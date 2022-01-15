@@ -4,7 +4,26 @@ author: "Andrew Esch, Evan Lee, Collin Stratton"
 date: "1/16/2022"
 output: word_document
 ---
-#"C:/Users/Evan/OneDrive/Documents/Github/CST-425/PerformancePredictions/TXN.csv"
+## Introduction
+### Problem Statement
+
+### Algorithm of the Solution
+
+## Data Setup
+
+## Training and Testing Sets Preparation
+
+## Multiple Linear Regression Model
+
+## Regression Output Interpretation
+
+## Test Set Predictions
+
+## Model Verification
+
+## Investment Worthiness Predication Results
+
+
 ```{r Import Data}
 file <- read.csv(file='PerformancePredictions/TXN.csv', header=TRUE, sep=',')
 head(file)
@@ -21,3 +40,6 @@ highy <- file[,"High"]
 plot(openx,highy)
 abline(lm(highy~openx))
 ```
+## Analysis of the Findings
+
+## References
