@@ -10,3 +10,4 @@ For this project, we were tasked to obtain a dataset from the stock market and p
 7. Make predictions using the test set
 8. Model verification
 9. Final investment worthiness predication results
+10. Testing
