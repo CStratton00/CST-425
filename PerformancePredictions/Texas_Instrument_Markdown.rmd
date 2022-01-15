@@ -9,39 +9,71 @@ output: word_document
 
 ### Algorithm of the Solution
 
-## Data Setup
-
-## Training and Testing Sets Preparation
-
-## Multiple Linear Regression Model
-
-## Regression Output Interpretation
-
-## Test Set Predictions
-
-## Model Verification
-
-## Investment Worthiness Predication Results
-
+## Data Setup and exploration
 ```{r Import Data}
-file <- read.csv(file='PerformancePredictions/TXN.csv', header=TRUE, sep=',')
-file.df <- data.frame(file)
-head(file.df)
-```
-
-```{r Summarize Data}
-summary(file.df)
+txn <- read.csv(file='PerformancePredictions/TXN.csv', header=TRUE, sep=',')
+txn.df <- data.frame(txn)
+head(txn.df)
 
 # Check for missing values
-sum(is.na(file.df))
+sum(is.na(txn.df))
 
-cor(file.df[2:7])
+# Find data correlation
+cor(txn.df[2:7])
 ```
+## Training and Testing Sets Preparation
+```{r Split Sets}
+library(caTools)
+set.seed(123)  # to reproduce the sample
+
+# Split training and testing based on "High" variable
+sample <- sample.split(txn.df$High, SplitRatio = 0.7) # Split using 70/30 ratio (backed up with research)
+
+# Create training/testing csv files
+txn.df.train <- subset(txn.df, sample==TRUE)
+txn.df.test <- subset(txn.df, sample==FALSE)
+
+# Display training dataframe
+head(txn.df.train)
+tail(txn.df.train)
+```
+
+## Test Set Predictions (Build the model)
+```{r model}
+
+highModel <- lm(High ~., data = txn.df.train[2:7])
+summary(highModel)
+```
+
+### Improve the model using only significant variables
+
+```{r improved_model}
+# Choose only variables with p-value < 2.2e-16
+
+highModel.significantVars <- lm(High ~ Open + Close + Volume, data = txn.df.train)
+highModel.significantVars
+
+summary(highModel.significantVars)
+```
+
+### Regression output intepretation
+
+For example, for every unit of **volatile.acidity** the quality decreases by 1.97 units, or for every increase in a unit of **sulphates** the quality increases by 0.746 units
+```{r interpretation}
+# The variables used in the model
+names(highModel.significantVars)
+
+# The number of fitted values in the model
+length(highModel.significantVars$fitted.values)
+
+```
+
+## Investment Worthiness Predication Results
 
 ```{r}
 library(pracma)
 xtime <- linspace(1,1259, n=1259)
-highy <- file.df[,"High"]
+highy <- txn.df[,"High"]
 
 plot(xtime,highy)
 abline(lm(highy~xtime))
