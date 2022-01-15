@@ -78,6 +78,24 @@ highy <- txn.df[,"High"]
 plot(xtime,highy)
 abline(lm(highy~xtime))
 ```
+```{r Fitted Values and Residuals}
+
+#Calculate the predicted values using the highmodel fitted values
+predicted.train <- highModel.significantVars$fitted.values
+
+#print out first 6 figures of predicted training model
+head(predicted.train)
+
+#make predicted training model a data frame
+predicted.train.df <- data.frame(predicted.train)
+
+# Calculate residual values
+predicted.train.df.residuals <- highModel.significantVars$residuals
+head(predicted.train.df.residuals)
+```
+
+
+
 ## Analysis of the Findings
 
 
