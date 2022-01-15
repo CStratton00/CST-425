@@ -1,0 +1,19 @@
+---
+title: "Texas Instruments Stock Performance"
+author: "Andrew Esch, Evan Lee, Collin Stratton"
+date: "1/16/2022"
+output: word_document
+---
+
+```{r Import Data}
+file <- read.csv("/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/PerformancePredictions/TXN.csv")
+head(file)
+```
+
+```{r Summarize Data}
+summary(file)
+```
+
+```{r}
+
+```
