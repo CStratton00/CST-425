@@ -23,20 +23,25 @@ output: word_document
 
 ## Investment Worthiness Predication Results
 
-
 ```{r Import Data}
 file <- read.csv(file='PerformancePredictions/TXN.csv', header=TRUE, sep=',')
-head(file)
+file.df <- data.frame(file)
+head(file.df)
 ```
 
 ```{r Summarize Data}
-summary(file)
+summary(file.df)
+
+# Check for missing values
+sum(is.na(file.df))
+
+cor(file.df[2:7])
 ```
 
 ```{r}
 library(pracma)
 xtime <- linspace(1,1259, n=1259)
-highy <- file[,"High"]
+highy <- file.df[,"High"]
 
 plot(xtime,highy)
 abline(lm(highy~xtime))
