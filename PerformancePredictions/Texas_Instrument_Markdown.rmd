@@ -4,9 +4,9 @@ author: "Andrew Esch, Evan Lee, Collin Stratton"
 date: "1/16/2022"
 output: word_document
 ---
-
+#"C:/Users/Evan/OneDrive/Documents/Github/CST-425/PerformancePredictions/TXN.csv"
 ```{r Import Data}
-file <- read.csv("/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/PerformancePredictions/TXN.csv")
+file <- read.csv(file='PerformancePredictions/TXN.csv', header=TRUE, sep=',')
 head(file)
 ```
 
@@ -15,5 +15,9 @@ summary(file)
 ```
 
 ```{r}
+openx <- file[,"Open"]
+highy <- file[,"High"]
 
+plot(openx,highy)
+abline(lm(highy~openx))
 ```
