@@ -2,17 +2,19 @@
 title: "Texas Instruments Stock Performance"
 author: "Andrew Esch, Evan Lee, Collin Stratton"
 date: "1/16/2022"
-output: html_document
+output: word_document
 ---
 # Introduction
+The purpose of this assignment is to take the data from the Texas Instruments stock and, given its performance characteristics and investment objectives, predict its future performance using linear modeling. This project also serves as an introduction to R and linear modeling.
 
 ## Data Setup and exploration
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+Import the data and set the dataframe as txn.
 ```{r Import Data}
 # If you need to knit this, use your full directory path (with forward-slashes) like this: C:/Users/andre/Documents/GitHub/CST-425/PerformancePredictions/TXN.csv
-txn <- read.csv(file='PerformancePredictions/TXN.csv', header=TRUE, sep=',')
+txn <- read.csv(file='/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/PerformancePredictions/TXN.csv', header=TRUE, sep=',')
 txn.df <- data.frame(txn)
 head(txn.df)
 
@@ -22,16 +24,21 @@ sum(is.na(txn.df))
 # Find data correlation
 cor(txn.df[2:7])
 ```
+Use the pracma library to plot the data from Texas Instruments. The graph below depicts the price of the stock at its highest over time. Furthermore, abline is used to draw a line to create a linear model predicting the price of the stock.
 ```{r}
 library(pracma)
+# create an array x that contatins time equal to the recorded high prices
 xtime <- linspace(1,1259, n=1259)
 highy <- txn.df[,"High"]
 
+# plot time vs high price and add a line to create a linear model
 plot(xtime,highy)
 abline(lm(highy~xtime))
 ```
+From the graph it is shown that Texas Instruments has performed well over the time frame selected. The linear plot of the data predicts the price of the stock will continue to increase over time. From here, more tests will be performed to determine if the linear plot is accurate.
 
 ## Training and Testing Sets Preparation
+Install caTools and use the function sample to split the data into training and testing sets. The head of the training set is shown below.
 ```{r Split Sets}
 library(caTools)
 set.seed(123)  # to reproduce the sample
@@ -45,29 +52,28 @@ txn.df.test <- subset(txn.df, sample==FALSE)
 
 # Display training dataframe
 head(txn.df.train)
-tail(txn.df.train)
 ```
 
 ## Test Set Predictions (Build the model)
+Build a model using the training set for the highest price of the stock over the given time frame. A summary model is shown below.
 ```{r model}
-
-highModel <- lm(High ~., data = txn.df.train[2:7]) # Build model based on
+# Build model using training set
+highModel <- lm(High ~., data = txn.df.train[2:7])
 summary(highModel)
 ```
 
-## Improve the model using only significant variables
-
+## Improve the Model using only Significant Variables
+Using the P Value of the model gained from the previous section, the next step is to determine which variables are significant and use the training set to build a model with only significant variables. The code section below gives a summary of the significant variables found.
 ```{r improved_model}
 # Choose only variables with p-value < 2.2e-16
-
 highModel.significantVars <- lm(High ~ Open + Close + Volume, data = txn.df.train)
 highModel.significantVars
 
 summary(highModel.significantVars)
 ```
 
-## Regression output intepretation
-
+## Regression Output Interpretation
+After finding the significant variables, the next step is to determine the regression output interpretation. The code section below shows the regression output interpretation in finding the number of fitted values in the model.
 For example, for every unit of **volatile.acidity** the quality decreases by 1.97 units, or for every increase in a unit of **sulphates** the quality increases by 0.746 units
 ```{r interpretation}
 # The variables used in the model
@@ -75,12 +81,11 @@ names(highModel.significantVars)
 
 # The number of fitted values in the model
 length(highModel.significantVars$fitted.values)
-
 ```
 
 ### Calculate residuals
+The residuals are calculated using the fitted values gathered from the significant variables. The residuals are shown below.
 ```{r Fitted Values and Residuals}
-
 #Calculate the predicted values using the highmodel fitted values
 predicted.train <- highModel.significantVars$fitted.values
 
@@ -95,21 +100,16 @@ predicted.train.df.residuals <- highModel.significantVars$residuals
 head(predicted.train.df.residuals)
 ```
 
-
 ### Make predictions using the test set
 It appears that the model for the predicted values are greater than the test model, which means the model overvalued each entry.
 ```{r predictions}
-
 predicted.test <- predict(highModel.significantVars, newdata = txn.df.test)
 predicted.test.df <- data.frame(predicted.test)
 
 # Plot actual values vs predicted values
-
-plot(txn.df.test$High, col="green", type="l", lty=1, lwd=5, main = "Actual vs Predicted Values") # Plot actu
+plot(txn.df.test$High, col="green", type="l", lty=1, lwd=5, main = "Actual vs Predicted Values")
 lines(predicted.test.df, col="red", type="l", lty=1, lwd=2.5)
 ```
-
-
 
 ## Verify Model
 There's a lot of steps to verify the model (definitely more than 4)
@@ -131,10 +131,8 @@ Explanation: To confirm linearity, check the graph for non-linear patterns. Alth
 
 ### Step 2: Confirm normality
 ```{r confirm_normality}
-
 # Verify that the residuals are normally distributed
 plot(highModel.significantVars, which=2)
-
 ```
 Explanation: To confirm normality, it must be verified that the standardized residuals vs. the theoretical quartiles form a normal distribution. Although the data appears to curve away from the line at the borders of the graph, the plot shows a clear straight line. Consequently, normality is normality distributed and the normality assumption is satisfied.
 
@@ -147,7 +145,6 @@ Explanation: There are three outliers: 736, 1056, and 1232. However, the data ap
 
 ### Step 4: Verify if there are any outliers that could skew results
 ```{r verification_outliers}
-
 # Assess the presence of significant outliers that could skew the results
 plot(highModel.significantVars, which=4)
 plot(highModel.significantVars, which=5)
@@ -156,9 +153,7 @@ Explanation: Using the first graph to verify the cook's distance vs. observation
 
 ### Step 5: Verify that there is no autocorrelation
 ```{r confirm_no_autocorrelation}
-
 # Verify that the residuals are independent (i.e. not auto-correlated)
-
 library(car) # companion to applied regression
 
 # Test for autocorrelation using the Durbin-Watson Test
@@ -180,14 +175,13 @@ Explanation: Reviewing the vif outputs for the three significant variables, the 
 
 Note: Write more about what this means for our model???
 
-
 ### Final financial "High" prediction results
 ```{r final_predictions}
-
 predicted.test <- predict(highModel.significantVars, newdata = txn.df.test)
 predicted.test.df <- data.frame(predicted.test)
 head(predicted.test.df[order(predicted.test.df$predicted.test),], 20)
-
-
 ```
 ## References
+https://finance.yahoo.com/quote/TXN/history?period1=1484438400&period2=1642204800&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true
+https://padlet.com/isac_artzi/9014mn5elmn7r8sg
+https://www.researchgate.net/publication/328589123_On_Splitting_Training_and_Validation_Set_A_Comparative_Study_of_Cross-Validation_Bootstrap_and_Systematic_Sampling_for_Estimating_the_Generalization_Performance_of_Supervised_Learning
