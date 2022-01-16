@@ -7,7 +7,11 @@ output: html_document
 # Introduction
 
 ## Data Setup and exploration
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 ```{r Import Data}
+# If you need to knit this, use your full directory path (with forward-slashes) like this: C:/Users/andre/Documents/GitHub/CST-425/PerformancePredictions/TXN.csv
 txn <- read.csv(file='PerformancePredictions/TXN.csv', header=TRUE, sep=',')
 txn.df <- data.frame(txn)
 head(txn.df)
