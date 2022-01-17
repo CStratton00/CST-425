@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Import the data and set the dataframe as txn.
 ```{r Import Data}
 # If you need to knit this, use your full directory path (with forward-slashes) like this: C:/Users/andre/Documents/GitHub/CST-425/PerformancePredictions/TXN.csv
-txn <- read.csv(file='/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/PerformancePredictions/TXN.csv', header=TRUE, sep=',')
+txn <- read.csv(file='C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/PerformancePredictions/TXN.csv', header=TRUE, sep=',')
 txn.df <- data.frame(txn)
 head(txn.df)
 
