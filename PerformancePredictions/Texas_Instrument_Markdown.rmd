@@ -173,14 +173,20 @@ sqrt(vif(highModel.significantVars)) > 5
 ```
 Explanation: Reviewing the vif outputs for the three significant variables, the "Open" and "Close" variables show a significantly high VIF value (vif = 425). Consequently, these variables has a sqrt(vif) > 5 and failed the collinarity test. This means that the variables "Open" and "Close" are correlated to each other.
 
-Note: Write more about what this means for our model???
-
 ### Final financial "High" prediction results
 ```{r final_predictions}
 predicted.test <- predict(highModel.significantVars, newdata = txn.df.test)
 predicted.test.df <- data.frame(predicted.test)
 head(predicted.test.df[order(predicted.test.df$predicted.test),], 20)
 ```
+
+## Christian Worldview
+When analyzing a publicly traded stock, one must not only consider the financial values of the company, but also the moral and ethical values of the company.
+This analysis done does not always mean the investment is good or should be done. In Matthew 25:14-30, the parable describes a master investing into three servants, each
+with varying levels of return. Two servant doubles the amount given, while the third does not make any. This parable is shown that knowing a company is reliable and trustworthy
+is very important when investing as well.
+
+
 ## References
 https://finance.yahoo.com/quote/TXN/history?period1=1484438400&period2=1642204800&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true
 https://padlet.com/isac_artzi/9014mn5elmn7r8sg
