@@ -48,6 +48,14 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/Participation/class-activity-1-20-2022.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/Participation/class-activity-1-20-2022.nb.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/Participation" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/PerformancePredictions/Texas_Instrument_Markdown.rmd">
           <value>
             <RMarkdownRenderProfile>
