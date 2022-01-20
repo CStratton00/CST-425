@@ -1,7 +1,12 @@
 ---
-title: "R Notebook"
+title: "Diabetes Prediction Model"
+author: "Andrew Esch, Evan Lee, Omar Elsayd"
 output: html_notebook
 ---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
 
 #Loading required packages
 ```{r}
