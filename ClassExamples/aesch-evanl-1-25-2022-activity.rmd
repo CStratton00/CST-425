@@ -1,0 +1,69 @@
+---
+title: "1-25-2022 Class Activity"
+author: Andrew Esch, Evan Lee
+output: html_notebook
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+## Get Applicable Libraries
+```{r}
+library(tidyverse)
+```
+
+## Import and Preview Data
+```{r}
+# Get Data from ClassExamples Directory
+email <- read.csv(file='C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/email.csv', header=TRUE, sep=',')
+
+# Preview data using head() and tail()
+head(email)
+tail(email)
+
+# Define class "feature" of an email to categorize ham or spam as a factor
+# This will create a tibble output for the email dataset.
+email <- email %>% mutate (message_label = as.factor(message_label))
+```
+
+## Convert dataset so that there are two columns: word and count
+```{r}
+email %>% gather(word, count,-message_index, -message_label)
+```
+
+# Create a frequency table
+```{r}
+email %>% gather(word, count, -message_index, -message_label) %>% group_by(word) %>% summarize(occurrence = sum(count)) %>% arrange(desc(occurrence)) %>% slice(1:10)
+```
+
+##
+```{r}
+set.seed(12345)
+sample_set <- sample(email, 500, replace = FALSE, prob = NULL)
+email_train <- email[1,]
+email_test <- email[1,]
+round(prop.table(table(select(email, message_label))),2)
+```
+
+```{r}
+library(e1071)
+email_mod <- naiveBayes(message_label ~ .-message_index, data = email_train, laplace = 1)
+```
+
+```{r}
+email_pred <- predict(email_mod, newdata = email_test, type = "raw")
+head(email_pred)
+email_pred <- predict(email_mod, newdata = email_test, type = "class")
+head(email_pred)
+```
+
+```{r}
+email_pred_table <- table(email_test$message_label, email_pred)
+
+email_pred_table
+```
+
+```{r}
+sum(diag(email_pred_table)) / nrow(email_test)
+```
