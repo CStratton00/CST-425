@@ -11,8 +11,8 @@ to predict whether a particular patient is likely to suffer from heart disease o
 # Load the data and use the `col_types` argument to specify type of 
 # all columns('n' stands for numerical and 'f' stands for factor).
 
-
 # Get a glimpse of the data.
+glimpse(heart)
 
 #----------------------------------------------------------------
 #' #2. Explore and Prepare the Data
