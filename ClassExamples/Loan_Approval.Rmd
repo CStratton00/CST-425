@@ -37,6 +37,8 @@ set.seed(2)
 # Split the data 80:20
 train.sample <- sample(c(1:dim(loan.df)[1]), dim(loan.df)[1]*0.8)
 
+
+
 train.df <- loan.df[train.sample,]
 test.df <- loan.df[-train.sample,]
 ```

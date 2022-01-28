@@ -28,7 +28,7 @@ library(scales)
 # all columns('n' stands for numerical and 'f' stands for factor).
 ```{r loadData}
 # Get Data from ClassExamples Directory
-heart <- read_csv(file='C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/1-27-2022/heart.csv', col_types = "nffnnffnfnfnff")
+heart <- read_csv(file='C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/1-27-2022/heart.csv', col_types = "nffnnffnfnfnff")
 # heartDF <- ldply(heart, read_csv, col_names = TRUE, )
 ```
 
@@ -112,11 +112,18 @@ The accuracy of our model is 80.4% with a seed of 1234
 
 
 The results show that the predictive accuracy of our model is ....
-Is this good?
-How important is prediction accuracy?
-Peek at near future concepts: resampling and k-fold cross-validation
+The range of accuracy from our model with a 75/25 ratio from varying seeds is from 75%-85% accurate.
 
+Is this good?
+This percentage of accuracy is very good for Naive Bayes due to it being quick in nature and having 6% missing data entries.
+
+How important is prediction accuracy?
+Prediction accuracy is important because the results from the prediction accuracy will give the result on how well our
+data set will be able to predict a set of events. Having a very high percentage will mean we have a very good model.
+
+Peek at near future concepts: resampling and k-fold cross-validation
+Did in class ^^
 #----------------------------------------------------------------
 #' #5. Interpret the results
 #----------------------------------------------------------------
-
+Based on age,sex,painType,restingBP,cholesterol,highBloodSugar,restingECG,restingHR,exerciseAngina,STdepression,STslope,coloredVessels and defectType, we can predict if a patient has heart disease with an accuracy of 80.4%.
