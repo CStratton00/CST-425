@@ -72,7 +72,7 @@ Do a little research about how is naïve Bayes affected by these issues.
 # Train a new model using the naiveBayes() function.
 ```{r model}
 # Set a seed to randomize model generation
-set.seed(1234)
+set.seed(12345)
 
 # Create a sample of the data
 sample_set <- sample(c(1:dim(heart)[1]), dim(heart)[1]*0.75)
@@ -92,9 +92,9 @@ heart_mod
 # Use the model to predict the class of the test instances.
 ```{r predict}
 heart_pred <- predict(heart_mod, newdata = heart_test, type = "raw")
-heart_pred
+head(heart_pred)
 heart_pred <- predict(heart_mod, newdata = heart_test, type = "class")
-heart_pred
+head(heart_pred)
 ```
 
 # Create confusion matrix of our results.
@@ -108,13 +108,18 @@ sum(diag(heart_pred_table)) / nrow(heart_test)
 ```
 
 # What is the accuracy of our prediction?
-The accuracy of our model is 80.4% with a seed of 1234
+The results show that the predictive accuracy of our model is 84.7% with a generated seed of 12345.
+
+# Is this good?
+We affirm that a predictive accuracy of 84.7% is a good for the affirmed use case of predicting heart disease for a patient. In the
 
 
-The results show that the predictive accuracy of our model is ....
-Is this good?
-How important is prediction accuracy?
-Peek at near future concepts: resampling and k-fold cross-validation
+# How important is prediction accuracy?
+
+
+# Peek at near future concepts: resampling and k-fold cross-validation
+
+
 
 #----------------------------------------------------------------
 #' #5. Interpret the results
