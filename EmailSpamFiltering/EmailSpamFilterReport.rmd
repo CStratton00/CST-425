@@ -2,8 +2,90 @@
 title: "Email Spam Filtering"
 output: html_notebook
 ---
-```{r}
 
+## Step 1: Data Setup and Exploration
 
+### Setup Knitr
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
+### Get the appropriate libraries
+```{r libraries}
+library(tidyverse)
+library(e1071)
+library(mice)
+library(Amelia)
+library(scales)
+```
+
+### Load the Data
+```{r loadData}
+# Get Data from ClassExamples Directory
+spam <- read_csv(file='C:/Users/andre/Documents/GitHub/CST-425/EmailSpamFiltering/completeSpamAssassin.csv', col_types = "nffnnffnfnfnff")
+
+# NOTE: Change col_types variable appropriately
+```
+
+# Explore the model by getting a glimpse of the data.
+```{r exploreModel}
+glimpse(heart)
+```
+
+
+## Step 2: Preparing training and testing sets
+```{r model}
+# Set a seed to randomize model generation
+set.seed(1234)
+
+# Create a sample of the data
+sample_set <- sample(c(1:dim(heart)[1]), dim(heart)[1]*0.75)
+
+# Split training and testing set using 75:25 split
+heart_train <- heart[sample_set,]
+heart_test <- heart[-sample_set,]
+```
+
+## Step 3: Build the Bayesian Model (Naive)
+```{r buildModel}
+# Build the naive model based on training set
+heart_mod <- naiveBayes(heartDisease ~ ., data = heart_train, laplace = 1)
+heart_mod
+```
+
+## Step 4: Improve the Bayesian Model
+```{r improveModel}
+# I don't know what to do here lol
+```
+
+## Step 5: Interpret the Model Output
+
+
+## Step 6: Estimate Errors
+
+
+## Step 7: Make predictions using the test set
+```{r predict}
+heart_pred <- predict(heart_mod, newdata = heart_test, type = "raw")
+heart_pred
+heart_pred <- predict(heart_mod, newdata = heart_test, type = "class")
+heart_pred
+```
+
+## Step 8: Model Verification
+
+
+## Step 9: Final Spam Identification Results
+
+### Create confusion matrix of our results
+```{r confusion}
+# Print Confusion Matrix
+heart_pred_table <- table(heart_test$heartDisease, heart_pred)
+heart_pred_table
+
+# Accuracy
+sum(diag(heart_pred_table)) / nrow(heart_test)
+```
+
+
+## References
