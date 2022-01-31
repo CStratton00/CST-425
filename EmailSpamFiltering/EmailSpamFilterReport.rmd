@@ -19,6 +19,7 @@ library(Amelia)
 library(scales)
 
 wd = getwd()
+wd
 ```
 
 
@@ -28,7 +29,7 @@ wd = getwd()
 # Get Data from ClassExamples Directory
 
 
-spam <- read_csv(file='C:/Users/andre/Documents/GitHub/CST-425/EmailSpamFiltering/completeSpamAssassin.csv')
+spam <- read_csv(file='completeSpamAssassin.csv')
 head(spam)
 # NOTE: Change col_types variable appropriately
 ```
@@ -38,17 +39,13 @@ head(spam)
 glimpse(spam)
 ```
 
-```{r missingVals}
-```
-
-
 ## Step 2: Preparing training and testing sets
 ```{r model}
 # Set a seed to randomize model generation
 set.seed(1234)
 
 # Create a sample of the data
-sample_set <- sample(c(1:dim(spam)[1]), dim(spam)[1]*0.75)
+sample_set <- sample(c(1:dim(spam)[1]), dim(spam)[1]*0.80)
 
 # Split training and testing set using 75:25 split
 spam_train <- spam[sample_set,]
@@ -65,7 +62,40 @@ spam_mod
 
 ## Step 4: Improve the Bayesian Model
 ```{r improveModel}
-# I don't know what to do here lol
+
+#Get rid of missing values
+#spam.df <- data.frame(spam)
+glimpse(spam)
+
+spam[spam == "empty"] <- NA
+sum(is.na(spam))
+spam.removedNA<- na.omit(spam)
+
+
+glimpse(spam.removedNA)
+
+
+
+#Make all words lowercase to prevent multiple matching
+# Lowercase the model
+#spam$Body <- tolower(spam$Body)
+#spam$Body <- toupper(spam$Body)
+head(spam,1)
+
+
+
+##Changing Testing and Training set ratios
+
+# Create a sample of the data
+sample_set <- sample(c(1:dim(spam)[1]), dim(spam)[1]*0.75)
+
+# Split training and testing set using 75:25 split
+spam_train <- spam[sample_set,]
+spam_test <- spam[-sample_set,]
+
+
+
+
 ```
 
 
