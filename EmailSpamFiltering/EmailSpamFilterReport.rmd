@@ -26,7 +26,7 @@ getwd()
 # Get Data from ClassExamples Directory
 
 
-spam <- read_csv(file='completeSpamAssassin.csv')
+spam <- read_csv(file='C:/Users/andre/Documents/GitHub/CST-425/EmailSpamFiltering/completeSpamAssassin.csv')
 head(spam)
 # NOTE: Change col_types variable appropriately
 ```
