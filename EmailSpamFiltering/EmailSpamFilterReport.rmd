@@ -53,7 +53,7 @@ spam[spam == "empty"] <- NA
 sum(is.na(spam))
 
 #Remove all email cases with NA in them
-spam.removedNA<- na.omit(spam)
+spam.removedNA <- na.omit(spam)
 
 glimpse(spam.removedNA)
 
@@ -85,7 +85,7 @@ sample_set <- sample(1:dim(spam.removedNA)[1], dim(spam.removedNA)[1]*0.80)
 
 # Split training and testing set using 80:20 split
 spam_train <- spam.removedNA[sample_set,]
-spam_test <- spam.removeNA[-sample_set,]
+spam_test <- spam.removedNA[-sample_set,]
 ```
 
 ## Step 3: Build the Bayesian Model (Naive)
@@ -113,9 +113,9 @@ spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
 
 ## Step 7: Make predictions using the test set
 ```{r predict}
-spam_pred <- predict(spam_mod, newdata = spam_test, type = "raw")
+spam_pred_raw <- predict(spam_mod, newdata = spam_test, type = "raw")
 head(spam_pred_raw)
-spam_pred <- predict(spam_mod, newdata = spam_test, type = "class")
+spam_pred_class <- predict(spam_mod, newdata = spam_test, type = "class")
 head(spam_pred_class)
 ```
 
@@ -128,14 +128,14 @@ The first output shows the probability of an email being spam or not spam (separ
 ### Create confusion matrix of the results and compute the model accuracy
 ```{r confusion}
 # Print Confusion Matrix
-spam_pred_table <- table(spam_test$Label, spam_pred)
+spam_pred_table <- table(spam_test$Label, spam_pred_class)
 spam_pred_table
 
 # State the model accuracy
 sum(diag(spam_pred_table)) / nrow(spam_test)
 ```
 
-The accuracy of our model is 99.8% with a seed of 1234. The confusion matrix shows a perfect prediction accuracy for detecting actual non-spam emails, while the prediction of actual spam emails is nearly perfect with an accuracy of 472/474. Overall, the testing set shows that the model has high accuracy in predicting spam emails.
+The accuracy of our model is 99.2% with a seed of 1234. The confusion matrix shows a nearly perfect prediction accuracy for detecting actual non-spam emails with an 774/784, while the prediction of actual spam emails is perfect with an accuracy of 321. Overall, the testing set shows that the model has high accuracy in predicting spam emails.
 
 
 ## Step 9: Model Verification
@@ -164,7 +164,7 @@ spam_pred_table2
 sum(diag(spam_pred_table2)) / nrow(spam_test2)
 ```
 
-The accuracy of this prediction is 44.1% with a seed of 1234. The confusion matrix shows a perfect prediction accuracy for detecting actual non-spam emails. However, the prediction accuracy for actual spam emails is low with an accuracy of 433/1889. However, notice that the ratio of non-spam to spam emails in the model training set is about 35%/65%, whereas this model is the opposite with 35%/65%. This may result in a skew of the data due to the difference in the expected ratio. Thus, this method of verifying the model is inconclusive.
+The accuracy of this prediction is 45.3% with a seed of 1234. The confusion matrix shows a perfect prediction accuracy for detecting actual non-spam emails. However, the prediction accuracy for actual spam emails is low with an accuracy of 433/1857. However, notice that the ratio of non-spam to spam emails in the model training set is about 35%/65%, whereas this model is the opposite with 40%/60%. This may result in a skew of the data due to the difference in the expected ratio. Thus, this method of verifying the model is inconclusive.
 
 ## References
 https://www.kaggle.com/nitishabharathi/email-spam-dataset
