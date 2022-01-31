@@ -29,7 +29,7 @@ wd
 # Get Data from ClassExamples Directory
 
 
-spam <- read_csv(file='completeSpamAssassin.csv')
+spam <- read_csv(file='EmailSpamFiltering/completeSpamAssassin.csv')
 head(spam)
 # NOTE: Change col_types variable appropriately
 ```
@@ -62,7 +62,6 @@ spam_mod
 
 ## Step 4: Improve the Bayesian Model
 ```{r improveModel}
-
 #Get rid of missing values
 #spam.df <- data.frame(spam)
 glimpse(spam)
@@ -107,7 +106,7 @@ spam_test <- spam[-sample_set,]
 
 ## Step 6: Estimate Errors
 ```{r errorEstimation}
-# TK
+error <- error(spam_mod)
 ```
 
 
