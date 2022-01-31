@@ -17,19 +17,23 @@ library(e1071)
 library(mice)
 library(Amelia)
 library(scales)
+
+getwd()
 ```
 
 ### Load the Data
 ```{r loadData}
 # Get Data from ClassExamples Directory
-spam <- read_csv(file='C:/Users/andre/Documents/GitHub/CST-425/EmailSpamFiltering/completeSpamAssassin.csv', col_types = "nffnnffnfnfnff")
 
+
+spam <- read_csv(file='completeSpamAssassin.csv')
+head(spam)
 # NOTE: Change col_types variable appropriately
 ```
 
 # Explore the model by getting a glimpse of the data.
 ```{r exploreModel}
-glimpse(heart)
+glimpse(spam)
 ```
 
 
@@ -39,18 +43,18 @@ glimpse(heart)
 set.seed(1234)
 
 # Create a sample of the data
-sample_set <- sample(c(1:dim(heart)[1]), dim(heart)[1]*0.75)
+sample_set <- sample(c(1:dim(spam)[1]), dim(spam)[1]*0.75)
 
 # Split training and testing set using 75:25 split
-heart_train <- heart[sample_set,]
-heart_test <- heart[-sample_set,]
+spam_train <- spam[sample_set,]
+spam_test <- spam[-sample_set,]
 ```
 
 ## Step 3: Build the Bayesian Model (Naive)
 ```{r buildModel}
 # Build the naive model based on training set
-heart_mod <- naiveBayes(heartDisease ~ ., data = heart_train, laplace = 1)
-heart_mod
+spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
+spam_mod
 ```
 
 ## Step 4: Improve the Bayesian Model
@@ -66,10 +70,10 @@ heart_mod
 
 ## Step 7: Make predictions using the test set
 ```{r predict}
-heart_pred <- predict(heart_mod, newdata = heart_test, type = "raw")
-heart_pred
-heart_pred <- predict(heart_mod, newdata = heart_test, type = "class")
-heart_pred
+spam_pred <- predict(spam_mod, newdata = spam_test, type = "raw")
+spam_pred
+spam_pred <- predict(spam_mod, newdata = spam_test, type = "class")
+spam_pred
 ```
 
 ## Step 8: Model Verification
@@ -80,11 +84,11 @@ heart_pred
 ### Create confusion matrix of our results
 ```{r confusion}
 # Print Confusion Matrix
-heart_pred_table <- table(heart_test$heartDisease, heart_pred)
-heart_pred_table
+spam_pred_table <- table(spam_test$Label, spam_pred)
+spam_pred_table
 
 # Accuracy
-sum(diag(heart_pred_table)) / nrow(heart_test)
+sum(diag(spam_pred_table)) / nrow(spam_test)
 ```
 
 
