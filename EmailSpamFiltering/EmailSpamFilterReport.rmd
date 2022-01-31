@@ -119,8 +119,8 @@ The first output shows the probability of an email being spam or not spam (separ
 
 ## Step 6: Estimate Errors
 ```{r errorEstimation}
-accuracy <- weighted.mean(0:spam_pred_raw,1:spam_pred_raw)
-spam_error_rate <- 1-accuracy
+# accuracy <- weighted.mean(0:spam_pred_raw,1:spam_pred_raw)
+# spam_error_rate <- 1-accuracy
 ```
 
 ## Step 8: Final Spam Identification Results
