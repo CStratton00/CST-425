@@ -44,7 +44,7 @@ set.seed(1234)
 # Create a sample of the data
 sample_set <- sample(1:dim(spam)[1], dim(spam)[1]*0.80)
 
-# Split training and testing set using 75:25 split
+# Split training and testing set using 80:20 split
 spam_train <- spam[sample_set,]
 spam_test <- spam[-sample_set,]
 ```
@@ -53,13 +53,17 @@ spam_test <- spam[-sample_set,]
 ```{r buildModel}
 # Build the naive model based on training set
 spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
-spam_mod
+
 ```
 
 
 ## Step 4: Improve the Bayesian Model
 ```{r improveModel}
+#-----------------------------------------------------------------------------------------------
 #Get rid of missing values
+
+#Naive Bayes is handy due to laplace smoothing which can allow
+
 #spam.df <- data.frame(spam)
 glimpse(spam)
 
@@ -71,14 +75,15 @@ spam.removedNA<- na.omit(spam)
 glimpse(spam.removedNA)
 
 
-
+#-----------------------------------------------------------------------------------------------
 #Make all words lowercase to prevent multiple matching
+
+# The idea behind making all of the text lowercase would be to eliminate cases where words that are the same but have different capitalization are considered different. Example being (free and FREE). This would be beneficial if in the context of the word they mean the same, but in this case, a sign of a spam email would be words in all caps, meaning that it is important to keep the text as is to increase the accuracy of the model.
+
 # Lowercase the model
 #spam$Body <- tolower(spam$Body)
 #spam$Body <- toupper(spam$Body)
-head(spam,1)
-
-
+#-----------------------------------------------------------------------------------------------
 
 ##Changing Testing and Training set ratios
 
@@ -89,7 +94,7 @@ sample_set <- sample(1:dim(spam)[1], dim(spam)[1]*0.75)
 spam_train <- spam[sample_set,]
 spam_test <- spam[-sample_set,]
 
-
+#-----------------------------------------------------------------------------------------------
 
 
 ```
@@ -110,9 +115,9 @@ spam_test <- spam[-sample_set,]
 ## Step 7: Make predictions using the test set
 ```{r predict}
 spam_pred <- predict(spam_mod, newdata = spam_test, type = "raw")
-spam_pred_raw
+head(spam_pred_raw)
 spam_pred <- predict(spam_mod, newdata = spam_test, type = "class")
-spam_pred_class
+head(spam_pred_class)
 ```
 
 ## Step 8: Model Verification
@@ -120,9 +125,10 @@ spam_pred_class
 # Get Data from ClassExamples Directory
 spam_test2 <- read_csv(file='EmailSpamFiltering/lingSpam.csv')
 head(spam_test2)
+glimpse(spam_test2)
 
 spam_pred2 <- predict(spam_mod, newdata = spam_test2, type = "class")
-spam_pred2
+head(spam_pred2)
 ```
 
 ```{r seeResults}
