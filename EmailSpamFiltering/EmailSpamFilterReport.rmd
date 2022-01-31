@@ -27,11 +27,8 @@ wd
 ### Load the Data
 ```{r loadData}
 # Get Data from ClassExamples Directory
-
-
 spam <- read_csv(file='EmailSpamFiltering/completeSpamAssassin.csv')
 head(spam)
-# NOTE: Change col_types variable appropriately
 ```
 
 # Explore the model by getting a glimpse of the data.
@@ -120,6 +117,21 @@ spam_pred
 
 ## Step 8: Model Verification
 ```{r modelVerification}
+# Get Data from ClassExamples Directory
+spam_test2 <- read_csv(file='EmailSpamFiltering/lingSpam.csv')
+head(spam_test2)
+
+spam_pred2 <- predict(spam_mod, newdata = spam_test2, type = "class")
+spam_pred2
+```
+
+```{r seeResults}
+# Print Confusion Matrix
+spam_pred_table2 <- table(spam_test2$Label, spam_pred2)
+spam_pred_table2
+
+# Accuracy
+sum(diag(spam_pred_table2)) / nrow(spam_test2)
 ```
 
 ## Step 9: Final Spam Identification Results
