@@ -17,18 +17,13 @@ library(e1071)
 library(mice)
 library(Amelia)
 library(scales)
-
-wd <- getwd()
-wd
 ```
-
-
 
 ### Load the Data
 ```{r loadData}
 # Get Data from ClassExamples Directory
 spam <- read_csv(file='EmailSpamFiltering/completeSpamAssassin.csv')
-head(spam)
+head(spam,1)
 ```
 
 # Explore the model by getting a glimpse of the data.
@@ -36,17 +31,61 @@ head(spam)
 glimpse(spam)
 ```
 
-## Step 2: Preparing training and testing sets
+
+# Step 2: Improve the Bayesian Model
+
+## Getting Rid of Missing Values
+### Naive Bayes is handy due to laplace smoothing which can allow not having to clean data for missing values. Although this can be useful, it still is a good implementation to clean the data. In this example there are about 500 entries with just the email body being the string "empty" which the model could unintentionally pick up as a key word in determining spam/ham in the model. So in this case scenario we removed all "empty" body text instances.
+
+## Lowercase/Uppercase text
+### The idea behind making all of the text lowercase would be to eliminate cases where words that are the same but have different capitalization are considered different. Example being (free and FREE). This would be beneficial if in the context of the word they mean the same, but in this case, a sign of a spam email would be words in all caps, meaning that it is important to keep the text as is to increase the accuracy of the model.
+
+##Changing Training/Testing Set Ratios
+### A way to change the accuracy of the model can be changing the ratio for the testing and training sets between 70:30 to 80:20.
+```{r improveModel}
+#------------------------------------Get rid of missing values---------------------------------------------------------
+glimpse(spam)
+
+#Change all "empty" spam emails to NA
+spam[spam == "empty"] <- NA
+
+#Count the amount of emails that have NA
+sum(is.na(spam))
+
+#Remove all email cases with NA in them
+spam.removedNA<- na.omit(spam)
+
+glimpse(spam.removedNA)
+
+#-----------------------Lowercase/Upercase (Theoretical Implementation)-----------------------------------------
+#Make all words lowercase to prevent multiple matching
+# Lowercase the model
+#spam$Body <- tolower(spam$Body)
+#spam$Body <- toupper(spam$Body)
+
+
+#-----------------Changing Testing and Training Set Ratios (Theoretical Implementation)---------------------------
+# Create a sample of the data
+#set.seed(1234)
+#sample_set <- sample(1:dim(spam.removedNA)[1], dim(spam.removedNA)[1]*0.75)
+
+#Split training and testing set using 75:25 split
+#spam_train <- spam[sample_set,]
+#spam_test <- spam[-sample_set,]
+
+```
+
+# Step 3: Preparing training and testing sets
 ```{r model}
 # Set a seed to randomize model generation
 set.seed(1234)
 
 # Create a sample of the data
-sample_set <- sample(1:dim(spam)[1], dim(spam)[1]*0.80)
+sample_set <- sample(1:dim(spam.removedNA)[1], dim(spam.removedNA)[1]*0.80)
 
 # Split training and testing set using 80:20 split
-spam_train <- spam[sample_set,]
-spam_test <- spam[-sample_set,]
+spam_train <- spam.removedNA[sample_set,]
+spam_test <- spam.removeNA[-sample_set,]
 ```
 
 ## Step 3: Build the Bayesian Model (Naive)
@@ -57,47 +96,7 @@ spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
 ```
 
 
-## Step 4: Improve the Bayesian Model
-```{r improveModel}
-#-----------------------------------------------------------------------------------------------
-#Get rid of missing values
 
-#Naive Bayes is handy due to laplace smoothing which can allow
-
-#spam.df <- data.frame(spam)
-glimpse(spam)
-
-spam[spam == "empty"] <- NA
-sum(is.na(spam))
-spam.removedNA<- na.omit(spam)
-
-
-glimpse(spam.removedNA)
-
-
-#-----------------------------------------------------------------------------------------------
-#Make all words lowercase to prevent multiple matching
-
-# The idea behind making all of the text lowercase would be to eliminate cases where words that are the same but have different capitalization are considered different. Example being (free and FREE). This would be beneficial if in the context of the word they mean the same, but in this case, a sign of a spam email would be words in all caps, meaning that it is important to keep the text as is to increase the accuracy of the model.
-
-# Lowercase the model
-#spam$Body <- tolower(spam$Body)
-#spam$Body <- toupper(spam$Body)
-#-----------------------------------------------------------------------------------------------
-
-##Changing Testing and Training set ratios
-
-# Create a sample of the data
-sample_set <- sample(1:dim(spam)[1], dim(spam)[1]*0.75)
-
-# Split training and testing set using 75:25 split
-spam_train <- spam[sample_set,]
-spam_test <- spam[-sample_set,]
-
-#-----------------------------------------------------------------------------------------------
-
-
-```
 
 
 ## Step 5: Interpret the Model Output
