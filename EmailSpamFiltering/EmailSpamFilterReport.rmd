@@ -119,38 +119,52 @@ spam_pred <- predict(spam_mod, newdata = spam_test, type = "class")
 head(spam_pred_class)
 ```
 
-## Step 8: Model Verification
-```{r modelVerification}
-# Get Data from ClassExamples Directory
-spam_test2 <- read_csv(file='EmailSpamFiltering/lingSpam.csv')
-head(spam_test2)
-glimpse(spam_test2)
+Using the improved prediction model for the spam email set, make a prediction about whether an email is spam or not using the testing set.
+The first output shows the probability of an email being spam or not spam (separated by columns 0 and 1). The second output generates an array of prediction values stating if the email is spam (1) or not spam(0), based on which one is more accurate.
 
-spam_pred2 <- predict(spam_mod, newdata = spam_test2, type = "class")
-head(spam_pred2)
-```
 
-```{r seeResults}
-# Print Confusion Matrix
-spam_pred_table2 <- table(spam_test2$Label, spam_pred2)
-spam_pred_table2
+## Step 8: Final Spam Identification Results
 
-# Accuracy
-sum(diag(spam_pred_table2)) / nrow(spam_test2)
-```
-
-## Step 9: Final Spam Identification Results
-
-### Create confusion matrix of our results
+### Create confusion matrix of the results and compute the model accuracy
 ```{r confusion}
 # Print Confusion Matrix
 spam_pred_table <- table(spam_test$Label, spam_pred)
 spam_pred_table
 
-# Accuracy
+# State the model accuracy
 sum(diag(spam_pred_table)) / nrow(spam_test)
 ```
 
+The accuracy of our model is 99.8% with a seed of 1234. The confusion matrix shows a perfect prediction accuracy for detecting actual non-spam emails, while the prediction of actual spam emails is nearly perfect with an accuracy of 472/474. Overall, the testing set shows that the model has high accuracy in predicting spam emails.
+
+
+## Step 9: Model Verification
+```{r modelVerification}
+# Ensure the seed is set to 1234
+set.seed(1234)
+
+# Get Data from ClassExamples Directory
+spam_test2 <- read_csv(file='EmailSpamFiltering/lingSpam.csv')
+head(spam_test2)
+glimpse(spam_test2)
+
+# Make a prediction for the lingSpam dataset
+spam_pred2 <- predict(spam_mod, newdata = spam_test2, type = "class")
+head(spam_pred2)
+```
+
+One method of verifying the model is to test it on another set of email data. Using the lingSpam.csv file (with the same column format), use the predict function to create an array of prediction values.
+
+```{r seeVerificationResults}
+# Print Confusion Matrix
+spam_pred_table2 <- table(spam_test2$Label, spam_pred2)
+spam_pred_table2
+
+# State the prediction accuracy
+sum(diag(spam_pred_table2)) / nrow(spam_test2)
+```
+
+The accuracy of this prediction is 44.1% with a seed of 1234. The confusion matrix shows a perfect prediction accuracy for detecting actual non-spam emails. However, the prediction accuracy for actual spam emails is low with an accuracy of 433/1889. However, notice that the ratio of non-spam to spam emails in the model training set is about 35%/65%, whereas this model is the opposite with 35%/65%. This may result in a skew of the data due to the difference in the expected ratio. Thus, this method of verifying the model is inconclusive.
 
 ## References
 https://www.kaggle.com/nitishabharathi/email-spam-dataset
