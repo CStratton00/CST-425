@@ -101,13 +101,7 @@ spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
 
 ## Step 5: Interpret the Model Output
 ```{r interpretModel}
-# TK
-```
-
-
-## Step 6: Estimate Errors
-```{r errorEstimation}
-
+plot.naiveBayes(spam_mod)
 ```
 
 
@@ -122,6 +116,12 @@ head(spam_pred_class)
 Using the improved prediction model for the spam email set, make a prediction about whether an email is spam or not using the testing set.
 The first output shows the probability of an email being spam or not spam (separated by columns 0 and 1). The second output generates an array of prediction values stating if the email is spam (1) or not spam(0), based on which one is more accurate.
 
+
+## Step 6: Estimate Errors
+```{r errorEstimation}
+accuracy <- weighted.mean(0:spam_pred_raw,1:spam_pred_raw)
+spam_error_rate <- 1-accuracy
+```
 
 ## Step 8: Final Spam Identification Results
 
