@@ -18,7 +18,7 @@ library(mice)
 library(Amelia)
 library(scales)
 
-wd = getwd()
+wd <- getwd()
 wd
 ```
 
@@ -42,7 +42,7 @@ glimpse(spam)
 set.seed(1234)
 
 # Create a sample of the data
-sample_set <- sample(c(1:dim(spam)[1]), dim(spam)[1]*0.80)
+sample_set <- sample(1:dim(spam)[1], dim(spam)[1]*0.80)
 
 # Split training and testing set using 75:25 split
 spam_train <- spam[sample_set,]
@@ -83,7 +83,7 @@ head(spam,1)
 ##Changing Testing and Training set ratios
 
 # Create a sample of the data
-sample_set <- sample(c(1:dim(spam)[1]), dim(spam)[1]*0.75)
+sample_set <- sample(1:dim(spam)[1], dim(spam)[1]*0.75)
 
 # Split training and testing set using 75:25 split
 spam_train <- spam[sample_set,]
@@ -103,16 +103,16 @@ spam_test <- spam[-sample_set,]
 
 ## Step 6: Estimate Errors
 ```{r errorEstimation}
-error <- error(spam_mod)
+
 ```
 
 
 ## Step 7: Make predictions using the test set
 ```{r predict}
 spam_pred <- predict(spam_mod, newdata = spam_test, type = "raw")
-spam_pred
+spam_pred_raw
 spam_pred <- predict(spam_mod, newdata = spam_test, type = "class")
-spam_pred
+spam_pred_class
 ```
 
 ## Step 8: Model Verification
