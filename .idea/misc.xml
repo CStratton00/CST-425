@@ -100,6 +100,13 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/Topic-3/2-1-2022/team-1-2-1-2022-activity.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/Topic-3/2-1-2022" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
