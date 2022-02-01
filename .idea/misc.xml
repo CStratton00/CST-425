@@ -49,6 +49,7 @@
         <entry key="file://$PROJECT_DIR$/EmailSpamFiltering/EmailSpamFilterReport.rmd">
           <value>
             <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/EmailSpamFiltering/EmailSpamFilterReport.nb.html" />
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/EmailSpamFiltering" />
             </RMarkdownRenderProfile>
           </value>
