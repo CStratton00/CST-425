@@ -83,10 +83,10 @@ glimpse(spam.removedNA)
 # Set a seed to randomize model generation
 set.seed(1234)
 
-# Create a sample of the data
+# Create a sample of the data. The sample set will just include the body text of the emails, starting at the first element and going to the 80% mark. This will allow the training set sample to be established. A training and testing set ratio should be around 70/30 to 80/20.
 sample_set <- sample(1:dim(spam.removedNA)[1], dim(spam.removedNA)[1]*0.80)
 
-# Split training and testing set using 80:20 split
+# Split training and testing set using 80:20 split. The training set will use the dimensions from the sample set sample() while the test set will use the inverse of it by using the (-sample_set).
 spam_train <- spam.removedNA[sample_set,]
 spam_test <- spam.removedNA[-sample_set,]
 ```
@@ -95,16 +95,11 @@ TK
 
 ## Step 4: Build the Bayesian Model (Naive)
 ```{r buildModel}
-# Build the naive model based on training set
+# Build the naive model based on training set. The variable on the left hand side of the tilde is the dependent variable (Label), while the variables on the right hand side ar the independent variables (. means all other variables). Our data being put into the naiveBayes model is the training set (20%-30%). Laplace smoothing = 1 will prevent zero probability from happening (empty emails from being counted). This was fixed earlier by manually cleaning the data but laplace smoothing will create the same results.
 spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
-```
-
-# Step 5: Interpret the model
-```{r}
 head(spam_mod,1)
 ```
 
-TK (plus maybe interpret this more, if possible)
 
 ## Step 5: Make predictions using the test set
 ```{r predict}
