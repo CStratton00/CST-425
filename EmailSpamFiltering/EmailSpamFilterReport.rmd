@@ -17,6 +17,7 @@ library(e1071)
 library(mice)
 library(Amelia)
 library(scales)
+library(ggplot2)
 ```
 
 ### Load the Data
@@ -92,7 +93,6 @@ spam_test <- spam.removedNA[-sample_set,]
 ```{r buildModel}
 # Build the naive model based on training set
 spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
-
 ```
 
 
@@ -101,7 +101,7 @@ spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
 
 ## Step 5: Interpret the Model Output
 ```{r interpretModel}
-plot.naiveBayes(spam_mod)
+#plot(spam_mod)
 ```
 
 
