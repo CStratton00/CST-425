@@ -32,17 +32,19 @@ head(spam,1)
 glimpse(spam)
 ```
 
+TK
 
 # Step 2: Improve the Bayesian Model
 
 ## Getting Rid of Missing Values
-### Naive Bayes is handy due to laplace smoothing which can allow not having to clean data for missing values. Although this can be useful, it still is a good implementation to clean the data. In this example there are about 500 entries with just the email body being the string "empty" which the model could unintentionally pick up as a key word in determining spam/ham in the model. So in this case scenario we removed all "empty" body text instances.
+### Naive Bayes is handy due to laplace smoothing which can allow not having to clean data for missing values. Although this can be useful, it still is a good implementation to clean the data. In this example there are about 500 entries with just the email body being the string "empty" which the model could unintentionally pick up as a key word in determining spam/ham in the model. So in this case scenario we removed all "empty" body text instances. By removing all of the "empty" body text instances, we avoid the zero-probability problem for this model.
 
 ## Lowercase/Uppercase text
 ### The idea behind making all of the text lowercase would be to eliminate cases where words that are the same but have different capitalization are considered different. Example being (free and FREE). This would be beneficial if in the context of the word they mean the same, but in this case, a sign of a spam email would be words in all caps, meaning that it is important to keep the text as is to increase the accuracy of the model.
 
 ##Changing Training/Testing Set Ratios
 ### A way to change the accuracy of the model can be changing the ratio for the testing and training sets between 70:30 to 80:20.
+
 ```{r improveModel}
 #------------------------------------Get rid of missing values---------------------------------------------------------
 glimpse(spam)
@@ -89,23 +91,22 @@ spam_train <- spam.removedNA[sample_set,]
 spam_test <- spam.removedNA[-sample_set,]
 ```
 
-## Step 3: Build the Bayesian Model (Naive)
+TK
+
+## Step 4: Build the Bayesian Model (Naive)
 ```{r buildModel}
 # Build the naive model based on training set
 spam_mod <- naiveBayes(Label ~ ., data = spam_train, laplace = 1)
 ```
 
-
-
-
-
-## Step 5: Interpret the Model Output
-```{r interpretModel}
-#plot(spam_mod)
+# Step 5: Interpret the model
+```{r}
+head(spam_mod,1)
 ```
 
+TK (plus maybe interpret this more, if possible)
 
-## Step 7: Make predictions using the test set
+## Step 5: Make predictions using the test set
 ```{r predict}
 spam_pred_raw <- predict(spam_mod, newdata = spam_test, type = "raw")
 head(spam_pred_raw)
@@ -117,13 +118,7 @@ Using the improved prediction model for the spam email set, make a prediction ab
 The first output shows the probability of an email being spam or not spam (separated by columns 0 and 1). The second output generates an array of prediction values stating if the email is spam (1) or not spam(0), based on which one is more accurate.
 
 
-## Step 6: Estimate Errors
-```{r errorEstimation}
-# accuracy <- weighted.mean(0:spam_pred_raw,1:spam_pred_raw)
-# spam_error_rate <- 1-accuracy
-```
-
-## Step 8: Final Spam Identification Results
+## Step 7: Final Spam Identification Results and Estimate the Error
 
 ### Create confusion matrix of the results and compute the model accuracy
 ```{r confusion}
@@ -132,13 +127,16 @@ spam_pred_table <- table(spam_test$Label, spam_pred_class)
 spam_pred_table
 
 # State the model accuracy
-sum(diag(spam_pred_table)) / nrow(spam_test)
+accuracy <- sum(diag(spam_pred_table)) / nrow(spam_test)
+cat("Accuracy: ", accuracy)
+error_rate <- 1-accuracy
+cat("\nError Rate: ", error_rate)
 ```
 
 The accuracy of our model is 99.2% with a seed of 1234. The confusion matrix shows a nearly perfect prediction accuracy for detecting actual non-spam emails with an 774/784, while the prediction of actual spam emails is perfect with an accuracy of 321. Overall, the testing set shows that the model has high accuracy in predicting spam emails.
 
 
-## Step 9: Model Verification
+## Step 8: Model Verification
 ```{r modelVerification}
 # Ensure the seed is set to 1234
 set.seed(1234)
@@ -161,10 +159,17 @@ spam_pred_table2 <- table(spam_test2$Label, spam_pred2)
 spam_pred_table2
 
 # State the prediction accuracy
-sum(diag(spam_pred_table2)) / nrow(spam_test2)
+accuracy <- sum(diag(spam_pred_table2)) / nrow(spam_test2)
+cat("Accuracy: ", accuracy)
+error_rate <- 1-accuracy
+cat("\nError Rate: ", error_rate)
 ```
 
-The accuracy of this prediction is 45.3% with a seed of 1234. The confusion matrix shows a perfect prediction accuracy for detecting actual non-spam emails. However, the prediction accuracy for actual spam emails is low with an accuracy of 433/1857. However, notice that the ratio of non-spam to spam emails in the model training set is about 35%/65%, whereas this model is the opposite with 40%/60%. This may result in a skew of the data due to the difference in the expected ratio. Thus, this method of verifying the model is inconclusive.
+The accuracy of this prediction is 45.3% with a seed of 1234. The confusion matrix shows a perfect prediction accuracy for detecting actual non-spam emails. However, the prediction accuracy for actual spam emails is low with an accuracy of 433/1857. However, notice that the ratio of non-spam to spam emails in the model training set is about 35%/65%, whereas this model is the opposite with 40%/60%. This may result in a skew of the data due to the difference in the expected ratio.
+
+Moreover, the words used in the first data set skew the results of testing the model on the new data set. For example, the word "subject" might be found to be a part of 75% of all non-spam email in the first data set, whereas the new data set could include that word in 30% of all non-spam emails. Consequently, if the word commonly appears in the new data set, it could skew the results to predict more false positives. To mitigate this issue, the model used must include a large testing sample from the new data set to accurately predict spam from both sets.
+
+Thus, this method of verifying the model is inconclusive.
 
 ## References
 https://www.kaggle.com/nitishabharathi/email-spam-dataset

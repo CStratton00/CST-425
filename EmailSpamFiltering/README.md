@@ -1,20 +1,11 @@
 # Email Spam Filtering Project
-Steps:
----------------------------
-    Data setup and exploration
-
-    Preparing training and testing sets
-
-    Build the Bayesian model
-
-    Improve the model
-
-    Output interpretation
-    
-    Estimate errors
-    
-    Make predictions using the test set
-    
-    Model verification
-    
-    Final spam identification results
+In this project, 
+1. Data setup and exploration 
+2. Preparing training and testing sets 
+3. Build the Bayesian model 
+4. Improve the model 
+5. Output interpretation 
+6. Estimate errors 
+7. Make predictions using the test set 
+8. Model verification 
+9. Final spam identification results
