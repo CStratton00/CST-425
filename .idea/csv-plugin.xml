@@ -38,6 +38,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\EmailSpamFiltering\lingSpam.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\Participation\diabetes.csv">
           <value>
             <Attribute>
@@ -53,6 +60,13 @@
           </value>
         </entry>
         <entry key="\PerformancePredictions\TXN.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Topic-3\2-3-2022\bill_authentication.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

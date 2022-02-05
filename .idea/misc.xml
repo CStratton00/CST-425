@@ -46,6 +46,28 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/EmailSpamFiltering/EmailSpamFilterReport.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/EmailSpamFiltering/EmailSpamFilterReport.nb.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/EmailSpamFiltering" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/EmailSpamFiltering/test.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/EmailSpamFiltering" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/EmailSpamFiltering/testing.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/EmailSpamFiltering" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/Participation/Topci_1_Lab_Question_1.rmd">
           <value>
             <RMarkdownRenderProfile>
@@ -75,6 +97,20 @@
             <RMarkdownRenderProfile>
               <option name="lastOutput" value="$PROJECT_DIR$/PerformancePredictions/Texas_Instrument_Markdown.docx" />
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/PerformancePredictions" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/Topic-3/2-1-2022/team-1-2-1-2022-activity.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/Topic-3/2-1-2022" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/Topic-3/2-3-2022/team1-2-3-2022-activity.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/Topic-3/2-3-2022" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
