@@ -28,7 +28,7 @@ library(scales)
 # all columns('n' stands for numerical and 'f' stands for factor).
 ```{r loadData}
 # Get Data from ClassExamples Directory
-heart <- read_csv(file='C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/1-27-2022/heart.csv', col_types = "nffnnffnfnfnff")
+heart <- read_csv(file= 'heart.csv', col_types = "nffnnffnfnfnff")
 # heartDF <- ldply(heart, read_csv, col_names = TRUE, )
 ```
 

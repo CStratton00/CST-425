@@ -22,7 +22,7 @@ library(rpart)
 library(randomForest)
 
 #Reading data into R
-data <- read.csv(file='C:/Users/andre/Documents/GitHub/CST-425/Participation/diabetes.csv', header=TRUE, sep=',')
+data <- read.csv(file= '../Topic-1/diabetes.csv', header=TRUE, sep=',')
 ```
 
 # Setting outcome variables as categorical

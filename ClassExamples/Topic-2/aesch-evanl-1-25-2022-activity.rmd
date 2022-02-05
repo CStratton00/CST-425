@@ -16,7 +16,7 @@ library(tidyverse)
 ## Import and Preview Data
 ```{r}
 # Get Data from ClassExamples Directory
-email <- read.csv(file='C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/email.csv', header=TRUE, sep=',')
+email <- read.csv(file= 'email.csv', header=TRUE, sep=',')
 
 # Preview data using head() and tail()
 head(email)
