@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 This example demonstrates the use of **Logistic Regression** to predict the likelihood of a loan to be approved. Data source is synthetic, created for this project
 
 ```{r get_data}
-loan.df <- read.csv(file='ClassExamples/LoanApproval.csv', header=TRUE, sep=',')
+loan.df <- read.csv(file= 'LoanApproval.csv', header=TRUE, sep=',')
 head(loan.df)
 
 # Check for missing values

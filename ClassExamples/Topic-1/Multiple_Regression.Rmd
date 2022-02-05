@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Data source:https://archive.ics.uci.edu/ml/datasets/Wine+Quality
 
 ```{r data_setup}
-wine <- read.csv(file='Participation/winequality-white.csv', header=TRUE, sep=';')
+wine <- read.csv(file= 'winequality-white.csv', header=TRUE, sep=';')
 wine.df <- data.frame(wine)
 head(wine.df)
 tail(wine.df)
