@@ -38,7 +38,7 @@ df['relationship'] = le.fit_transform(df['relationship'])
 df['race'] = le.fit_transform(df['race'])
 df['sex'] = le.fit_transform(df['sex'])
 df['native-country'] = le.fit_transform(df['native-country'])
-df['50k-Prediction'] = le.fit_transform(df['50k-Prediction'])
+df['50k-Prediction'] = le.fit_transform(df['50k-Prediction'])  # Under 50k = 0, Over 50k = 1
 
 # Print out the top 20 instances from the dataframe to show how LabelEncoder changed our data
 print(df.head(20))
@@ -107,19 +107,27 @@ print("547 false negatives")
 print("1142 false positives")
 
 
+# Precision-> True Positives / (True Positives + False Positives)
+# How correct was the prediction?
+# 86% salary under 50k
+# 68% salary over 50k
+# Averaging the two, the chance to identify is 77%, with a weighted 82% chance
 
-# Precision-
-# How correct the prediction was
+# Recall-> True Positives / (True Positives + False Negatives)
+# A measure of the models completeness. How many positive cases were found?
+# 93% of cases were found if salary is less than 50k
+# 50% of cases were found if salary is over 50k
+# 72% average cases found with a weighted 83% rate
 
-# Recall-
-# A measure of the models completeness
-
-# f1-score-
-
-
-# Support-
-
+# f1-score- F1 Score = 2*(Recall * Precision) / (Recall + Precision)
+# What percent of positive predictions were correct?
+# 89% for salary <50k
+# 58% for salary > 50k
+# Accuracy of 83% to determine if a person has a salary over/under 50k
 
 print(classification_report(y_test,y_pred))
 
 
+#Resources Used
+# https://muthu.co/understanding-the-classification-report-in-sklearn/
+# https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html
