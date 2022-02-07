@@ -70,7 +70,7 @@ X_train, X_test, y_train, y_test = train_test_split(x10000, y10000, test_size=0.
 # Determine the optimal amount of clusters using Error graph
 # The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
 Error = []  # will keep track of Error percentage for each n value
-for n in range(1,31):  # calculate 40 different error values
+for n in range(1,31):  # calculate 30 different error values
     knnData = KNeighborsClassifier(n_neighbors=n)  # Uses KNeighborsClassifier to
     knnData = knnData.fit(X_train,y_train)  # Use train data to create a model
     y_pred = knnData.predict(X_test)  # Predict the y values with x_test values
@@ -83,7 +83,7 @@ plt.ylabel("Error")
 plt.show()
 
 # will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
-best_n = Error.index(min(Error))
+best_n = Error.index(min(Error))+1
 print(f"Lowest Error is with n neighbor value: {best_n}")
 
 
@@ -131,21 +131,21 @@ print("1142 false positives")
 
 # Precision-> True Positives / (True Positives + False Positives)
 # How correct was the prediction?
-# 86% salary under 50k
-# 68% salary over 50k
-# Averaging the two, the chance to identify is 77%, with a weighted 82% chance
+# 88% salary under 50k
+# 67% salary over 50k
+# Averaging the two, the chance to identify is 78%, with a weighted 83% chance
 
 # Recall-> True Positives / (True Positives + False Negatives)
 # A measure of the models completeness. How many positive cases were found?
-# 93% of cases were found if salary is less than 50k
-# 50% of cases were found if salary is over 50k
-# 72% average cases found with a weighted 83% rate
+# 91% of cases were found if salary is less than 50k
+# 58% of cases were found if salary is over 50k
+# 75% average cases found with a weighted 84% rate
 
 # f1-score- F1 Score = 2*(Recall * Precision) / (Recall + Precision)
 # What percent of positive predictions were correct?
 # 89% for salary <50k
-# 58% for salary > 50k
-# Accuracy of 83% to determine if a person has a salary over/under 50k
+# 62% for salary > 50k
+# Accuracy of 84% to determine if a person has a salary over/under 50k
 
 print(classification_report(y_test,y_pred))
 
