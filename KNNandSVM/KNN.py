@@ -149,6 +149,7 @@ print("1142 false positives")
 
 print(classification_report(y_test,y_pred))
 
+print(f"There are {confusion[1,0]} classification errors.")
 
 #Resources Used
 # https://muthu.co/understanding-the-classification-report-in-sklearn/

@@ -80,32 +80,31 @@ x = pd.DataFrame(x)
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3,random_state=1234)  # 70% training and 30% test
 
 
-# FIX THIS TO MATCH SVM - TK
-
 # Determine the optimal amount of clusters using Error graph
 # The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
 Error = []  # will keep track of Error percentage for each n value
-for n in range(1,31):  # calculate 40 different error values
-    knnData = KNeighborsClassifier(n_neighbors=n)  # Uses KNeighborsClassifier to
-    knnData = knnData.fit(X_train,y_train)  # Use train data to create a model
-    y_pred = knnData.predict(X_test)  # Predict the y values with x_test values
+gammaValues = np.linspace(1,100,10)
+for g in range(10):  # calculate 10 different error values
+    svcData = SVC(kernel='rbf', gamma=gammaValues[g])  # Uses KNeighborsClassifier to
+    svcData = svcData.fit(X_train,y_train)  # Use train data to create a model
+    y_pred = svcData.predict(X_test)  # Predict the y values with x_test values
     Error.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
 
-plt.plot(range(1,31),Error) #Plot the 30 different error calculations
+plt.plot(range(10),Error) #Plot the 10 different error calculations
 plt.title("Using KNeighborsClassifier with neighbor values 1-31")
 plt.xlabel("Number of neighbors")
 plt.ylabel("Error")
 plt.show()
 
 # will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
-best_n = Error.index(min(Error))
-print(f"Lowest Error is with n neighbor value: {best_n}")
+best_g = Error.index(min(Error))
+print(f"Lowest Error is with n neighbor value: {best_g}")
 
 ## Build KFold Model to split and build model
 print("\n--- GAUSSIAN KERNEL ---\n")
 k = 5 # Do 5 folds, and split the set into 80/20
 kfold = KFold(n_splits=k, random_state=1234, shuffle=True)
-svclassifier = SVC(kernel='rbf', n_neighbors = n_best) # Note the use of 'rbf'
+svclassifier = SVC(kernel='rbf', gamma=best_g) # Note the use of 'rbf'
 
 acc_score = []
 
