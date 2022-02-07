@@ -2,18 +2,17 @@
 
 # Load the appropriate software packages.
 import numpy as np
-from numpy import mean
-from numpy import absolute
-from numpy import sqrt
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
-from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import LabelEncoder
+from sklearn import preprocessing
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import accuracy_score
+
 
 # Import the data
 colnames = ['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'native-country', '50k-Prediction']
@@ -70,15 +69,43 @@ print(df.head(20))
 #x = x.iloc[:1000,].values  # Set sample amount to first 1000 rows
 #y = df['50k-Prediction'].iloc[:1000,].values # only the 50k Prediction column (or classifier), Set sample amount to first 1000 rows
 
+x = df.iloc[:10000,:-1]
+y = df.iloc[:10000,-1]
+
 # Data Normalization
-x = df.iloc[:,:-1]
-y = df.iloc[:,-1]
+x = preprocessing.scale(x)
+x = pd.DataFrame(x)
+
+# Split testing and training sets
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3,random_state=1234)  # 70% training and 30% test
+
+
+# FIX THIS TO MATCH SVM - TK
+
+# Determine the optimal amount of clusters using Error graph
+# The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
+Error = []  # will keep track of Error percentage for each n value
+for n in range(1,31):  # calculate 40 different error values
+    knnData = KNeighborsClassifier(n_neighbors=n)  # Uses KNeighborsClassifier to
+    knnData = knnData.fit(X_train,y_train)  # Use train data to create a model
+    y_pred = knnData.predict(X_test)  # Predict the y values with x_test values
+    Error.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
+
+plt.plot(range(1,31),Error) #Plot the 30 different error calculations
+plt.title("Using KNeighborsClassifier with neighbor values 1-31")
+plt.xlabel("Number of neighbors")
+plt.ylabel("Error")
+plt.show()
+
+# will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
+best_n = Error.index(min(Error))
+print(f"Lowest Error is with n neighbor value: {best_n}")
 
 ## Build KFold Model to split and build model
 print("\n--- GAUSSIAN KERNEL ---\n")
 k = 5 # Do 5 folds, and split the set into 80/20
 kfold = KFold(n_splits=k, random_state=1234, shuffle=True)
-svclassifier = SVC(kernel='rbf') # Note the use of 'rbf'
+svclassifier = SVC(kernel='rbf', n_neighbors = n_best) # Note the use of 'rbf'
 
 acc_score = []
 
@@ -115,6 +142,19 @@ print("\nCONFUSION MATRIX:\n")
 cm = confusion_matrix(y_test, y_pred)
 print(cm)
 print(classification_report(y_test, y_pred))
+
+# Visualize the data
+for i in range(0, 14):
+     plt.scatter(x[:, i], y, c=y, s=50, cmap='autumn')
+
+     # Setting the 3rd dimension with RBF centered on the middle clump
+     r = np.exp(-(x ** 2).sum(1))
+     ax = plt.subplot(projection='3d')
+     ax.scatter3D(x[:, i], y, r, c=y, s=50, cmap='autumn')
+     ax.set_xlabel('x')
+     ax.set_ylabel('y')
+     ax.set_zlabel('r')
+     plt.show()
 
 ## For each classifier, compute the accuracy, sensitivity, and specificity.
 # TK
