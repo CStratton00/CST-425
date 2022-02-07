@@ -21,24 +21,9 @@ df = pd.read_csv("adult.data", names=colnames)
 print(df.head(20))
 
 # Data preprocessing
-## Define each column as numerical or categorical
-#df['age'] = df['age'].astype('float64')
-#df['workclass'] = df['workclass'].astype('category')
-#df['fnlwgt'] = df['fnlwgt'].astype('float64')
-#df['education'] = df['education'].astype('category')
-#df['education-num'] = df['education-num'].astype('float64')
-#df['marital-status'] = df['marital-status'].astype('category')
-#df['occupation'] = df['occupation'].astype('category')
-#df['relationship'] = df['relationship'].astype('category')
-#df['race'] = df['race'].astype('category')
-#df['sex'] = df['sex'].astype('category')
-#df['capital-gain'] = df['capital-gain'].astype('float64')
-#df['capital-loss'] = df['capital-loss'].astype('float64')
-#df['hours-per-week'] = df['hours-per-week'].astype('float64')
-#df['native-country'] = df['native-country'].astype('category')
 
 ## Step 1: Remove unnecessary variables
-
+# TK
 
 ## Step 2: Remove duplicate data rows
 df.drop_duplicates()
@@ -46,7 +31,7 @@ df.drop_duplicates()
 ## Step 3: Convert categorical variables into numerical data using a simple label encoder
 le = LabelEncoder()
 
-### Use the .fit_transform() function to fit each column into a numerical value
+### Use the .fit_transform() function to turn columns with categorical values into columns with numerical value
 df['workclass'] = le.fit_transform(df['workclass'])
 df['education'] = le.fit_transform(df['education'])
 df['marital-status'] = le.fit_transform(df['marital-status'])
