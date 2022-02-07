@@ -69,8 +69,8 @@ print(df.head(20))
 #x = x.iloc[:1000,].values  # Set sample amount to first 1000 rows
 #y = df['50k-Prediction'].iloc[:1000,].values # only the 50k Prediction column (or classifier), Set sample amount to first 1000 rows
 
-x = df.iloc[:10000,:-1]
-y = df.iloc[:10000,-1]
+x = df.iloc[:1000,:-1]
+y = df.iloc[:1000,-1]
 
 # Data Normalization
 x = preprocessing.scale(x)
@@ -82,29 +82,50 @@ X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3,random_s
 
 # Determine the optimal amount of clusters using Error graph
 # The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
-Error = []  # will keep track of Error percentage for each n value
-gammaValues = np.linspace(1,100,10)
-for g in range(10):  # calculate 10 different error values
+gammaError = []  # will keep track of Error percentage for each n value
+gammaValues = [0.01, 1, 5]
+for g in range(3):  # calculate 10 different error values
     svcData = SVC(kernel='rbf', gamma=gammaValues[g])  # Uses KNeighborsClassifier to
     svcData = svcData.fit(X_train,y_train)  # Use train data to create a model
     y_pred = svcData.predict(X_test)  # Predict the y values with x_test values
-    Error.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
+    gammaError.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
 
-plt.plot(range(10),Error) #Plot the 10 different error calculations
+plt.plot(range(3),gammaError) #Plot the 10 different error calculations
+plt.title("Testing Gamma values 0.01, 1, and 5")
+plt.xlabel("Gamma")
+plt.ylabel("Error")
+plt.show()
+
+# will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
+best_g = gammaValues[gammaError.index(min(gammaError))]
+print(f"Lowest Error is with n neighbor value: {best_g}")
+
+# Determine the optimal amount of clusters using Error graph
+# The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
+cpenaltyError = []  # will keep track of Error percentage for each n value
+cpenaltyValues = [1, 10, 100, 1000, 10000]
+for c in range(5):  # calculate 10 different error values
+    cpenalty = cpenaltyValues[c]
+    svcData = SVC(kernel='rbf', C=cpenalty)  # Uses KNeighborsClassifier to
+    svcData = svcData.fit(X_train,y_train)  # Use train data to create a model
+    y_pred = svcData.predict(X_test)  # Predict the y values with x_test values
+    cpenaltyError.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
+
+plt.plot(range(5),cpenaltyError) #Plot the 10 different error calculations
 plt.title("Using KNeighborsClassifier with neighbor values 1-31")
 plt.xlabel("Number of neighbors")
 plt.ylabel("Error")
 plt.show()
 
 # will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
-best_g = Error.index(min(Error))
-print(f"Lowest Error is with n neighbor value: {best_g}")
+best_c = cpenaltyValues[cpenaltyError.index(min(cpenaltyError))]
+print(f"Lowest Error is with n neighbor value: {best_c}")
 
 ## Build KFold Model to split and build model
 print("\n--- GAUSSIAN KERNEL ---\n")
 k = 5 # Do 5 folds, and split the set into 80/20
 kfold = KFold(n_splits=k, random_state=1234, shuffle=True)
-svclassifier = SVC(kernel='rbf', gamma=best_g) # Note the use of 'rbf'
+svclassifier = SVC(kernel='rbf', gamma=best_g, C = best_c) # Note the use of 'rbf'
 
 acc_score = []
 
@@ -159,9 +180,6 @@ for i in range(0, 14):
 # TK
 
 ## Explain the use of the ROC curve and the meaning of the area under the ROC curve.
-# TK
-
-## Compare the results obtained with each one of the classifiers, referring to the confusion matrix and associated metrics. Are the results similar? If not, how statistically different are they? If different, what is the reason? If similar, how would you decide to use one method or another?
 # TK
 
 # References
