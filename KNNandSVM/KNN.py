@@ -76,7 +76,7 @@ for n in range(1,31):  # calculate 30 different error values
     y_pred = knnData.predict(X_test)  # Predict the y values with x_test values
     Error.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
 
-plt.plot(range(1,31),Error) # Plot the 30 different error calculations
+plt.plot(range(1, 31), Error, marker='o')  # Plot the 30 different error calculations
 plt.title("Using KNeighborsClassifier with neighbor values 1-31")
 plt.xlabel("Number of neighbors")
 plt.ylabel("Error")
