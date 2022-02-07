@@ -4,7 +4,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.datasets import make_circles
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
@@ -64,71 +63,70 @@ df['50k-Prediction'] = le.fit_transform(df['50k-Prediction'])
 ## Step 5: Print the updated data with data cleaning
 print(df.head(20))
 
-## Subset the data into x and y and lower sample amount
-#x = df.drop('50k-Prediction', axis=1) # all columns except 50k Prediction column (or classifier)
-#x = x.iloc[:1000,].values  # Set sample amount to first 1000 rows
-#y = df['50k-Prediction'].iloc[:1000,].values # only the 50k Prediction column (or classifier), Set sample amount to first 1000 rows
-
-x = df.iloc[:1000,:-1]
-y = df.iloc[:1000,-1]
+## Subset the data into x and y and set the sample amount
+n = 1000 # Number of data points to include in the set (x and y vectors)
+x = df.iloc[:n,:-1] # all columns except 50k Prediction column (or classifier)
+y = df.iloc[:n,-1] # only the 50k Prediction column (or classifier)
 
 # Data Normalization
 x = preprocessing.scale(x)
 x = pd.DataFrame(x)
 
-# Split testing and training sets
-X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3,random_state=1234)  # 70% training and 30% test
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2,random_state=1234)  # 70% training and 30% test
 
-
-# Determine the optimal amount of clusters using Error graph
+# Determine the optimal gamma value using the elbow method to create an error graph
 # The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
 gammaError = []  # will keep track of Error percentage for each n value
 gammaValues = [0.01, 1, 5]
-for g in range(3):  # calculate 10 different error values
-    svcData = SVC(kernel='rbf', gamma=gammaValues[g])  # Uses KNeighborsClassifier to
-    svcData = svcData.fit(X_train,y_train)  # Use train data to create a model
+for g in range(3):  # calculate 3 different error values
+    svcData = SVC(kernel='rbf', gamma=gammaValues[g])  # Uses SVC to model the data with gamma
+    svcData = svcData.fit(X_train,y_train)  # Use training data to create a model
     y_pred = svcData.predict(X_test)  # Predict the y values with x_test values
     gammaError.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
 
-plt.plot(range(3),gammaError) #Plot the 10 different error calculations
+plt.plot(range(3),gammaError) #Plot the 3 different error calculations
 plt.title("Testing Gamma values 0.01, 1, and 5")
 plt.xlabel("Gamma")
 plt.ylabel("Error")
 plt.show()
 
-# will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
+# will print the index value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
 best_g = gammaValues[gammaError.index(min(gammaError))]
 print(f"Lowest Error is with n neighbor value: {best_g}")
 
-# Determine the optimal amount of clusters using Error graph
+# Determine the optimal cpenalty value using the elbow method to create an error graph
 # The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
 cpenaltyError = []  # will keep track of Error percentage for each n value
 cpenaltyValues = [1, 10, 100, 1000, 10000]
-for c in range(5):  # calculate 10 different error values
+for c in range(5):  # calculate 5 different error values
     cpenalty = cpenaltyValues[c]
-    svcData = SVC(kernel='rbf', C=cpenalty)  # Uses KNeighborsClassifier to
-    svcData = svcData.fit(X_train,y_train)  # Use train data to create a model
+    svcData = SVC(kernel='rbf', C=cpenalty)  # Uses SVC to model the data with cpenalty
+    svcData = svcData.fit(X_train,y_train)  # Use training data to create a model
     y_pred = svcData.predict(X_test)  # Predict the y values with x_test values
     cpenaltyError.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
 
-plt.plot(range(5),cpenaltyError) #Plot the 10 different error calculations
-plt.title("Using KNeighborsClassifier with neighbor values 1-31")
-plt.xlabel("Number of neighbors")
+plt.plot(range(5),cpenaltyError) #Plot the 3 different error calculations
+plt.title("Using C-Penalty Values 1, 10, 100, 1000, and 10000")
+plt.xlabel("C-Penalty")
 plt.ylabel("Error")
 plt.show()
 
-# will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
+# will print the index value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
 best_c = cpenaltyValues[cpenaltyError.index(min(cpenaltyError))]
 print(f"Lowest Error is with n neighbor value: {best_c}")
 
-## Build KFold Model to split and build model
+## Build KFold Model to split and build model using the best
 print("\n--- GAUSSIAN KERNEL ---\n")
 k = 5 # Do 5 folds, and split the set into 80/20
-kfold = KFold(n_splits=k, random_state=1234, shuffle=True)
+kfold = KFold(n_splits=k, random_state=1234, shuffle=True) # Use KFolding using seed, shuffle, and k splits
+
+# Create Guassian SVC model with the best gamma and cpenalty value
 svclassifier = SVC(kernel='rbf', gamma=best_g, C = best_c) # Note the use of 'rbf'
 
 acc_score = []
 
+# Use a loop to start the k folding method
 for train_index, test_index in kfold.split(x):
      x_train, x_test = x.iloc[train_index,:], x.iloc[test_index,:]
      y_train, y_test = y[train_index], y[test_index]
@@ -144,15 +142,7 @@ avg_acc_score = sum(acc_score)/k
 print('accuracy of each fold - {}'.format(acc_score))
 print('Avg accuracy : {}'.format(avg_acc_score))
 
-## Split the data into training and testing sets
-#x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
-
-
-## Build the classification model.
-#svclassifier = SVC(kernel='rbf') # Note the use of 'rbf'
-#svclassifier.fit(x_train, y_train)
-
-## Run the model (make predictions).
+## Run the final model (make predictions).
 y_pred = svclassifier.predict(x_test)
 
 ## Display classification results (quantitative and visual)
