@@ -1,11 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score,plot_confusion_matrix
-
+from mlxtend.plotting import plot_decision_regions
 
 # Import the data
 
@@ -52,7 +52,11 @@ y10000 = y.iloc[:10000,].values              # Set sample amount to first 10000 
 
 # Need to normalize our data so 0/1 values are weighted the same as 0-50 values
 # Dont need to normalize our y data because it is only 0s and 1s.
+print(type(x))
 x = preprocessing.scale(x)
+print(type(x))
+x = pd.DataFrame(x)
+print(type(x))
 x10000 = preprocessing.scale(x10000)
 
 # Because KNN is a supervised classifier, split dataset into training set and test set
@@ -66,36 +70,54 @@ X_train, X_test, y_train, y_test = train_test_split(x10000, y10000, test_size=0.
 # Determine the optimal amount of clusters using Error graph
 # The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
 Error = []  # will keep track of Error percentage for each n value
-for n in range(1,31):  # calculate 40 different error values
+for n in range(1,31):  # calculate 30 different error values
     knnData = KNeighborsClassifier(n_neighbors=n)  # Uses KNeighborsClassifier to
     knnData = knnData.fit(X_train,y_train)  # Use train data to create a model
     y_pred = knnData.predict(X_test)  # Predict the y values with x_test values
     Error.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
 
-plt.plot(range(1,31),Error) #Plot the 30 different error calculations
+plt.plot(range(1,31),Error) # Plot the 30 different error calculations
 plt.title("Using KNeighborsClassifier with neighbor values 1-31")
 plt.xlabel("Number of neighbors")
 plt.ylabel("Error")
 plt.show()
 
 # will print the index/n_neighbor value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
-best_n = Error.index(min(Error))
+best_n = Error.index(min(Error))+1
 print(f"Lowest Error is with n neighbor value: {best_n}")
 
 
 # Main KNN Calculation:
 
-#Show that x and y are full data set -> 32k instances
+# Show that x and y are full data set -> 32k instances
 print(f"Length of x data = {len(x)}")
 print(f"Length of y data = {len(y)}")
 
-# Recreate X_train, X_test, y_train, y_test values with the full data set for the one knn calculation
-X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1234)  # 70% training and 30% test
+# Using Kfolding to create a better estimate by averaging 5 testing and training sets
+k = 5  # Do 5 folds, and split the set into 80/20
+kfold = KFold(n_splits=k, random_state=1234, shuffle=True)
+knnclassifier = KNeighborsClassifier(n_neighbors=best_n) # Note the use of best_n
 
-# Creates a single KNN model with optimal n value and all 32k data points
-knn = KNeighborsClassifier(n_neighbors=best_n)
-knn.fit(X_train,y_train)
-y_pred = knn.predict(X_test)
+acc_score = []
+
+# For loop that will calculate the KNeighbors Classifier 5 times using 5 different folds of the training and testing
+# data, then average the results.
+for train_index, test_index in kfold.split(x):
+     x_train, x_test = x.iloc[train_index,:], x.iloc[test_index,:]
+     y_train, y_test = y[train_index], y[test_index]
+
+     knnclassifier.fit(x_train,y_train)
+     y_pred = knnclassifier.predict(x_test)
+
+     acc = accuracy_score(y_pred, y_test)
+     acc_score.append(acc)
+
+avg_acc_score = sum(acc_score)/k
+
+print('accuracy of each fold - {}'.format(acc_score))
+print('Avg accuracy : {}'.format(avg_acc_score))
+
+
 
 # Create a confusion matrix of the y_test values(correct answers) to the y_pred values(predicted values)
 confusion = confusion_matrix(y_test, y_pred)
@@ -109,21 +131,21 @@ print("1142 false positives")
 
 # Precision-> True Positives / (True Positives + False Positives)
 # How correct was the prediction?
-# 86% salary under 50k
-# 68% salary over 50k
-# Averaging the two, the chance to identify is 77%, with a weighted 82% chance
+# 88% salary under 50k
+# 67% salary over 50k
+# Averaging the two, the chance to identify is 78%, with a weighted 83% chance
 
 # Recall-> True Positives / (True Positives + False Negatives)
 # A measure of the models completeness. How many positive cases were found?
-# 93% of cases were found if salary is less than 50k
-# 50% of cases were found if salary is over 50k
-# 72% average cases found with a weighted 83% rate
+# 91% of cases were found if salary is less than 50k
+# 58% of cases were found if salary is over 50k
+# 75% average cases found with a weighted 84% rate
 
 # f1-score- F1 Score = 2*(Recall * Precision) / (Recall + Precision)
 # What percent of positive predictions were correct?
 # 89% for salary <50k
-# 58% for salary > 50k
-# Accuracy of 83% to determine if a person has a salary over/under 50k
+# 62% for salary > 50k
+# Accuracy of 84% to determine if a person has a salary over/under 50k
 
 print(classification_report(y_test,y_pred))
 
