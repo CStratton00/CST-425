@@ -1,11 +1,11 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import preprocessing
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score,plot_confusion_matrix
-
+from mlxtend.plotting import plot_decision_regions
 
 # Import the data
 
@@ -52,7 +52,11 @@ y10000 = y.iloc[:10000,].values              # Set sample amount to first 10000 
 
 # Need to normalize our data so 0/1 values are weighted the same as 0-50 values
 # Dont need to normalize our y data because it is only 0s and 1s.
+print(type(x))
 x = preprocessing.scale(x)
+print(type(x))
+x = pd.DataFrame(x)
+print(type(x))
 x10000 = preprocessing.scale(x10000)
 
 # Because KNN is a supervised classifier, split dataset into training set and test set
@@ -72,7 +76,7 @@ for n in range(1,31):  # calculate 40 different error values
     y_pred = knnData.predict(X_test)  # Predict the y values with x_test values
     Error.append(1-accuracy_score(y_test,y_pred))  # Compare the y_pred values to the y_test actual values to find Error
 
-plt.plot(range(1,31),Error) #Plot the 30 different error calculations
+plt.plot(range(1,31),Error) # Plot the 30 different error calculations
 plt.title("Using KNeighborsClassifier with neighbor values 1-31")
 plt.xlabel("Number of neighbors")
 plt.ylabel("Error")
@@ -85,17 +89,35 @@ print(f"Lowest Error is with n neighbor value: {best_n}")
 
 # Main KNN Calculation:
 
-#Show that x and y are full data set -> 32k instances
+# Show that x and y are full data set -> 32k instances
 print(f"Length of x data = {len(x)}")
 print(f"Length of y data = {len(y)}")
 
-# Recreate X_train, X_test, y_train, y_test values with the full data set for the one knn calculation
-X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1234)  # 70% training and 30% test
+# Using Kfolding to create a better estimate by averaging 5 testing and training sets
+k = 5  # Do 5 folds, and split the set into 80/20
+kfold = KFold(n_splits=k, random_state=1234, shuffle=True)
+knnclassifier = KNeighborsClassifier(n_neighbors=best_n) # Note the use of best_n
 
-# Creates a single KNN model with optimal n value and all 32k data points
-knn = KNeighborsClassifier(n_neighbors=best_n)
-knn.fit(X_train,y_train)
-y_pred = knn.predict(X_test)
+acc_score = []
+
+# For loop that will calculate the KNeighbors Classifier 5 times using 5 different folds of the training and testing
+# data, then average the results.
+for train_index, test_index in kfold.split(x):
+     x_train, x_test = x.iloc[train_index,:], x.iloc[test_index,:]
+     y_train, y_test = y[train_index], y[test_index]
+
+     knnclassifier.fit(x_train,y_train)
+     y_pred = knnclassifier.predict(x_test)
+
+     acc = accuracy_score(y_pred, y_test)
+     acc_score.append(acc)
+
+avg_acc_score = sum(acc_score)/k
+
+print('accuracy of each fold - {}'.format(acc_score))
+print('Avg accuracy : {}'.format(avg_acc_score))
+
+
 
 # Create a confusion matrix of the y_test values(correct answers) to the y_pred values(predicted values)
 confusion = confusion_matrix(y_test, y_pred)
