@@ -78,7 +78,7 @@ plt.show()
 
 # will print the index value where the error is the lowest. Each time the data is randomly selected, so it will change each time it is run
 best_g = gammaValues[gammaError.index(min(gammaError))]
-print(f"Lowest Error is with n neighbor value: {best_g}")
+print(f"Lowest Error for gamma is: {best_g}")
 
 # Determine the optimal cpenalty value using the elbow method to create an error graph
 # The biggest bend in the elbow determines which number of neighbors creates greatest difference in error reduction
@@ -101,12 +101,12 @@ plt.show()
 best_c = cpenaltyValues[cpenaltyError.index(min(cpenaltyError))]
 print(f"Lowest Error is with n neighbor value: {best_c}")
 
-## Build KFold Model to split and build model using the best
-print("\n--- GAUSSIAN KERNEL ---\n")
+## Build KFold Model to split and build model using the best values
+print("\n--- RBF KERNEL ---\n")
 k = 5 # Do 5 folds, and split the set into 80/20
 kfold = KFold(n_splits=k, random_state=1234, shuffle=True) # Use KFolding using seed, shuffle, and k splits
 
-# Create Guassian SVC model with the best gamma and cpenalty value
+# Create an RBF SVC model with the best gamma and cpenalty value
 svclassifier = SVC(kernel='rbf', gamma=best_g, C = best_c) # Note the use of 'rbf'
 
 acc_score = []
@@ -138,18 +138,17 @@ cm = confusion_matrix(y_test, y_pred)
 print(cm)
 print(classification_report(y_test, y_pred))
 
-# Visualize the data
-for i in range(0, 14):
-     plt.scatter(x[:, i], y, c=y, s=50, cmap='autumn')
+from mlxtend.plotting import plot_decision_regions
+x_test = np.array(x_test)
+y_test = np.array(y_test)
 
-     # Setting the 3rd dimension with RBF centered on the middle clump
-     r = np.exp(-(x ** 2).sum(1))
-     ax = plt.subplot(projection='3d')
-     ax.scatter3D(x[:, i], y, r, c=y, s=50, cmap='autumn')
-     ax.set_xlabel('x')
-     ax.set_ylabel('y')
-     ax.set_zlabel('r')
-     plt.show()
+value = 1
+width = 1.5
+
+for i in range(0,14):
+    figure = plot_decision_regions(x_test, y_test, clf=svclassifier, legend=2, feature_index=[i, i+1], filler_feature_values={
+}, filler_feature_ranges=width)
+    figure.show()
 
 ## For each classifier, compute the accuracy, sensitivity, and specificity.
 # TK
