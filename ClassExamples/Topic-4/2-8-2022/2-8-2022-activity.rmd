@@ -2,4 +2,67 @@
 title: "R Notebook"
 output: html_notebook
 ---
+```{r Library}
+library(readr)
+library(ggplot2)
+library(factoextra)
+library(stats)
 
+```
+```{r getData}
+setwd("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/Topic-4/2-8-2022")
+df <- read.csv("dow_jones_index.data")
+df <- data.frame(df)
+head(df)
+
+
+df$open <- as.numeric(gsub('[$,]', '', df$open))
+df$close <- as.numeric(gsub('[$,]', '', df$close))
+df$high <- as.numeric(gsub('[$,]', '', df$high))
+df$low <- as.numeric(gsub('[$,]', '', df$low))
+df$volume <- as.numeric(gsub('[$,]', '', df$volume))
+
+
+
+
+
+head(df)
+
+
+
+```
+
+```{r DataCleaning}
+# Data cleaning
+df <- df[,4:8]
+head(df)
+df <- na.omit(df) # Get rid of missing values
+df <- scale(df) # Set scale for data
+head(df, n = 3)
+
+# Detect outliers using z-score method
+z_scores <- as.data.frame(sapply(df, function(df) (abs(df-mean(df))/sd(df))))
+
+# Keep rows in dataframe with all z-scores less than absolute value of 3
+no_outliers <- z_scores[!rowSums(z_scores>3), ]
+
+# References
+# https://uc-r.github.io/kmeans_clustering#kmeans
+# https://www.datanovia.com/en/lessons/data-preparation-and-r-packages-for-cluster-analysis/
+# https://www.statology.org/remove-outliers-r/
+
+```
+
+```{r ElbowMethod}
+set.seed(123)
+
+fviz_nbclust(df, kmeans, method = "wss")
+
+```
+
+
+```{r Kmeans}
+k2 <- kmeans(df, centers = 4, nstart = 25)
+str(k2)
+fviz_cluster(k2, data = df)
+```
