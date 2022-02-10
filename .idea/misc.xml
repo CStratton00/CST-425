@@ -102,6 +102,13 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-activity.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-class-example.rmd">
           <value>
             <RMarkdownRenderProfile>
