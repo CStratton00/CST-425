@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (venv)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (CST-425)" project-jdk-type="Python SDK" />
   <component name="RMarkdownSettings">
     <option name="renderProfiles">
       <map>
@@ -92,6 +92,36 @@
           <value>
             <RMarkdownRenderProfile>
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-2" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-3/2-1-2022/team-1-2-1-2022-activity.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-3/2-1-2022" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-activity.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-class-example.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-class-example.nb.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-8-2022/2-8-2022-activity.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/ClassExamples/Topic-4/2-8-2022/2-8-2022-activity.nb.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-8-2022" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
