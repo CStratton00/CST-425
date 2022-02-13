@@ -37,7 +37,7 @@ library(arulesViz)
 ```{r getDataKMeans}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
-kmeansdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
+kmeansdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
 kmeansdf <- data.frame(kmeansdf)
 head(kmeansdf)
 ```
@@ -81,8 +81,10 @@ no_outliers <- z_scores[!rowSums(z_scores>3), ]
 ### Decide number of groups using the elbow method
 ```{r KMeansElbowMethod}
 set.seed(123)
+kmeansdf <- kmeansdf[1:1000]
+kmeansdf <- data.frame(kmeansdf)
 # DO NOT UNCOMMENT THIS UNLESS YOU HAVE A CONFIDENT SOLUTION TO THE ELBOW METHOD THAT INVOLVES THIS
-#fviz_nbclust(kmeansdf, kmeans, method = "wss")
+fviz_nbclust(kmeansdf, kmeans, method = "wss")
 ```
 
 ### Build the model using optimal number of groups and show the results
@@ -121,9 +123,9 @@ Explain here TK
 ```{r getDataAssociation}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
-associationdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
-associationdf <- data.frame(associationdf)
-head(associationdf)
+associationdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
+associationdf <- as (associationdf, "transactions") # convert to 'transactions' class
+str(associationdf)
 ```
 
 
@@ -131,29 +133,24 @@ head(associationdf)
 
 ### Setup variables and remove unnecessary columns
 ```{r AssociationVariables}
-#df$open <- as.numeric(gsub('[$,]', '', df$open))
-#df$close <- as.numeric(gsub('[$,]', '', df$close))
-#df$high <- as.numeric(gsub('[$,]', '', df$high))
-#df$low <- as.numeric(gsub('[$,]', '', df$low))
-#df$volume <- as.numeric(gsub('[$,]', '', df$volume))
-
 head(associationdf)
 ```
 
 ### Data Cleaning
 ```{r AssociationDataCleaning}
-# Data cleaning
-associationdf <- associationdf[,4:8]
-head(associationdf)
-associationdf <- na.omit(associationdf) # Get rid of missing values
-associationdf <- scale(associationdf) # Set scale for data
-head(associationdf, n = 3)
+#associationdf[,1] <- as.factor(associationdf[,1])
+#associationdf[,2] <- as.factor(associationdf[,2])
+#associationdf[,3] <- as.factor(associationdf[,3])
+#associationdf[,4] <- as.factor(associationdf[,4])
+#associationdf[,5] <- as.factor(associationdf[,5])
+#associationdf[,6] <- as.factor(associationdf[,6])
+#associationdf[,7] <- as.factor(associationdf[,7])
+#associationdf[,8] <- as.factor(associationdf[,8])
+#associationdf[,9] <- as.factor(associationdf[,9])
+#associationdf[,10] <- as.factor(associationdf[,10])
 
-# Detect outliers using z-score method
-z_scores <- as.data.frame(sapply(associationdf, function(associationdf) (abs(associationdf-mean(associationdf))/sd(associationdf))))
-
-# Keep rows in dataframe with all z-scores less than absolute value of 3
-no_outliers <- z_scores[!rowSums(z_scores>3), ]
+#class(associationdf)
+#head(associationdf)
 ```
 
 ## Step 3 (Association Rules Mining): Build the model
