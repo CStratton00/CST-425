@@ -72,9 +72,8 @@ head(kmeansdf, n = 3)
 # Detect outliers using z-score method
 z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
 
-# Keep rows in dataframe with all z-scores less than absolute value of 3
-kmeansdf <- z_scores[!rowSums(z_scores>3), ]
-kmeansdf <- data.frame(kmeansdf)
+# Show rows in dataframe with all z-scores less than absolute value of 3
+no_outliers <- z_scores[!rowSums(z_scores>3), ]
 ```
 
 ## Step 3 (K-Means): Build the model
@@ -82,7 +81,8 @@ kmeansdf <- data.frame(kmeansdf)
 ### Decide number of groups using the elbow method
 ```{r KMeansElbowMethod}
 set.seed(123)
-fviz_nbclust(kmeansdf, kmeans, method = "wss")
+# DO NOT UNCOMMENT THIS UNLESS YOU HAVE A CONFIDENT SOLUTION TO THE ELBOW METHOD THAT INVOLVES THIS
+#fviz_nbclust(kmeansdf, kmeans, method = "wss")
 ```
 
 ### Build the model using optimal number of groups and show the results
@@ -153,7 +153,7 @@ head(associationdf, n = 3)
 z_scores <- as.data.frame(sapply(associationdf, function(associationdf) (abs(associationdf-mean(associationdf))/sd(associationdf))))
 
 # Keep rows in dataframe with all z-scores less than absolute value of 3
-associationdf <- z_scores[!rowSums(z_scores>3), ]
+no_outliers <- z_scores[!rowSums(z_scores>3), ]
 ```
 
 ## Step 3 (Association Rules Mining): Build the model
