@@ -1,0 +1,186 @@
+---
+title: "Data Mining - Clustering"
+author: "Andrew Esch, Evan Lee, and Collin Stratton"
+date: "2-13-2022"
+output: html_notebook
+---
+
+# Introduction
+The purpose of this project is to apply data mining algorithms to perform clustering then provide a clear analysis of the data. This project uses the K-Means Clustering algorithm to classify information about online shopping intentions. Moreover, this project uses the Association Rules Mining algorithm to classify information about TK.
+
+# Part 1
+Clustering is about... an example of this is...
+
+Association is about... an example of this is...
+
+Correlation Analysis is about... an example of this is...
+
+# Part 2
+Note: This may take some time to compile and run.
+
+## Step 1: Get data and libraries
+```{r Libraries}
+# General
+library(readr)
+library(ggplot2)
+
+# K-Means Clustering
+library(factoextra)
+library(stats)
+
+# Association Rules Mining
+library(arules)
+library(arulesViz)
+```
+
+### K-Means Clustering Data
+```{r getDataKMeans}
+kmeansdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
+kmeansdf <- data.frame(kmeansdf)
+head(kmeansdf)
+```
+
+### Association Rules Mining Data
+```{r getDataAssociation}
+associationdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
+associationdf <- data.frame(associationdf)
+head(associationdf)
+```
+
+# K-Means
+
+## Step 2 (K-Means): Pre-processing Data
+
+### Setup variables and remove unnecessary columns
+```{r KMeansVariables}
+#df$open <- as.numeric(gsub('[$,]', '', df$open))
+#df$close <- as.numeric(gsub('[$,]', '', df$close))
+#df$high <- as.numeric(gsub('[$,]', '', df$high))
+#df$low <- as.numeric(gsub('[$,]', '', df$low))
+#df$volume <- as.numeric(gsub('[$,]', '', df$volume))
+
+head(kmeansdf)
+```
+
+### Data Cleaning
+```{r KMeansDataCleaning}
+# Data cleaning
+kmeansdf <- kmeansdf[,4:8]
+head(kmeansdf)
+kmeansdf <- na.omit(kmeansdf) # Get rid of missing values
+kmeansdf <- scale(kmeansdf) # Set scale for data
+head(kmeansdf, n = 3)
+
+# Detect outliers using z-score method
+z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
+
+# Keep rows in dataframe with all z-scores less than absolute value of 3
+kmeansdf <- z_scores[!rowSums(z_scores>3), ]
+kmeansdf <- data.frame(kmeansdf)
+```
+
+## Step 3 (K-Means): Build the model
+
+### Decide number of groups using the elbow method
+```{r KMeansElbowMethod}
+set.seed(123)
+fviz_nbclust(kmeansdf, kmeans, method = "wss")
+```
+
+### Build the model using optimal number of groups and show the results
+```{r KMeansModel}
+kmeansmodel <- kmeans(kmeansdf, centers = 4, nstart = 25)
+str(kmeansmodel)
+```
+
+## Step 4 (K-Means): Run the model and make predictions
+```{r KMeansPredictions}
+# TK
+```
+
+## Step 5 (K-Means): Display the results (quantitative and visual)
+```{r KMeansResults}
+# Quantitative Results
+
+# Visual Results
+fviz_cluster(kmeansmodel, data = kmeansdf)
+```
+
+## Steps 6-7 (K-Means): Interpret the results and adjust your clustering
+Explain here TK
+
+
+# Association Rules Mining
+
+## Step 2 (Association Rules Mining): Pre-processing Data
+
+### Setup variables and remove unnecessary columns
+```{r AssociationVariables}
+#df$open <- as.numeric(gsub('[$,]', '', df$open))
+#df$close <- as.numeric(gsub('[$,]', '', df$close))
+#df$high <- as.numeric(gsub('[$,]', '', df$high))
+#df$low <- as.numeric(gsub('[$,]', '', df$low))
+#df$volume <- as.numeric(gsub('[$,]', '', df$volume))
+
+head(associationdf)
+```
+
+### Data Cleaning
+```{r AssociationDataCleaning}
+# Data cleaning
+associationdf <- associationdf[,4:8]
+head(associationdf)
+associationdf <- na.omit(associationdf) # Get rid of missing values
+associationdf <- scale(associationdf) # Set scale for data
+head(associationdf, n = 3)
+
+# Detect outliers using z-score method
+z_scores <- as.data.frame(sapply(associationdf, function(associationdf) (abs(associationdf-mean(associationdf))/sd(associationdf))))
+
+# Keep rows in dataframe with all z-scores less than absolute value of 3
+associationdf <- z_scores[!rowSums(z_scores>3), ]
+```
+
+## Step 3 (Association Rules Mining): Build the model
+
+### Decide lift and support using the elbow method
+```{r AssociationElbowMethod}
+set.seed(123)
+# TK
+```
+
+### Build the model using optimal variables and show the model results
+```{r AssociationModel}
+frequentItems <- eclat(associationdf, parameter = list(supp = 0.07, maxlen = 15)) # calculates support for frequent items
+inspect(frequentItems)
+itemFrequencyPlot(associationdf, topN=20, type="absolute", main="Item Frequency") # plot frequent items
+```
+
+## Step 4 (Association Rules Mining): Run the model and make predictions
+```{r AssociationPredictions}
+rules <- apriori(associationdf, parameter = list(supp = 0.001, conf = 0.5)) # Min Support as 0.001, confidence as 0.5.
+rules_conf <- sort(rules, by="confidence", decreasing=TRUE) # 'high-confidence' rules.
+inspect(head(rules_conf)) # show the support, lift and confidence for all rules
+
+rules_lift <- sort(rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
+inspect(head(rules_lift)) # show the support, lift and confidence for all rules
+```
+
+## Step 5 (Association Rules Mining): Display the results (quantitative and visual)
+```{r AssociationResults}
+# Quantitative Results
+
+# Visual Results
+
+```
+
+## Steps 6-7 (Association Rules Mining): Interpret the results and adjust your clustering
+Explain here TK
+
+
+# References
+https://uc-r.github.io/kmeans_clustering#kmeans
+
+https://www.datanovia.com/en/lessons/data-preparation-and-r-packages-for-cluster-analysis/
+
+https://www.statology.org/remove-outliers-r/
