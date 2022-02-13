@@ -35,17 +35,15 @@ library(arulesViz)
 
 ### K-Means Clustering Data
 ```{r getDataKMeans}
-kmeansdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
+# Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
+# Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
+kmeansdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
 kmeansdf <- data.frame(kmeansdf)
 head(kmeansdf)
 ```
 
 ### Association Rules Mining Data
-```{r getDataAssociation}
-associationdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
-associationdf <- data.frame(associationdf)
-head(associationdf)
-```
+
 
 # K-Means
 
@@ -110,7 +108,24 @@ fviz_cluster(kmeansmodel, data = kmeansdf)
 Explain here TK
 
 
+
+
+
+
+
+#------------------------------------------------------------------------------------------------------
+
+
 # Association Rules Mining
+
+```{r getDataAssociation}
+# Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
+# Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
+associationdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
+associationdf <- data.frame(associationdf)
+head(associationdf)
+```
+
 
 ## Step 2 (Association Rules Mining): Pre-processing Data
 
