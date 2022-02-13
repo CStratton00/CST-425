@@ -43,7 +43,6 @@ head(kmeansdf)
 ### Association Rules Mining Data
 ```{r getDataAssociation}
 associationdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
-associationdf <- data.frame(associationdf)
 head(associationdf)
 ```
 
@@ -75,8 +74,7 @@ head(kmeansdf, n = 3)
 z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
 
 # Keep rows in dataframe with all z-scores less than absolute value of 3
-kmeansdf <- z_scores[!rowSums(z_scores>3), ]
-kmeansdf <- data.frame(kmeansdf)
+no_outliers <- z_scores[!rowSums(z_scores>3), ]
 ```
 
 ## Step 3 (K-Means): Build the model
@@ -84,7 +82,8 @@ kmeansdf <- data.frame(kmeansdf)
 ### Decide number of groups using the elbow method
 ```{r KMeansElbowMethod}
 set.seed(123)
-fviz_nbclust(kmeansdf, kmeans, method = "wss")
+# NOTE: DO NOT UNCOMMENT THIS UNTIL SOLUTION IS FOUND
+#fviz_nbclust(kmeansdf, kmeans, method = "wss")
 ```
 
 ### Build the model using optimal number of groups and show the results
@@ -116,36 +115,20 @@ Explain here TK
 
 ### Setup variables and remove unnecessary columns
 ```{r AssociationVariables}
-#df$open <- as.numeric(gsub('[$,]', '', df$open))
-#df$close <- as.numeric(gsub('[$,]', '', df$close))
-#df$high <- as.numeric(gsub('[$,]', '', df$high))
-#df$low <- as.numeric(gsub('[$,]', '', df$low))
-#df$volume <- as.numeric(gsub('[$,]', '', df$volume))
-
 head(associationdf)
 ```
 
 ### Data Cleaning
 ```{r AssociationDataCleaning}
 # Data cleaning
-associationdf <- associationdf[,4:8]
-head(associationdf)
-associationdf <- na.omit(associationdf) # Get rid of missing values
-associationdf <- scale(associationdf) # Set scale for data
-head(associationdf, n = 3)
 
-# Detect outliers using z-score method
-z_scores <- as.data.frame(sapply(associationdf, function(associationdf) (abs(associationdf-mean(associationdf))/sd(associationdf))))
-
-# Keep rows in dataframe with all z-scores less than absolute value of 3
-associationdf <- z_scores[!rowSums(z_scores>3), ]
 ```
 
 ## Step 3 (Association Rules Mining): Build the model
 
 ### Decide lift and support using the elbow method
 ```{r AssociationElbowMethod}
-set.seed(123)
+#set.seed(123)
 # TK
 ```
 
