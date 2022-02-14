@@ -29,15 +29,18 @@ library(stats)
 # Association Rules Mining
 library(arules)
 library(arulesViz)
+library(dplyr)
+library(DT)
 ```
 
 ### K-Means Clustering Data
 ```{r getDataKMeans}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
-kmeansdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
+kmeansdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
 kmeansdf <- data.frame(kmeansdf)
 head(kmeansdf)
+
 ```
 
 ### Association Rules Mining Data
@@ -47,31 +50,27 @@ head(kmeansdf)
 
 ## Step 2 (K-Means): Pre-processing Data
 
-### Setup variables and remove unnecessary columns
-```{r KMeansVariables}
-#df$open <- as.numeric(gsub('[$,]', '', df$open))
-#df$close <- as.numeric(gsub('[$,]', '', df$close))
-#df$high <- as.numeric(gsub('[$,]', '', df$high))
-#df$low <- as.numeric(gsub('[$,]', '', df$low))
-#df$volume <- as.numeric(gsub('[$,]', '', df$volume))
-
-head(kmeansdf)
-```
-
 ### Data Cleaning
+### Normalizing Data for KMeans is useful since the algorithm calculates the different clusters based on distance
 ```{r KMeansDataCleaning}
 # Data cleaning
-kmeansdf <- kmeansdf[,4:8]
+#head(kmeansdf)
+scalecolumns <- c(1,2,3,4,5,6,7,8,9,10,12,13,14,15) # picks integer columns we want to scale
+kmeansdf <- kmeansdf[,scalecolumns]
 head(kmeansdf)
-kmeansdf <- na.omit(kmeansdf) # Get rid of missing values
-kmeansdf <- scale(kmeansdf) # Set scale for data
-head(kmeansdf, n = 3)
+
+print(sum(is.na(kmeansdf))) # Do not need to omit missing values because there are none
+# kmeansdf <- na.omit(kmeansdf) # Get rid of missing values
+
+kmeansdf <- scale(kmeansdf)
+
+head(kmeansdf)
 
 # Detect outliers using z-score method
 z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
 
 # Show rows in dataframe with all z-scores less than absolute value of 3
-no_outliers <- z_scores[!rowSums(z_scores>3), ]
+#no_outliers <- z_scores[!rowSums(z_scores>3), ]
 ```
 
 ## Step 3 (K-Means): Build the model
@@ -79,15 +78,14 @@ no_outliers <- z_scores[!rowSums(z_scores>3), ]
 ### Decide number of groups using the elbow method
 ```{r KMeansElbowMethod}
 set.seed(123)
-kmeansdf <- kmeansdf[1:1000]
+kmeansdf <- kmeansdf[1:3000]
 kmeansdf <- data.frame(kmeansdf)
-# DO NOT UNCOMMENT THIS UNLESS YOU HAVE A CONFIDENT SOLUTION TO THE ELBOW METHOD THAT INVOLVES THIS
 fviz_nbclust(kmeansdf, kmeans, method = "wss")
 ```
 
 ### Build the model using optimal number of groups and show the results
 ```{r KMeansModel}
-kmeansmodel <- kmeans(kmeansdf, centers = 4, nstart = 25)
+kmeansmodel <- kmeans(kmeansdf, centers = 2, nstart = 25)
 str(kmeansmodel)
 ```
 
@@ -99,13 +97,14 @@ str(kmeansmodel)
 ## Step 5 (K-Means): Display the results (quantitative and visual)
 ```{r KMeansResults}
 # Quantitative Results
-
+head(kmeansmodel)
+head(kmeansdf)
 # Visual Results
 fviz_cluster(kmeansmodel, data = kmeansdf)
 ```
 
 ## Steps 6-7 (K-Means): Interpret the results and adjust your clustering
-Explain here TK
+For KMeans, the calculation is taken from a distance equation from each of the variables for each instance. This means that all non-integer values will need to be changed into integer values if possible or ignored. Another part of the cleaning process was normalizing the variables so that they are all scaled uniformly so that outliers do not cause as big of a disruption. From our first calculation of the elbow graph, the optimal grouping for our KMeans k value is 2. This will split the data into two different groups. kmeans() is used to calculate the kmean model while fvis_cluster() will be used to visualize the kmeans model.
 
 
 
@@ -121,9 +120,13 @@ Explain here TK
 ```{r getDataAssociation}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
-associationdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
+associationdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
+associationdf <- associationdf %>% relocate(BRD, .before = MONTH)   # puts brand as first column instead of last
 associationdf <- as (associationdf, "transactions") # convert to 'transactions' class
+
+
 str(associationdf)
+head(associationdf)
 ```
 
 
@@ -132,6 +135,7 @@ str(associationdf)
 ### Setup variables and remove unnecessary columns
 ```{r AssociationVariables}
 head(associationdf)
+inspect(associationdf)
 ```
 
 ### Data Cleaning
@@ -155,12 +159,15 @@ head(associationdf)
 
 ### Decide lift and support using the elbow method
 ```{r AssociationElbowMethod}
-set.seed(123)
+#set.seed(123)
 # TK
 ```
 
 ### Build the model using optimal variables and show the model results
 ```{r AssociationModel}
+
+#TK -> Need to figure out if the xlabels being all weird is normal or if we have to reforma
+
 frequentItems <- eclat(associationdf, parameter = list(supp = 0.07, maxlen = 15)) # calculates support for frequent items
 inspect(frequentItems)
 itemFrequencyPlot(associationdf, topN=20, type="absolute", main="Item Frequency") # plot frequent items

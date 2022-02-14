@@ -6,7 +6,11 @@ output: html_notebook
 library(arules)
 data(Groceries)
 class(Groceries)
-inspect(head(Groceries, 3))
+#inspect(head(Groceries, 3))
+head(Groceries)
+```
+
+```{r}
 
 frequentItems <- eclat (Groceries, parameter = list(supp = 0.07, maxlen = 15)) # calculates support for frequent items
 inspect(frequentItems)
@@ -18,4 +22,6 @@ inspect(head(rules_conf)) # show the support, lift and confidence for all rules
 
 rules_lift <- sort (rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
 inspect(head(rules_lift)) # show the support, lift and confidence for all rules
+
+
 ```
