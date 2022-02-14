@@ -9,11 +9,9 @@ output: html_notebook
 The purpose of this project is to apply data mining algorithms to perform clustering then provide a clear analysis of the data. This project uses the K-Means Clustering algorithm to classify information about online shopping intentions. Moreover, this project uses the Association Rules Mining algorithm to classify information about TK.
 
 # Part 1
-Clustering is about... an example of this is...
+Clustering is a collection of data points aggregated into similar groups. When using k-means clustering, the user will specify the number of clusters they want to create, or rather the number of centroids. The algorithm will then assign each data point to the closest cluster using the in-cluster sum of squares. The goal of clustering is to group similar data points and discover relationships from the clusters. It is advantageous to use because it is relatively time-efficient and can easily visualize the data. Its disadvantages are that it requires centroids to be inputted prior, so it doesn't generate the most optimal number of clusters automatically, and it cannot handle noisy data and outliers. An example of clustering will be further explored in part 2.
 
-Association is about... an example of this is...
-
-Correlation Analysis is about... an example of this is...
+Association Rule Mining is the process of finding patterns in data that can be used to predict the next event. If event A were to occur, how likely would event B occur? Using an example of finding the most commonly purchased grocery store items, the association is found by creating a list of all combinations of items purchased together. These combinations are used to find a confidence value for if item A is purchased, then item B will be purchased. This is very useful for places like grocery stores because they can use the data to organize their products to provide a better customer experience. Some drawbacks of association rule mining are that data collection is difficult due to the unique nature of text needed in the data, it can discover a huge number of rules or patterns that ultimately mean nothing, and the larger the dataset, the slower the algorithm. An example of association rule mining will be further explored in part 2.
 
 # Part 2
 Note: This may take some time to compile and run.
