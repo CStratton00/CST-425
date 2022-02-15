@@ -73,7 +73,7 @@ print(statSig, short=FALSE)
 # the paf() function calculates both Bartlett and KMO tests
 
 # coerce data into a matrix and ignore headers
-dat <- data.matrix(pca[1:5])  
+dat <- data.matrix(pca[1:5])
 paf.pca <- paf(dat, eigcrit=1, convcrit=.001)
 summary(paf.pca)  # Notice Bartlett and KMO values and ignore the rest
 ```
@@ -148,7 +148,7 @@ fa.diagram(pca5Components)
 
 ##### It is clear that one component yields 76% of the variance and explains all 5 variables. We can now compute the principal component using the first set of weights
 
-```{r compute_pca_finally} 
+```{r compute_pca_finally}
 pcaDF <- data.frame(pca)   # convert pca matrix to dataframe
 attach(pcaDF)              # so we can use variable names
 

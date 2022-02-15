@@ -31,6 +31,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\ClassExamples\Topic-5\2-15-2022\PCA_stock.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\ClassExamples\email.csv">
           <value>
             <Attribute>
@@ -39,6 +46,13 @@
           </value>
         </entry>
         <entry key="\ClassExamples\testing.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Clustering\data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
