@@ -21,6 +21,7 @@ Note: This may take some time to compile and run.
 # General
 library(readr)
 library(ggplot2)
+library(rlang)
 
 # K-Means Clustering
 library(factoextra)
@@ -54,23 +55,34 @@ head(kmeansdf)
 ### Normalizing Data for KMeans is useful since the algorithm calculates the different clusters based on distance
 ```{r KMeansDataCleaning}
 # Data cleaning
-#head(kmeansdf)
 scalecolumns <- c(1,2,3,4,5,6,7,8,9,10,12,13,14,15) # picks integer columns we want to scale
 kmeansdf <- kmeansdf[,scalecolumns]
 head(kmeansdf)
 
 print(sum(is.na(kmeansdf))) # Do not need to omit missing values because there are none
-# kmeansdf <- na.omit(kmeansdf) # Get rid of missing values
+#kmeansdf <- na.omit(kmeansdf) # Get rid of missing values (if any)
 
-kmeansdf <- scale(kmeansdf)
+#kmeansdf <- scale(kmeansdf) # Scale columns proportionately
 
+# Find interquartile range for values in each column
+Q1 <- quantile(kmeansdf[,1], .25)
+Q3 <- quantile(kmeansdf[,1], .25)
+IQR <- IQR(kmeansdf[,1])
+kmeansdf <- subset(kmeansdf, kmeansdf[,1] > (Q1 - 1.5*IQR) & kmeansdf[,1] < (Q3 + 1.5*IQR))
+
+
+#for (i in 1:14) {
+#  Q1 <- quantile(kmeansdf[,i], .25)
+#  Q3 <- quantile(kmeansdf[,i], .25)
+#  IQR <- IQR(kmeansdf[,i])
+#  kmeansdf <- subset(kmeansdf, kmeansdf[,i] > (Q1 - 1.5*IQR) & kmeansdf[,i] < (Q3 + 1.5*IQR))
+#}
+
+
+```
+
+```{r}
 head(kmeansdf)
-
-# Detect outliers using z-score method
-z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
-
-# Show rows in dataframe with all z-scores less than absolute value of 3
-#no_outliers <- z_scores[!rowSums(z_scores>3), ]
 ```
 
 ## Step 3 (K-Means): Build the model
@@ -100,6 +112,7 @@ str(kmeansmodel)
 # Quantitative Results
 head(kmeansmodel)
 head(kmeansdf)
+
 # Visual Results
 fviz_cluster(kmeansmodel, data = kmeansdf2)
 ```
@@ -122,12 +135,6 @@ For KMeans, the calculation is taken from a distance equation from each of the v
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
 associationdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/data.csv")
-associationdf <- associationdf[,c(1,3)]
-# associationdf <- associationdf %>% relocate(BRD, .before = MONTH)   # puts brand as first column instead of last
-associationdf <- as (associationdf, "transactions") # convert to 'transactions' class
-
-
-str(associationdf)
 head(associationdf)
 ```
 
@@ -136,8 +143,11 @@ head(associationdf)
 
 ### Setup variables and remove unnecessary columns
 ```{r AssociationVariables}
+# associationdf <- associationdf %>% relocate(BRD, .before = MONTH)   # puts brand as first column instead of last
+associationdf <- associationdf[,c(1,3)]
+associationdf <- as (associationdf, "transactions") # convert to 'transactions' class
+str(associationdf)
 head(associationdf)
-#inspect(associationdf)
 ```
 
 ### Data Cleaning
@@ -159,17 +169,10 @@ head(associationdf)
 
 ## Step 3 (Association Rules Mining): Build the model
 
-### Decide lift and support using the elbow method
-```{r AssociationElbowMethod}
-#set.seed(123)
-# TK
-```
-
 ### Build the model using optimal variables and show the model results
 ```{r AssociationModel}
 
 #TK -> Need to figure out if the xlabels being all weird is normal or if we have to reforma
-
 frequentItems <- eclat(associationdf, parameter = list(supp = 0.07, maxlen = 15)) # calculates support for frequent items
 inspect(frequentItems)
 itemFrequencyPlot(associationdf, topN=20, type="absolute", main="Item Frequency") # plot frequent items
@@ -183,18 +186,17 @@ rules <- apriori(associationdf, parameter = list(supp = 0.001, conf = 0.01)) # M
 ## Step 5 (Association Rules Mining): Display the results (quantitative and visual)
 ```{r AssociationResults}
 # Quantitative Results
-head(rules)
+rules_conf <- sort(rules, by="confidence", decreasing=TRUE) # 'high-confidence' rules.
+inspect(head(rules_conf)) # show the support, lift and confidence for all rules
+
+rules_lift <- sort(rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
+inspect(head(rules_lift)) # show the support, lift and confidence for all rules
 
 # Visual Results
 
 ```
 
 ```{r}
-rules_conf <- sort(rules, by="confidence", decreasing=TRUE) # 'high-confidence' rules.
-inspect(head(rules_conf)) # show the support, lift and confidence for all rules
-
-rules_lift <- sort(rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
-inspect(head(rules_lift)) # show the support, lift and confidence for all rules
 ```
 
 ## Steps 6-7 (Association Rules Mining): Interpret the results and adjust your clustering
