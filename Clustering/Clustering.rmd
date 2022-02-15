@@ -74,10 +74,15 @@ kmeansdf <- subset(kmeansdf, kmeansdf[,1] > (Q1 - 1.5*IQR) & kmeansdf[,1] < (Q3 
 head(kmeansdf)
 
 # Detect outliers using z-score method
-z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
 
+#z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
+
+#head(z_scores)
 # Show rows in dataframe with all z-scores less than absolute value of 3
-#no_outliers <- z_scores[!rowSums(z_scores>3), ]
+
+#kmeansdf <- kmeansdf[!rowSums(z_scores>3), ]
+kmeansdf <- data.frame(kmeansdf)
+
 ```
 
 ## Step 3 (K-Means): Build the model
@@ -86,7 +91,7 @@ z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean
 ```{r KMeansElbowMethod}
 set.seed(123)
 kmeansdf2 <- kmeansdf
-kmeansdf <- kmeansdf[1:3000]
+kmeansdf <- kmeansdf[1:3000,]
 kmeansdf <- data.frame(kmeansdf)
 fviz_nbclust(kmeansdf, kmeans, method = "wss")
 ```
@@ -188,8 +193,13 @@ Explain here TK
 
 
 # References
+#------------ Resources ------------#
+https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset
+https://www.kaggle.com/iamprateek/store-transaction-data/version/1
+https://towardsdatascience.com/understanding-k-means-clustering-in-machine-learning-6a6e67336aa1
+https://www.gatevidyalay.com/tag/disadvantages-of-k-means-clustering/
+https://towardsdatascience.com/association-rule-mining-be4122fc1793
+http://ijcsit.com/docs/Volume%205/vol5issue02/ijcsit20140502307.pdf
 https://uc-r.github.io/kmeans_clustering#kmeans
-
 https://www.datanovia.com/en/lessons/data-preparation-and-r-packages-for-cluster-analysis/
-
 https://www.statology.org/remove-outliers-r/
