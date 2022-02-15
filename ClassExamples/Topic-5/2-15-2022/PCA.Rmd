@@ -1,0 +1,187 @@
+---
+title: "PCA"
+author: "Isac"
+date: "5/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load PCA related packages
+
+```{r cars}
+#install.packages("psych")
+#install.packages("rela")
+#install.packages("MASS")
+#install.packages("parallel")
+
+library(psych)
+library(rela)   # contains Bartlett and KMO tests to verify assumptions
+library(MASS)
+library(parallel)
+
+options(scipen=999)
+```
+
+## Data set
+##### Dowload the dataset freely available in the **Support Material** section of <https://www.routledge.com/An-Introduction-to-Applied-Multivariate-Analysis/Raykov-Marcoulides/p/book/9780805863758>. Under **eResources**, download and unzip the *Data_TF.zip* file and load the data set *ch7ex1.dat*
+
+##### The *S* matrix represents the 5 personality measures for *n=161* subjects
+
+```{r prep_data}
+# Andrew CD: C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-15-2022/ch7ex1.dat
+pca <- read.delim(file="C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-15-2022/ch7ex1.dat", header=TRUE,sep="\t")
+colnames(pca) = c("IRLLETT", "FIGREL", "IRSYMB", "CULTFR", "RAVEN")
+head(pca)
+tail(pca)
+
+```
+
+##### Compute the correlation matrix (notice that the diagonal is obviously all 1's)
+
+```{r corr_matrix}
+pcacor <- cor(pca)
+pcacor
+```
+
+##### Compute the variance-covariance matrix
+
+```{r var-covar_matrix}
+pcacov <- cov(pca)
+pcacov
+```
+
+##### Check the statistical significance of the bivariate correlation using the *psych* package and *corr.p()* function
+
+```{r statistical_significance}
+statSig <- corr.p(pcacor, 161, alpha=.05)
+print(statSig, short=FALSE)
+```
+
+## Verify assumptions
+##### This is an essential step, otherwise we cannot perform the PCA. Verify the 3 assumptions:
+1. Sphericity *(Bartlett Test of Sphericity for covariance matrices)*
+2. Sample Adequacy *(Kaiser-Meyer-Olkin Measure of sampling adequacy test)*
+3. Positive determinant of the matrix *(det() function)*
+
+
+#### Test assumptions 1 and 2
+
+```{r assumptions_1_and_2}
+# the paf() function calculates both Bartlett and KMO tests
+
+# coerce data into a matrix and ignore headers
+dat <- data.matrix(pca[1:5])  
+paf.pca <- paf(dat, eigcrit=1, convcrit=.001)
+summary(paf.pca)  # Notice Bartlett and KMO values and ignore the rest
+```
+
+##### Since KMO = 0.86 (i.e. close to 1), the data set with *n=161* and *5* variables, is an adequate sample size
+
+##### Bartlett chi-square = 614.15 does not show a *p* value. We must thus compute the statistical seignificance:
+
+```{r bartlett_significance}
+#Bartlett significance test using correlation matrix
+
+cortest.bartlett(pcacor, n=161)
+```
+
+##### With *df=10* and *p<.00001* the statistical significance has been established
+
+#### Test assumption 3
+
+```{r assumption_3}
+# Verify that the determinant is positive
+
+det(pcacor)
+```
+
+##### Since the determinant is positive (0.020255) we completed the assumptions tests and can proceed with performing PCA
+
+## Complete PCA
+
+##### Number of Components using the **principal()** function
+
+```{r compute_pca}
+pca1Component <- principal(pcacor, rotate="none")    # default with 1 component and no scores
+
+pca1Component
+```
+
+##### The eigenvalues is the sum of the h^2 values, with a proportion of 0.76, i.e. 76%. This means that we have yet to explain 24% of the variance, i.e. we need an additional *principal component*
+
+```{r all_pca_components}
+pca5Components <- principal(pcacor, nfactors=5, rotate="none")   #we calculate all 5 components
+
+pca5Components
+```
+
+##### The eigenvalues of the components are:
+1. PC1 = 3.8 (76%)
+2. PC2 = .43 (9%)
+3. PC3 = .40 (8%)
+4. PC4 = .24 (5%)
+5. PC5 = .13 (3%)
+
+##### You can decide which variables you want to keep and what percentage of the variance you are satisfied with explaining (they add up to 100%)
+
+##### Finally, we need to be mindful of the residual error (even if small). We can use the *Cronbach alpha reliability coefficient* for assessing the internal consistency. Notice that *alpha=.92*. i.e. no impact on the PCA results
+
+```{r Cronbach_alpha}
+alpha(pcacor)
+```
+
+#### Scree Plot
+##### The above computations are typically sufficient to help us decide how many *principal components* to keep and avoid diminishing return. The *Scree Plot* provides additional visualization to help with that decision. **Main idea:** select eigenvalues > 1.0
+
+```{r scree_plot}
+fa.parallel(pca,n.obs=161, fm="pa", fa="pc")
+```
+
+##### Plot the component structure of the PCA model with 5 components
+
+```{r component_structure}
+fa.diagram(pca5Components)
+```
+
+##### It is clear that one component yields 76% of the variance and explains all 5 variables. We can now compute the principal component using the first set of weights
+
+```{r compute_pca_finally} 
+pcaDF <- data.frame(pca)   # convert pca matrix to dataframe
+attach(pcaDF)              # so we can use variable names
+
+pcscores <- .87*IRLLETT + .86*FIGREL + .92*IRSYMB + .88*CULTFR + .81*RAVEN
+pcscores <- sort(pcscores, decreasing=FALSE)
+
+pcscores
+```
+
+##### Since the above scores are difficult to interpret, we will convert them to a 0-100 scale.
+##### s = 100/(max - (-min)) = 100/(329.275 - (-66.213)) = .25285
+##### m = 0 - (min x s) = -(66.213 x .25285) = 16.742
+
+```{r p_at_0-100_scale}
+pcscaled <- 16.742 + (.25285 * pcscores)
+round(pcscaled,2)
+```
+
+### Plot Histogram
+##### Show equivalency of principal component scores and scaled scores
+##### Instead of 5 variables, we need only use one. We can easily choose 50 as the threshold for assessing who is above or below average.
+
+```{r plot_histograms}
+par(mfrow = c(1,2))
+
+hist(pcscores)
+hist(pcscaled)
+```
+
+### Final report
+
+##### Note: this is a summary. Your reports should be more substantial :)
+1. PCA was performed with 5 variables: IRLETT, FIGREL, IRSYMB, CULTFR, RAVEN
+2. Statistically significant bivariations were found
+3. The three assumptions were successfully tested: sphericity, sample adequacy, positive determinant
+4. PCA revealed one variable explained 76% of the variance (review table above and Cronbach's alpha)
