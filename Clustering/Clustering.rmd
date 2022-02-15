@@ -37,7 +37,7 @@ library(DT)
 ```{r getDataKMeans}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
-kmeansdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
+kmeansdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
 kmeansdf <- data.frame(kmeansdf)
 head(kmeansdf)
 
@@ -78,6 +78,7 @@ z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean
 ### Decide number of groups using the elbow method
 ```{r KMeansElbowMethod}
 set.seed(123)
+kmeansdf2 <- kmeansdf
 kmeansdf <- kmeansdf[1:3000]
 kmeansdf <- data.frame(kmeansdf)
 fviz_nbclust(kmeansdf, kmeans, method = "wss")
@@ -85,7 +86,7 @@ fviz_nbclust(kmeansdf, kmeans, method = "wss")
 
 ### Build the model using optimal number of groups and show the results
 ```{r KMeansModel}
-kmeansmodel <- kmeans(kmeansdf, centers = 2, nstart = 25)
+kmeansmodel <- kmeans(kmeansdf2, centers = 2, nstart = 25)
 str(kmeansmodel)
 ```
 
@@ -100,7 +101,7 @@ str(kmeansmodel)
 head(kmeansmodel)
 head(kmeansdf)
 # Visual Results
-fviz_cluster(kmeansmodel, data = kmeansdf)
+fviz_cluster(kmeansmodel, data = kmeansdf2)
 ```
 
 ## Steps 6-7 (K-Means): Interpret the results and adjust your clustering
@@ -120,8 +121,9 @@ For KMeans, the calculation is taken from a distance equation from each of the v
 ```{r getDataAssociation}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
-associationdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv")
-associationdf <- associationdf %>% relocate(BRD, .before = MONTH)   # puts brand as first column instead of last
+associationdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/data.csv")
+associationdf <- associationdf[,c(1,3)]
+# associationdf <- associationdf %>% relocate(BRD, .before = MONTH)   # puts brand as first column instead of last
 associationdf <- as (associationdf, "transactions") # convert to 'transactions' class
 
 
@@ -135,7 +137,7 @@ head(associationdf)
 ### Setup variables and remove unnecessary columns
 ```{r AssociationVariables}
 head(associationdf)
-inspect(associationdf)
+#inspect(associationdf)
 ```
 
 ### Data Cleaning
@@ -175,20 +177,24 @@ itemFrequencyPlot(associationdf, topN=20, type="absolute", main="Item Frequency"
 
 ## Step 4 (Association Rules Mining): Run the model and make predictions
 ```{r AssociationPredictions}
-rules <- apriori(associationdf, parameter = list(supp = 0.001, conf = 0.5)) # Min Support as 0.001, confidence as 0.5.
-rules_conf <- sort(rules, by="confidence", decreasing=TRUE) # 'high-confidence' rules.
-inspect(head(rules_conf)) # show the support, lift and confidence for all rules
-
-rules_lift <- sort(rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
-inspect(head(rules_lift)) # show the support, lift and confidence for all rules
+rules <- apriori(associationdf, parameter = list(supp = 0.001, conf = 0.01)) # Min Support as 0.001, confidence as 0.5.
 ```
 
 ## Step 5 (Association Rules Mining): Display the results (quantitative and visual)
 ```{r AssociationResults}
 # Quantitative Results
+head(rules)
 
 # Visual Results
 
+```
+
+```{r}
+rules_conf <- sort(rules, by="confidence", decreasing=TRUE) # 'high-confidence' rules.
+inspect(head(rules_conf)) # show the support, lift and confidence for all rules
+
+rules_lift <- sort(rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
+inspect(head(rules_lift)) # show the support, lift and confidence for all rules
 ```
 
 ## Steps 6-7 (Association Rules Mining): Interpret the results and adjust your clustering
