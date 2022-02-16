@@ -39,10 +39,13 @@ library(DT)
 ```{r getDataKMeans}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
-kmeansdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
+kmeansdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
 kmeansdf <- data.frame(kmeansdf)
+head(kmeansdf)
 
 ```
+
+### Association Rules Mining Data
 
 
 ##(K-Means): Pre-processing Data
@@ -60,8 +63,7 @@ head(kmeansdf)
 print(sum(is.na(kmeansdf))) # Do not need to omit missing values because there are none
 #kmeansdf <- na.omit(kmeansdf) # Get rid of missing values (if any)
 
-```
-```{r RemoveOutliers}
+kmeansdf <- scale(kmeansdf) # Scale columns proportionately
 
 ```
 
@@ -84,7 +86,22 @@ str(kmeansmodel)
 ```
 
 ## (K-Means): Display the results (quantitative and visual)
-### For our visualization of kmeans we use fviz_cluster(). From the results of fviz_cluster(), there are two groups, red and blue. We used 2 groupings from the elbow graph results. To make a better vizualization, next time we would get rid of outliers. We tried using three methods and multiple different resources but they all didn't work for getting rid of outliers on our data. If given more time we would get rid of the outliers using either the zscore or IQR method.
+### For our visualization of kmeans we use fviz_cluster(). From the results of fviz_cluster(), there are two groups, red and blue. We used 2 groupings from the elbow graph results. To make a better vizualization, next time we would get rid of outliers. We tried using three methods and multiple different resources but they all didn't work for getting rid of outliers on our data. If given more time we would get rid of the outliers using either the zscore or IQR method. To get this method to work, we would use the following R code:
+
+###Find interquartile range for values in each column
+###Q1 <- quantile(kmeansdf[,1], .25)
+###Q3 <- quantile(kmeansdf[,1], .25)
+###IQR <- IQR(kmeansdf[,1])
+###kmeansdf <- subset(kmeansdf, kmeansdf[,1] > (Q1 - 1.5*IQR) & kmeansdf[,1] < (Q3 + 1.5*IQR))
+###head(kmeansdf)
+###Detect outliers using z-score method
+###z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
+###head(z_scores)
+### Show rows in dataframe with all z-scores less than absolute value of 3
+###kmeansdf <- kmeansdf[!rowSums(z_scores>3), ]
+###kmeansdf <- data.frame(kmeansdf)
+
+
 ```{r KMeansResults}
 # Quantitative Results
 head(kmeansmodel)
@@ -100,7 +117,7 @@ fviz_cluster(kmeansmodel, data = kmeansdf2)
 aggregate(kmeansdf2, by=list(cluster=kmeansmodel$cluster), mean)
 
 
-testdata = data.frame(ProductRelated=c(100,20),BounceRates=c(0,0),ExitRates=c(0,0),PageValues=c(8,2),SpecialDay=c(0,0),OperatingSystems=c(2,2),Browser=c(1,2),Region=c(1,2),TrafficType=c(3,4))
+testdata <- data.frame(ProductRelated=c(.05,.5),BounceRates=c(0,2),ExitRates=c(0,3),PageValues=c(0.75,0.1),SpecialDay=c(0,0),OperatingSystems=c(0.2,0.2),Browser=c(0.01,3),Region=c(0.2,0),TrafficType=c(0.35,0.8))
 print("Prediction of test data 1:")
 predict_KMeans(testdata[1,],kmeansmodel$centers, threads=1)
 print("Prediction of test data 2:")
@@ -109,7 +126,7 @@ predict_KMeans(testdata[2,],kmeansmodel$centers, threads=1)
 
 ```
 ###Aggregate-
-###Aggregate was used on the kmeansdf2 dataset which will take all of the data and determine the mean values but split up for the points in each cluster. In the table, it lists the average values for each variable in cluster 1 and two. From this we can see that most of the variables were actaully quite close, but the main difference was the "ProductRelated" variable with cluster 1 averaging 146 while cluster 2 averaged 21.45. This average can help decide which items would interest each cluster of people buying these items online.
+###Aggregate was used on the kmeansdf2 dataset which will take all of the data and determine the mean values but split up for the points in each cluster. In the table, it lists the average values for each variable in cluster 1 and two. From this we can see that most of the variables were actaully quite close, but the main difference was the "ProductRelated" variable with cluster 1 averaging 0.061 while cluster 2 averaged -0.64. This average can help decide which items would interest each cluster of people buying these items online.
 ###Predictions-
 ###As a test, two artificial data points were made that follow the trends shown in the averaging to see if the kmeans model could predict which cluster each point will be part of. The first point made is made to resemble cluster 1 and the second point cluster 2. When using ClusterR's function predict_KMeans() we can select each point with the cluster centers to figure out which point is closer to each center to predict the cluster it belongs to. When printed out the predict function correctly guesses the intended clustering of both points.
 
@@ -123,52 +140,86 @@ predict_KMeans(testdata[2,],kmeansmodel$centers, threads=1)
 
 
 # Association Rules Mining
+To perform association rules mining, this section will analyze transactions from ecommerce data and create rules to predict highly-likely items (RHS) in an ecommerce basket to pair with a set of items in an online checkout basket (LHS list).
 
 ## Step 1: Importing Data
 ```{r getDataAssociation}
 # Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
-# Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
-associationdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/data.csv")
+# Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/ecommerce-data-final.csv
+associationdf <- read.transactions("C:/Users/andre/Documents/GitHub/CST-425/Clustering/ecommerce-data-final.csv", format="basket", sep=',')
+head(associationdf)
 ```
 
 ## Step 2 (Association Rules Mining): Pre-processing Data
-### Setup variables and remove unnecessary columns
+
+### Format Data
+Pre-processing the ecommerce data for conversion into a transaction list requires an appropriate dataset that comes formatted as a list of transactions (associated with a single ID) in one CSV file. This analysis took several approaches to accomplish successful data pre-processing.
+
+In the start of this analysis, the "Store_Hackathon_Ideal_Data.csv" dataset was utilized due to the simplistic itemized dataset. However, this dataset is unable to be processed into a transactions list due to single items being associated with individual IDs. Consequently, this dataset is unusable for association rules mining.
+
+To resolve these issues, we used Excel with a new
+
+
+### Remove Empty Transactions, if possible
 ```{r Cleaning and Managing Data}
-
-associationdf <- associationdf[,c(1,3)]
-
-head(associationdf)
-associationdf[associationdf == "NA"] <- NA
 sum(is.na(associationdf))
 associationdf <- na.omit(associationdf)
-head(associationdf)
 ```
 
-##Turning Data into Transactions
-```{r Data to Transactions}
-associationdf <- as (associationdf, "transactions") # convert to 'transactions' class
-str(associationdf)
-inspect(head(associationdf))
-```
+After creating the dataset as a transactions list, it automatically removed transactions and prevented omitting other transactions.
+Combining this result with the formatted .csv data (from Excel editing), the ecommerce transaction data is ready to be turned into an association rules mining model.
 
+### Step 3 (Association Rules Mining): Inspect and build the model to show model results
 
-### Build the model using optimal variables and show the model results
+### Inspect frequent items in the transaction dataset
 ```{r AssociationModel}
 
-frequentItems <- eclat(associationdf, parameter = list(supp = 0.07, maxlen = 15)) # calculates support for frequent items
+frequentItems <- eclat(associationdf, parameter = list(supp = 0.05, maxlen = 15)) # Calculates the support with max length of 15 items
 inspect(frequentItems)
-itemFrequencyPlot(associationdf, topN=20, type="absolute", main="Item Frequency") # plot frequent items
+itemFrequencyPlot(associationdf, topN=25, type="absolute", main="Item Frequency") # Plot the top 25 items
 ```
 
-## Step 4 (Association Rules Mining): Run the model and make predictions
+### Build the model and show result of rules creation
+```{r buildAssociationModel}
+# Use apriori to create the rules
+# Bounds: Minimum support must be 0.005; Minimum confidence as 0.6 to sort out important transaction rules.
+rules <- apriori(associationdf, parameter = list(supp = 0.005, conf = 0.6))
+
+# Show model summary
+summary(rules)
+
+```
+
+## Step 4 (Association Rules Mining): Make predictions using a verified model
+
+### Verify model using two measures
+```{r verifyAssociationModel}
+# Measure 1: Coverage
+# Goal: Test to ensure the proportion of transactions is not overly centralized on a small set of transactions
+# Measures the probability that a rule applies to transactions selected at random
+coverage <- interestMeasure(rules, measure="Coverage", transactions=associationdf)
+summary(coverage)
+
+# Measure 2: Fisher's Exact Test
+# Goal: Find the proportion of extreme rules that go beyond the calculated test statistic
+# Measures the percentage of rules that go beyond the test statistic, calculated using a p-value.
+fisherTest <- interestMeasure(rules, measure="fishersExactTest", transactions=associationdf)
+summary(fisherTest)
+
+```
+
+The coverage interval is [.0069, .0097] with a median of .0008. This tells us that the probability of rules being from random transactions is extremely small.
+The Fishers test interval is [0, 0] with a median of 0. This means that there are almost no extreme rules.
+
+### Make predictions on rules
 ```{r AssociationPredictions}
-data("Groceries")
-rules <- apriori(Groceries, parameter = list(supp = 0.001, conf = 0.5)) # Min Support as 0.001, confidence as 0.5.
-#rules <- apriori(associationdf, parameter = list(supp = 0.001, conf = 0.5)) # Min Support as 0.001, confidence as 0.5.
-inspect(rules[1:10])
+LHS <- apriori(associationdf, parameter=list(support=0.0005, confidence=0.9), appearance=list(rhs=c("JUMBO BAG RED RETROSPOT"), default="lhs"))
+#summary(LHSrules)
+LHSbylift <- sort(LHS, by="lift", decreasing=TRUE)
+inspect(head(LHSbylift,20))
 ```
 
-## Step 5 (Association Rules Mining): Display the results (quantitative and visual)
+## Step 5 (Association Rules Mining): Display the quantitative and visual results
 ```{r AssociationResults}
 # Quantitative Results
 rules_conf <- sort(rules, by="confidence", decreasing=TRUE) # 'high-confidence' rules.
@@ -176,6 +227,9 @@ inspect(head(rules_conf)) # show the support, lift and confidence for all rules
 
 rules_lift <- sort(rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
 inspect(head(rules_lift)) # show the support, lift and confidence for all rules
+
+# Visual Results using arulesViz
+plot(rules, limit = 100)
 ```
 
 ## Steps 6-7 (Association Rules Mining): Interpret the results and adjust your clustering
@@ -186,6 +240,7 @@ Explain here TK
 #------------ Resources ------------#
 https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset
 https://www.kaggle.com/iamprateek/store-transaction-data/version/1
+https://www.kaggle.com/carrie1/ecommerce-data
 https://towardsdatascience.com/understanding-k-means-clustering-in-machine-learning-6a6e67336aa1
 https://www.gatevidyalay.com/tag/disadvantages-of-k-means-clustering/
 https://towardsdatascience.com/association-rule-mining-be4122fc1793
