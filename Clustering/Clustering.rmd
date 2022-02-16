@@ -13,10 +13,10 @@ Clustering is a collection of data points aggregated into similar groups. When u
 
 Association Rule Mining is the process of finding patterns in data that can be used to predict the next event. If event A were to occur, how likely would event B occur? Using an example of finding the most commonly purchased grocery store items, the association is found by creating a list of all combinations of items purchased together. These combinations are used to find a confidence value for if item A is purchased, then item B will be purchased. This is very useful for places like grocery stores because they can use the data to organize their products to provide a better customer experience. Some drawbacks of association rule mining are that data collection is difficult due to the unique nature of text needed in the data, it can discover a huge number of rules or patterns that ultimately mean nothing, and the larger the dataset, the slower the algorithm. An example of association rule mining will be further explored in part 2.
 
-# Part 2
+# Kmeans clustering
 Note: This may take some time to compile and run.
 
-## Step 1: Get data and libraries
+## Get data and libraries
 ```{r Libraries}
 # General
 library(readr)
@@ -26,6 +26,7 @@ library(rlang)
 # K-Means Clustering
 library(factoextra)
 library(stats)
+library(ClusterR)
 
 # Association Rules Mining
 library(arules)
@@ -40,54 +41,34 @@ library(DT)
 # Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
 kmeansdf <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
 kmeansdf <- data.frame(kmeansdf)
-head(kmeansdf)
 
 ```
 
-### Association Rules Mining Data
 
-
-# K-Means
-
-## Step 2 (K-Means): Pre-processing Data
+##(K-Means): Pre-processing Data
 
 ### Data Cleaning
-### Normalizing Data for KMeans is useful since the algorithm calculates the different clusters based on distance
+### Normalizing Data for KMeans is useful since the algorithm calculates the different clusters based on distance.
 ```{r KMeansDataCleaning}
 # Data cleaning
 #head(kmeansdf)
-scalecolumns <- c(1,2,3,4,5,6,7,8,9,10,12,13,14,15) # picks integer columns we want to scale
+scalecolumns <- c(5,7,8,9,10,12,13,14,15) # picks integer columns we want to scale
 kmeansdf <- kmeansdf[,scalecolumns]
+kmeansdf <- scale(kmeansdf)
 head(kmeansdf)
 
 print(sum(is.na(kmeansdf))) # Do not need to omit missing values because there are none
 #kmeansdf <- na.omit(kmeansdf) # Get rid of missing values (if any)
 
-#kmeansdf <- scale(kmeansdf) # Scale columns proportionately
-
-# Find interquartile range for values in each column
-Q1 <- quantile(kmeansdf[,1], .25)
-Q3 <- quantile(kmeansdf[,1], .25)
-IQR <- IQR(kmeansdf[,1])
-kmeansdf <- subset(kmeansdf, kmeansdf[,1] > (Q1 - 1.5*IQR) & kmeansdf[,1] < (Q3 + 1.5*IQR))
-
-head(kmeansdf)
-
-# Detect outliers using z-score method
-
-#z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
-
-#head(z_scores)
-# Show rows in dataframe with all z-scores less than absolute value of 3
-
-#kmeansdf <- kmeansdf[!rowSums(z_scores>3), ]
-kmeansdf <- data.frame(kmeansdf)
+```
+```{r RemoveOutliers}
 
 ```
 
-## Step 3 (K-Means): Build the model
+## (K-Means): Build the model
 
 ### Decide number of groups using the elbow method
+#### The greatest bend in the elbow graph will determine the optimal number of clusters that the kmeans algorithm will use. After the bend, there will be diminishing returns on the addition of more groupings.
 ```{r KMeansElbowMethod}
 set.seed(123)
 kmeansdf2 <- kmeansdf
@@ -102,28 +83,40 @@ kmeansmodel <- kmeans(kmeansdf2, centers = 2, nstart = 25)
 str(kmeansmodel)
 ```
 
-## Step 4 (K-Means): Run the model and make predictions
-```{r KMeansPredictions}
-# TK
-```
-
-## Step 5 (K-Means): Display the results (quantitative and visual)
+## (K-Means): Display the results (quantitative and visual)
+### For our visualization of kmeans we use fviz_cluster(). From the results of fviz_cluster(), there are two groups, red and blue. We used 2 groupings from the elbow graph results. To make a better vizualization, next time we would get rid of outliers. We tried using three methods and multiple different resources but they all didn't work for getting rid of outliers on our data. If given more time we would get rid of the outliers using either the zscore or IQR method.
 ```{r KMeansResults}
 # Quantitative Results
 head(kmeansmodel)
-head(kmeansdf)
-
+head(kmeansdf2)
 # Visual Results
 fviz_cluster(kmeansmodel, data = kmeansdf2)
 ```
 
+##Cluster Analysis using aggregate and predict functions
+```{r ClusterAnalysis}
+#find means of each cluster
+
+aggregate(kmeansdf2, by=list(cluster=kmeansmodel$cluster), mean)
+
+
+testdata = data.frame(ProductRelated=c(100,20),BounceRates=c(0,0),ExitRates=c(0,0),PageValues=c(8,2),SpecialDay=c(0,0),OperatingSystems=c(2,2),Browser=c(1,2),Region=c(1,2),TrafficType=c(3,4))
+print("Prediction of test data 1:")
+predict_KMeans(testdata[1,],kmeansmodel$centers, threads=1)
+print("Prediction of test data 2:")
+predict_KMeans(testdata[2,],kmeansmodel$centers, threads=1)
+
+
+```
+###Aggregate-
+###Aggregate was used on the kmeansdf2 dataset which will take all of the data and determine the mean values but split up for the points in each cluster. In the table, it lists the average values for each variable in cluster 1 and two. From this we can see that most of the variables were actaully quite close, but the main difference was the "ProductRelated" variable with cluster 1 averaging 146 while cluster 2 averaged 21.45. This average can help decide which items would interest each cluster of people buying these items online.
+###Predictions-
+###As a test, two artificial data points were made that follow the trends shown in the averaging to see if the kmeans model could predict which cluster each point will be part of. The first point made is made to resemble cluster 1 and the second point cluster 2. When using ClusterR's function predict_KMeans() we can select each point with the cluster centers to figure out which point is closer to each center to predict the cluster it belongs to. When printed out the predict function correctly guesses the intended clustering of both points.
+
+
+
 ## Steps 6-7 (K-Means): Interpret the results and adjust your clustering
-For KMeans, the calculation is taken from a distance equation from each of the variables for each instance. This means that all non-integer values will need to be changed into integer values if possible or ignored. Another part of the cleaning process was normalizing the variables so that they are all scaled uniformly so that outliers do not cause as big of a disruption. From our first calculation of the elbow graph, the optimal grouping for our KMeans k value is 2. This will split the data into two different groups. kmeans() is used to calculate the kmean model while fvis_cluster() will be used to visualize the kmeans model.
-
-
-
-
-
+###For KMeans, the calculation is taken from a distance equation from each of the variables for each instance. This means that all non-integer values will need to be changed into integer values if possible or ignored. Another part of the cleaning process was normalizing the variables so that they are all scaled uniformly so that outliers do not cause as big of a disruption. From our first calculation of the elbow graph, the optimal grouping for our KMeans k value is 2. This will split the data into two different groups. kmeans() is used to calculate the kmean model while fvis_cluster() will be used to visualize the kmeans model.
 
 
 #------------------------------------------------------------------------------------------------------
@@ -173,9 +166,6 @@ data("Groceries")
 rules <- apriori(Groceries, parameter = list(supp = 0.001, conf = 0.5)) # Min Support as 0.001, confidence as 0.5.
 #rules <- apriori(associationdf, parameter = list(supp = 0.001, conf = 0.5)) # Min Support as 0.001, confidence as 0.5.
 inspect(rules[1:10])
-
-
-
 ```
 
 ## Step 5 (Association Rules Mining): Display the results (quantitative and visual)
