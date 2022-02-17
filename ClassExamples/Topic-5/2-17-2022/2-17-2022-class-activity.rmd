@@ -1,0 +1,30 @@
+---
+title: "2-17-2022 - Team 1 Class Activity"
+author: "Andrew Esch, Evan Lee, Collin Stratton"
+date: "2-17-2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load related packages
+
+```{r libraries}
+library(psych)
+library(rela)   # contains Bartlett and KMO tests to verify assumptions
+library(MASS)
+library(parallel)
+
+options(scipen=999)
+```
+
+## Data set
+```{r prep_data}
+# Andrew CD: C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-15-2022/PCA_stock.csv
+data <- read.csv(file="C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-15-2022/PCA_stock.csv", header=TRUE,sep=",")
+head(data)
+tail(data)
+
+```
