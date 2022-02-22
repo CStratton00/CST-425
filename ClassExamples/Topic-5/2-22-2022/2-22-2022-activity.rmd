@@ -1,0 +1,34 @@
+---
+title: "Soybean PCA - Team 1 Class Activity"
+author: "Andrew Esch, Evan Lee, Collin Stratton"
+date: "2-22-2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load PCA related packages
+
+```{r cars}
+#install.packages("psych")
+#install.packages("rela")
+#install.packages("MASS")
+#install.packages("parallel")
+
+library(psych)
+library(rela)   # contains Bartlett and KMO tests to verify assumptions
+library(MASS)
+library(parallel)
+
+options(scipen=999)
+```
+
+```{r prep_data}
+# Andrew CD: C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-22-2022/soybean-large.data
+data <- read.csv(file="C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-22-2022/soybean-large.data", header=TRUE,sep=",")
+head(data)
+tail(data)
+
+```
