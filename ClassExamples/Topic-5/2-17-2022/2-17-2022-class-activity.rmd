@@ -16,22 +16,71 @@ library(psych)
 library(rela)   # contains Bartlett and KMO tests to verify assumptions
 library(MASS)
 library(parallel)
-library(creditmodel)
-library(dplyr)
 
 options(scipen=999)
 
+# General filtering
+library(dplyr)
+
+# Low variance filter
+library(creditmodel)
+
+# Random forests
+library(randomForest)
 ```
 
-## Data set
+## Step 1: Identify a dataset (UCI, Kaggle, make one up, etc)
 ```{r prep_data}
-# Andrew CD: C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-15-2022/PCA_stock.csv
-# Evan CD: C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/Topic-5/2-17-2022/HighestGrossers.csv
-data <- read.csv(file="C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/Topic-5/2-17-2022/HighestGrossers.csv", header=TRUE,sep=",")
+# Andrew CD: C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-17-2022/HighestGrossers.csv
+data <- read.csv(file="C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-17-2022/train.csv", header=TRUE,sep=",")
+```
+
+## Step 2: Explore the variables that make up the data
+```{r exploreData}
 head(data)
 tail(data)
-for(x in 1:8){
-  print(sum(is.na(data[,x])))
+```
+
+## Step 3: Formulate a predictive question
+
+## Step 4: Build a model that predicts outcomes by combining a reduced number of essential variables (i.e. those which explain most of the variation)
+
+## Dimensionality Reduction: Missing Values Ratio
+```{r missingValues}
+# Goal: Remove columns that have 1:7.5 ratio (at least 13.333%) of missing data to total data
+#points <- vector("list", length(nor))
+
+print(ncol(data))
+for (i in 1:ncol(data)) {
+  if (sum(is.na(data[,i])) / nrow(data) > 0.1333) {
+    print(paste0("Remove column ", i)) # Specify column removed
+    print(paste0("Ratio: ", sum(is.na(data[,i])) / nrow(data))) # Print ratio
+    index <- i *-1
+    data %>% select(index)
+  }
 }
 
+#print(points)
+#data %>% select(-1, -points)
+print(ncol(data))
+
 ```
+
+## Dimensionality Reduction: Low Variance Ratio
+```{r lowVariance}
+low_variance_filter(data, lvp = 0.97, only_NA = FALSE, note = FALSE, ex_cols = NULL)
+```
+
+## Dimensionality Reduction: Random Forests
+```{r randomForests}
+# TK
+```
+
+
+Formulate a predictive question about the data
+
+Reduce the variables using three different methods and compare the results
+Post your Markdown document that shows the reduced number of variables in the model, i.e. after you performed dimensionality reduction. Analysis refers to performing the reduction steps using methods described above
+
+# References
+https://www.tutorialspoint.com/r/r_random_forest.htm
