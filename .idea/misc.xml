@@ -146,6 +146,14 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/Clustering/Clustering.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/Clustering/Clustering.nb.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/Clustering" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/EmailSpamFiltering/EmailSpamFilterReport.rmd">
           <value>
             <RMarkdownRenderProfile>

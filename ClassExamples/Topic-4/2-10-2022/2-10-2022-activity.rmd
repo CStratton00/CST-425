@@ -7,9 +7,10 @@ output: html_notebook
 library(arules)
 
 #setwd("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/Topic-4/2-8-2022")
-df <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-4/2-8-2022/dow_jones_index.data")
-df <- data.frame(df)
-head(df)
+
+#df <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/ClassExamples\Topic-4\2-8-2022\dow_jones_index.data")
+#df <- data.frame(df)
+#head(df)
 ```
 
 ```{r}
