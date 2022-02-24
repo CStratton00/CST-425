@@ -1,0 +1,64 @@
+---
+title: "DistGPU"
+author: "Isac Artzi"
+date: "11/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Get data about cars
+```{r data}
+data(mtcars)
+head(mtcars)
+```
+
+### Dist by GPU
+![Euclidean Distance](r-gpu0x.png)
+```{r dist}
+x <- mtcars["Honda Civic",]
+y <- mtcars["Camaro Z28",]
+x
+y
+print("Distance between Honda Civic and Camaro Z28")
+dist(rbind(x,y))
+
+z <- mtcars["Pontiac Firebird",]
+print("Distance between Firebird and Camaro")
+dist(rbind(y,z))
+```
+
+### For a data sample of size M, the distance matrix is an M × M symmetric matrix with M × (M - 1)∕2 distinct elements. Hence for a data sample of size 4,500, its distance matrix has about ten million distinct elements. Nevertheless, depending on your application, a sample of size 4,500 may still to be too small to be useful.
+
+```{r distMatrix}
+dist(as.matrix(mtcars))
+```
+
+### The following measures the time spent on finding the distance matrix for a collection of 4,500 random vectors in a 120 dimension space. On a laptop computer with Intel i7 x6 CPU, it takes about *5.4 seconds* to finish.
+
+```{r speedTest}
+test.data <- function(dim, num, seed=17) { 
+     set.seed(seed) 
+     matrix(rnorm(dim * num), nrow=num) 
+} 
+
+m <- test.data(120, 45000) 
+system.time(dist(m))
+
+```
+
+### Calculations using **rpuDist** from the **rpud** package, running on NVIDIA GeForce RTX2080
+
+```{r GPUcalc}
+
+#library(rpud)
+system.time(rpuDist(m))
+```
+
+### **mtcars** on GPU
+```{r mtcarsGPU}
+rpuDist(rbind(x,y))
+rpuDist(as.matrix(mtcars))
+```
