@@ -74,6 +74,7 @@ summary(model)
 
 # Step 2: Perform PCA
 ```{r PCA}
+summary(pc.cr <- princomp(data, cor = TRUE, center=TRUE))
 loadings(pc.cr)
 plot(pc.cr)
 biplot(pc.cr)
@@ -87,7 +88,7 @@ test <- fa(pcacor, nfactors=7, rotate="none")
 
 alpha(pcacor)
 fa.parallel(data,n.obs=161, fm="pa", fa="pc")
-fa.diagram(pca5Components)
+# fa.diagram(pca5Components)
 ```
 
 ```{r regression}
