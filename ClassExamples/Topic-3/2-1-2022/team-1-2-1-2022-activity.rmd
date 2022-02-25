@@ -1,0 +1,85 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Data Setup and Exploration
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+### Get the appropriate libraries
+```{r libraries}
+library(tidyverse)
+library(e1071)
+library(mice)
+library(Amelia)
+library(scales)
+library(class)
+```
+
+### Load the Data
+```{r loadData}
+# Get Data from ClassExamples Directory
+yeast <- read.csv(file='C:/Users/andre/Documents/GitHub/CST-425/Topic-3/2-1-2022/yeast.data', sep=" ")
+col_odd <- seq_len(ncol(yeast)) %% 2
+yeast <- yeast[, col_odd == 1]
+glimpse(yeast)
+```
+
+
+### Explore the data
+```{r glimpse}
+# Initial data exploration
+glimpse(yeast)
+```
+
+```{r explore}
+# Noticing the data, we can remove columns 5 and 6 because they have all the same values
+yeast %>% select(-5,-6)
+
+yeast <- na.omit(yeast)
+
+# This output should be zero
+sum(is.na(yeast))
+
+# Glimpse the data again
+glimpse(yeast)
+```
+
+### Decide which variable you want to predict and which ones will be the predictors create a subset of the data to include only relevant variables
+```{r decideVariables}
+```
+
+### Clean data
+
+
+### Normalize
+```{r}
+
+```
+
+### Split the dataset into training and testing subsets
+```{r split}
+# Set a seed to randomize model generation
+set.seed(1234)
+
+# Create a sample of the data. The sample set will just include the body text of the emails, starting at the first element and going to the 80% mark. This will allow the training set sample to be established. A training and testing set ratio should be around 70/30 to 80/20.
+sample_set <- sample(1:dim(yeast)[1], dim(yeast)[1]*0.80)
+
+# Split training and testing set using 80:20 split. The training set will use the dimensions from the sample set sample() while the test set will use the inverse of it by using the (-sample_set).
+yeast_train <- yeast[sample_set,]
+yeast_test <- yeast[-sample_set,]
+```
+
+### Use the knn function in R or Python
+```{r knn}
+# Determine a value for k
+kVal <- 10
+
+# Create model
+knn(yeast_train, yeast_test, yeast_train$MIT, k = kVal, l = 0, prob = FALSE, use.all = TRUE)
+```
+
+### Assess how good is your model

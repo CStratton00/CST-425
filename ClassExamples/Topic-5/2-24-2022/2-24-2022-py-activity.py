@@ -21,7 +21,7 @@ def func2(a):
 if __name__ == "__main__":
     n = 10000000
     a = np.ones(n, dtype=np.float64)
-    #b = np.ones(n, dtype=np.float32)
+    b = np.ones(n, dtype=np.float32)
 
     start = timer()
     func(a)

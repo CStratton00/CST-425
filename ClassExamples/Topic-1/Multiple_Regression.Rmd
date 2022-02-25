@@ -1,0 +1,199 @@
+---
+title: "Multiple Regression"
+author: "Isac Artzi"
+date: "12/24/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Data Setup and exploration
+
+Data source:https://archive.ics.uci.edu/ml/datasets/Wine+Quality
+
+```{r data_setup}
+wine <- read.csv(file= 'winequality-white.csv', header=TRUE, sep=';')
+wine.df <- data.frame(wine)
+head(wine.df)
+tail(wine.df)
+
+# The data structure
+str(wine.df)
+names(wine.df)
+class(wine.df)
+summary(wine.df)
+
+# Check for missing values
+sum(is.na(wine.df))
+
+# Calculate the correlation between all variables
+
+cor(wine.df)
+```
+
+### Prepare training and testing sets
+
+```{r split_data}
+
+library(caTools)
+set.seed(123)  # to reproduce the sample
+
+sample <- sample.split(wine.df$quality, SplitRatio = 0.7)
+
+wine.df.train <- subset(wine.df, sample==TRUE)
+wine.df.test <- subset(wine.df, sample==FALSE)
+
+head(wine.df.train)
+tail(wine.df.train)
+
+```
+
+### Build the multiple linear regression model
+
+```{r model}
+
+qualityModel <- lm(quality ~., data = wine.df.train)
+summary(qualityModel)
+```
+
+### Improve the model using only significant variables
+
+```{r improved_model}
+# Choose only variables with p-value < 2.2e-16
+
+qualityModel.significantVars <- lm(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol, data = wine.df.train)
+qualityModel.significantVars
+
+summary(qualityModel.significantVars)
+```
+
+### Regression output intepretation
+
+For example, for every unit of **volatile.acidity** the quality decreases by 1.97 units, or for every increase in a unit of **sulphates** the quality increases by 0.746 units
+
+```{r interpretation}
+# The variables used in the model
+names(qualityModel.significantVars)
+
+# The number of fitted values in the model
+length(qualityModel.significantVars$fitted.values)
+
+```
+
+### Calculate residuals
+
+Calculate the difference between the predicted and observed values. Since all the residual values below are positive, we conclude that the actual values are **greater** than the predicted ones.
+
+```{r residuals}
+# The fitted values by the training set
+
+predicted.train <- qualityModel.significantVars$fitted.values
+head(predicted.train)
+
+predicted.train.df <- data.frame(predicted.train)
+
+# Calculate residual values
+
+predicted.train.df.residuals <- qualityModel.significantVars$residuals
+head(predicted.train.df.residuals)
+```
+
+### Make predictions using the test set
+
+```{r predictions}
+
+predicted.test <- predict(qualityModel.significantVars, newdata = wine.df.test)
+head(predicted.test,10)
+
+predicted.test.df <- data.frame(predicted.test)
+
+# Plot actual values vs predicted values
+
+plot(wine.df.test$quality, col="red", type="l", lty=1.8, main = "Actual vs Predicted Values")
+lines(predicted.test.df, col="blue", type="l", lty=1.4)
+```
+
+### Model verification
+
+Verify that the assumptions of the linear regression model are satisfied.
+
+```{r verification_linearity}
+
+# Plot residuals vs fitted values to verify linearity
+plot(qualityModel.significantVars, which=1)
+
+```
+
+Absence of a pattern and a spread-out residuals, indicate that the assumptions are satisfied.
+
+```{r verification_normality}
+
+# Verify that the residuals are normally distributed
+plot(qualityModel.significantVars, which=2)
+
+```
+
+The straight line indicates normal distribution
+
+```{r verification_homoscedasticity_visual}
+
+# Verify that the residuals are randomly spread
+plot(qualityModel.significantVars, which=3)
+```
+Besides two values (2544 and 4746), the residuals are satisfactorily spread about the red line, confirming homoscedasticity. However, there seems to be some pattern in the residuals spread, and homoscedasticity must be further verified (see below())
+
+```{r verification_outliers}
+
+# Assess the presence of significant outliers that could skew the results
+plot(qualityModel.significantVars, which=5)
+```
+
+There are three outlier observations, 1932, 1664, and 4746, but they are not crossing the Cook's distance line, which means they do not significantly impact the model
+
+```{r verification_independence}
+
+# Verify that the residuals are independent (i.e. not auto-correlated)
+
+library(car) # companion to applied regression
+
+# Test for independence using the Durbin-Watson Test
+durbinWatsonTest(qualityModel.significantVars)
+```
+
+Since the p-value in the Durbin-Watson test is 0, we cannot reject the null hypothesis, meaning the resdiduals are not auto-correlated (i.e. they are independent)
+
+
+```{r verification_homoscedasticity}
+# Test homoscedasticity using the Non-Constant Variance Score test (NCV)
+ncvTest(qualityModel.significantVars)
+```
+
+
+The NCV test returns a p-value = 8.1174e-07, which is smaller than 0.001. This means the null hypothesis cannot be rejected outright, and there is reason to believe that homoscedasticity is not fully confirmed.
+
+```{r verification_colinearity}
+# Test Collinearity using Variance Inflation Factor (VIF)
+vif(qualityModel.significantVars)
+
+# Test that SQRT(VIF) > 5
+
+sqrt(vif(qualityModel.significantVars)) > 5
+```
+
+Since all tests have returned **FALSE**, we conclude that there is no collinearity
+
+### Final wine quality prediction results
+
+
+```{r final_predictions}
+
+predicted.test <- predict(qualityModel.significantVars, newdata = wine.df.test)
+predicted.test.df <- data.frame(predicted.test)
+head(predicted.test.df[order(predicted.test.df$predicted.test),], 20)
+
+
+```

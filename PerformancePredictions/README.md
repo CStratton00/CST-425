@@ -4,7 +4,7 @@ For this project, we were tasked to obtain a dataset from the stock market and p
 1. Data set-up and exploration
 2. Preparing training and testing sets
 3. Build the multiple linear regression model
-4. Improve the model using only significant variables
+4. Improve the model through various methods
 5. Regression output interpretation
 6. Calculate residuals
 7. Make predictions using the test set

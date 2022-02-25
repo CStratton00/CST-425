@@ -3,45 +3,59 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="/Participation/winequality-white.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value=";" />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\ClassExamples\1-27-2021\heart.csv">
+        <entry key="$USER_HOME$/Downloads/WA_Fn-UseC_-HR-Employee-Attrition.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\ClassExamples\LoanApproval.csv">
+        <entry key="\ClassExamples\Topic-2\email.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\ClassExamples\email.csv">
+        <entry key="\Clustering\Store_Hackathon_Ideal_Data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\Participation\diabetes.csv">
+        <entry key="\Clustering\data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="\Participation\winequality-white.csv">
+        <entry key="\Clustering\ecommerce-data-final.csv">
           <value>
             <Attribute>
-              <option name="separator" value=";" />
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\Clustering\online_shoppers_intention.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\EmailSpamFiltering\completeSpamAssassin.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\EmailSpamFiltering\lingSpam.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>

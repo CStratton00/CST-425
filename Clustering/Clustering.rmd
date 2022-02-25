@@ -1,0 +1,267 @@
+---
+title: "Data Mining - Clustering"
+author: "Andrew Esch, Evan Lee, and Collin Stratton"
+date: "2-13-2022"
+output: html_notebook
+---
+
+# Introduction
+The purpose of this project is to apply data mining algorithms to perform clustering then provide a clear analysis of the data. This project uses the K-Means Clustering algorithm to classify information about online shopping intentions. Moreover, this project uses the Association Rules Mining algorithm to classify information about TK.
+
+# Part 1
+Clustering is a collection of data points aggregated into similar groups. When using k-means clustering, the user will specify the number of clusters they want to create, or rather the number of centroids. The algorithm will then assign each data point to the closest cluster using the in-cluster sum of squares. The goal of clustering is to group similar data points and discover relationships from the clusters. It is advantageous to use because it is relatively time-efficient and can easily visualize the data. Its disadvantages are that it requires centroids to be inputted prior, so it doesn't generate the most optimal number of clusters automatically, and it cannot handle noisy data and outliers. An example of clustering will be further explored in part 2.
+
+Association Rule Mining is the process of finding patterns in data that can be used to predict the next event. If event A were to occur, how likely would event B occur? Using an example of finding the most commonly purchased grocery store items, the association is found by creating a list of all combinations of items purchased together. These combinations are used to find a confidence value for if item A is purchased, then item B will be purchased. This is very useful for places like grocery stores because they can use the data to organize their products to provide a better customer experience. Some drawbacks of association rule mining are that data collection is difficult due to the unique nature of text needed in the data, it can discover a huge number of rules or patterns that ultimately mean nothing, and the larger the dataset, the slower the algorithm. An example of association rule mining will be further explored in part 2.
+
+# Kmeans clustering
+Note: This may take some time to compile and run.
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+## Get data and libraries
+```{r Libraries}
+# General
+library(readr)
+library(ggplot2)
+library(rlang)
+
+# K-Means Clustering
+library(factoextra)
+library(stats)
+library(ClusterR)
+
+# Association Rules Mining
+library(arules)
+library(arulesViz)
+library(dplyr)
+library(DT)
+```
+
+### K-Means Clustering Data
+```{r getDataKMeans}
+# Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
+# Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv
+kmeansdf <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/Clustering/online_shoppers_intention.csv")
+kmeansdf <- data.frame(kmeansdf)
+head(kmeansdf)
+
+```
+
+### Association Rules Mining Data
+
+
+## (K-Means): Pre-processing Data
+
+### Data Cleaning
+### Normalizing Data for KMeans is useful since the algorithm calculates the different clusters based on distance.
+```{r KMeansDataCleaning}
+# Data cleaning
+#head(kmeansdf)
+scalecolumns <- c(5,7,8,9,10,12,13,14,15) # picks integer columns we want to scale
+kmeansdf <- kmeansdf[,scalecolumns]
+kmeansdf <- scale(kmeansdf)
+head(kmeansdf)
+
+print(sum(is.na(kmeansdf))) # Do not need to omit missing values because there are none
+#kmeansdf <- na.omit(kmeansdf) # Get rid of missing values (if any)
+
+kmeansdf <- scale(kmeansdf) # Scale columns proportionately
+
+```
+
+## (K-Means): Build the model
+
+### Decide number of groups using the elbow method
+#### The greatest bend in the elbow graph will determine the optimal number of clusters that the kmeans algorithm will use. After the bend, there will be diminishing returns on the addition of more groupings.
+```{r KMeansElbowMethod}
+set.seed(123)
+kmeansdf2 <- kmeansdf
+kmeansdf <- kmeansdf[1:3000,]
+kmeansdf <- data.frame(kmeansdf)
+fviz_nbclust(kmeansdf, kmeans, method = "wss")
+```
+
+### Build the model using optimal number of groups and show the results
+```{r KMeansModel}
+kmeansmodel <- kmeans(kmeansdf2, centers = 2, nstart = 25)
+str(kmeansmodel)
+```
+
+## (K-Means): Display the results (quantitative and visual)
+### For our visualization of kmeans we use fviz_cluster(). From the results of fviz_cluster(), there are two groups, red and blue. We used 2 groupings from the elbow graph results. To make a better vizualization, next time we would get rid of outliers. We tried using three methods and multiple different resources but they all didn't work for getting rid of outliers on our data. If given more time we would get rid of the outliers using either the zscore or IQR method. To get this method to work, we would use the following R code:
+
+###Find interquartile range for values in each column
+###Q1 <- quantile(kmeansdf[,1], .25)
+###Q3 <- quantile(kmeansdf[,1], .25)
+###IQR <- IQR(kmeansdf[,1])
+###kmeansdf <- subset(kmeansdf, kmeansdf[,1] > (Q1 - 1.5*IQR) & kmeansdf[,1] < (Q3 + 1.5*IQR))
+###head(kmeansdf)
+###Detect outliers using z-score method
+###z_scores <- as.data.frame(sapply(kmeansdf, function(kmeansdf) (abs(kmeansdf-mean(kmeansdf))/sd(kmeansdf))))
+###head(z_scores)
+### Show rows in dataframe with all z-scores less than absolute value of 3
+###kmeansdf <- kmeansdf[!rowSums(z_scores>3), ]
+###kmeansdf <- data.frame(kmeansdf)
+
+
+```{r KMeansResults}
+# Quantitative Results
+head(kmeansmodel)
+head(kmeansdf2)
+# Visual Results
+fviz_cluster(kmeansmodel, data = kmeansdf2)
+```
+
+## Cluster Analysis using aggregate and predict functions
+```{r ClusterAnalysis}
+#find means of each cluster
+
+aggregate(kmeansdf2, by=list(cluster=kmeansmodel$cluster), mean)
+
+
+testdata <- data.frame(ProductRelated=c(.05,.5),BounceRates=c(0,2),ExitRates=c(0,3),PageValues=c(0.75,0.1),SpecialDay=c(0,0),OperatingSystems=c(0.2,0.2),Browser=c(0.01,3),Region=c(0.2,0),TrafficType=c(0.35,0.8))
+print("Prediction of test data 1:")
+predict_KMeans(testdata[1,],kmeansmodel$centers, threads=1)
+print("Prediction of test data 2:")
+predict_KMeans(testdata[2,],kmeansmodel$centers, threads=1)
+
+
+```
+### Aggregate-
+Aggregate was used on the kmeansdf2 dataset which will take all of the data and determine the mean values but split up for the points in each cluster. In the table, it lists the average values for each variable in cluster 1 and two. From this we can see that most of the variables were actaully quite close, but the main difference was the "ProductRelated" variable with cluster 1 averaging 0.061 while cluster 2 averaged -0.64. This average can help decide which items would interest each cluster of people buying these items online.
+
+### Predictions-
+As a test, two artificial data points were made that follow the trends shown in the averaging to see if the kmeans model could predict which cluster each point will be part of. The first point made is made to resemble cluster 1 and the second point cluster 2. When using ClusterR's function predict_KMeans() we can select each point with the cluster centers to figure out which point is closer to each center to predict the cluster it belongs to. When printed out the predict function correctly guesses the intended clustering of both points.
+
+
+
+## Steps 6-7 (K-Means): Interpret the results and adjust your clustering
+For KMeans, the calculation is taken from a distance equation from each of the variables for each instance. This means that all non-integer values will need to be changed into integer values if possible or ignored. Another part of the cleaning process was normalizing the variables so that they are all scaled uniformly so that outliers do not cause as big of a disruption. From our first calculation of the elbow graph, the optimal grouping for our KMeans k value is 2. This will split the data into two different groups. kmeans() is used to calculate the kmean model while fvis_cluster() will be used to visualize the kmeans model.
+
+
+#------------------------------------------------------------------------------------------------------
+
+
+# Association Rules Mining
+To perform association rules mining, this section will analyze transactions from ecommerce data and create rules to predict highly-likely items (RHS) in an ecommerce basket to pair with a set of items in an online checkout basket (LHS list).
+
+## Step 1: Importing Data
+```{r getDataAssociation}
+# Evan's CWD -> C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/Clustering/Store_Hackathon_Ideal_Data.csv
+# Andrew's CWD -> C:/Users/andre/Documents/GitHub/CST-425/Clustering/ecommerce-data-final.csv
+associationdf <- read.transactions("C:/Users/andre/Documents/GitHub/CST-425/Clustering/ecommerce-data-final.csv", format="basket", sep=',')
+head(associationdf)
+```
+
+## Step 2 (Association Rules Mining): Pre-processing Data
+
+### Format Data
+Pre-processing the ecommerce data for conversion into a transaction list requires an appropriate dataset that comes formatted as a list of transactions (associated with a single ID) in one CSV file. This analysis took several approaches to accomplish successful data pre-processing.
+
+In the start of this analysis, the "Store_Hackathon_Ideal_Data.csv" dataset was utilized due to the simplistic itemized dataset. However, this dataset is unable to be processed into a transactions list due to single items being associated with individual IDs. Consequently, this dataset is unusable for association rules mining.
+
+To resolve these issues, we used Excel with a new dataset (see "data.csv"). This ecommerce data lists multiple items by ID. However, this data still displays items individually by row. Using Excel and Matrix transposing, we created a final .csv dataset that combines all transaction items into one row by ID (see "ecommerce-data-final.csv").
+
+
+### Remove Empty Transactions, if possible
+```{r Cleaning and Managing Data}
+sum(is.na(associationdf))
+associationdf <- na.omit(associationdf)
+```
+
+After creating the dataset as a transactions list, it automatically removed transactions and prevented omitting other transactions.
+Combining this result with the formatted .csv data (from Excel editing), the ecommerce transaction data is ready to be turned into an association rules mining model.
+
+### Step 3 (Association Rules Mining): Inspect and build the model to show model results
+
+### Inspect frequent items in the transaction dataset
+```{r AssociationModel}
+
+frequentItems <- eclat(associationdf, parameter = list(supp = 0.05, maxlen = 15)) # Calculates the support with max length of 15 items
+inspect(frequentItems)
+itemFrequencyPlot(associationdf, topN=25, type="absolute", main="Item Frequency") # Plot the top 25 items
+```
+
+Using a support of 0.05, we find that the top three items within transactions for the ecommerce dataset are: BIG HEART T-LIGHT HOLDER, JUMBO BAG RED RETROSPOT, and REGENCY CAKESTAND 3 TIER.
+
+
+### Build the model and show result of rules creation
+```{r buildAssociationModel}
+# Use apriori to create the rules
+# Bounds: Minimum support must be 0.005; Minimum confidence as 0.6 to sort out important transaction rules.
+rules <- apriori(associationdf, parameter = list(supp = 0.005, conf = 0.6))
+
+# Show model summary
+summary(rules)
+
+```
+
+The apriori library utilized association rules mining to create 903 rules with a support of 0.005 and a confidence of 0.6. The median metrics are: Support = 0.005945, Confidence: 0.7192, Coverage = 0.008223, lift = 24.262
+
+## Step 4 (Association Rules Mining): Make predictions using a verified model
+
+### Verify model using two measures
+```{r verifyAssociationModel}
+# Measure 1: Coverage
+# Goal: Test to ensure the proportion of transactions is not overly centralized on a small set of transactions
+# Measures the probability that a rule applies to transactions selected at random
+coverage <- interestMeasure(rules, measure="Coverage", transactions=associationdf)
+summary(coverage)
+
+# Measure 2: Fisher's Exact Test
+# Goal: Find the proportion of extreme rules that go beyond the calculated test statistic
+# Measures the percentage of rules that go beyond the test statistic, calculated using a p-value.
+fisherTest <- interestMeasure(rules, measure="fishersExactTest", transactions=associationdf)
+summary(fisherTest)
+
+```
+
+The coverage interval is [.0069, .0097] with a median of .0008. This tells us that the probability of rules being from random transactions is extremely small.
+The Fishers test interval is [0, 0] with a median of 0. This means that there are almost no extreme rules.
+
+### Make predictions on rules
+```{r AssociationPredictions}
+# Predict high-confidence rules for JUMBO BAG RED RETROSPOT -> Confidence = 0.9, support = 0.001
+JumboLHS <- apriori(associationdf, parameter=list(support=0.001, confidence=0.9), appearance=list(rhs=c("JUMBO BAG RED RETROSPOT"), default="lhs"))
+
+# Sort results by lift
+LHSbylift <- sort(JumboLHS, by="lift", decreasing=TRUE)
+
+# Print the top 20 rules for JUMBO BAG RED RETROSPOT
+inspect(head(LHSbylift,20))
+```
+
+## Step 5 (Association Rules Mining): Display the quantitative and visual results
+```{r AssociationResults}
+# Quantitative Results
+rules_conf <- sort(rules, by="confidence", decreasing=TRUE) # Show the rules with the highest confidence
+inspect(head(rules_conf)) # Show metrics for support, lift and confidence for listed rules
+
+rules_lift <- sort(rules, by="lift", decreasing=TRUE) # Show the rules with the highest lift
+inspect(head(rules_lift)) # Show metrics for support, lift and confidence for listed rules
+
+# Visual Results using arulesViz (maximum 100 data points)
+plot(rules, limit = 100)
+```
+
+## Steps 6-7 (Association Rules Mining): Interpret the results
+The association rules mining model was able to predict several one-item high-confidence associations with high lift metrics. For example, if an ecommerce customer has the item "ELEPHANT" in their cart, it is almost guaranteed that they will also have a "BIRTHDAY CARD" item in their cart due to a confidence of 1.
+
+Moreover, the association rules mining model created multiple multi-item high-lift associations that display a high coverage, support, and confidence. For example, the rules mining model analyzed several examples of "herb" item associations and predicted the highest probability outcome for the next associated item.
+
+Overall, the association rules model for the ecommerce dataset is a strong prescriber for shopping transactions.
+
+
+#------------ Resources ------------#
+https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset
+https://www.kaggle.com/iamprateek/store-transaction-data/version/1
+https://www.kaggle.com/carrie1/ecommerce-data
+https://towardsdatascience.com/understanding-k-means-clustering-in-machine-learning-6a6e67336aa1
+https://www.gatevidyalay.com/tag/disadvantages-of-k-means-clustering/
+https://towardsdatascience.com/association-rule-mining-be4122fc1793
+http://ijcsit.com/docs/Volume%205/vol5issue02/ijcsit20140502307.pdf
+https://uc-r.github.io/kmeans_clustering#kmeans
+https://www.datanovia.com/en/lessons/data-preparation-and-r-packages-for-cluster-analysis/
+https://www.statology.org/remove-outliers-r/

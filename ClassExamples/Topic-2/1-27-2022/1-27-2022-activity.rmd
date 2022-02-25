@@ -1,0 +1,127 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+# Objective: Examine the records of existing patients and use that information
+# to predict whether a particular patient is likely to suffer from heart disease or not.
+
+# Install the packages needed for this code file
+# install.packages("e1071")
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+
+```{r libraries}
+library(tidyverse)
+library(e1071)
+library(mice)
+library(Amelia)
+library(scales)
+```
+
+#----------------------------------------------------------------
+#' #1. Load the Data
+#----------------------------------------------------------------
+
+# Load the data and use the `col_types` argument to specify type of
+# all columns('n' stands for numerical and 'f' stands for factor).
+```{r loadData}
+# Get Data from ClassExamples Directory
+heart <- read_csv(file= 'heart.csv', col_types = "nffnnffnfnfnff")
+# heartDF <- ldply(heart, read_csv, col_names = TRUE, )
+```
+
+
+# Get a glimpse of the data.
+```{r glimpse}
+glimpse(heart)
+```
+
+
+#----------------------------------------------------------------
+#' #2. Explore and Prepare the Data
+#----------------------------------------------------------------
+# Show a set of descriptive statistics for every variable in the data.
+
+```{r explore}
+```
+
+Note that there are some missing values in the dataset. Also, some of the numeric features have a wider range of values than others.
+
+How do you handle these missing values?
+Response: Naive Bayes model works well with missing values. It can predict a model even with missing data
+
+Do you have to normalize data to overcome the wide range in values?
+Response: No, you do not have to normalize the data to overcome the wide range in values in the dataset.
+
+Do a little research about how is naïve Bayes affected by these issues.
+
+# Using the sample() function, let's create our training and test datasets with a 75% to 25% split.
+# The set.seed() function ensures to get the same result every time we run a random sampling process.
+
+
+# Check the proportions for the class between all 3 sets.
+
+
+#----------------------------------------------------------------
+#' #3. Build the Model
+#----------------------------------------------------------------
+
+
+# Train a new model using the naiveBayes() function.
+```{r model}
+# Set a seed to randomize model generation
+set.seed(12345)
+
+# Create a sample of the data
+sample_set <- sample(c(1:dim(heart)[1]), dim(heart)[1]*0.75)
+
+# Split training and testing set using 75:25 split
+heart_train <- heart[sample_set,]
+heart_test <- heart[-sample_set,]
+
+# Build the naive model based on training set
+heart_mod <- naiveBayes(heartDisease ~ ., data = heart_train, laplace = 1)
+heart_mod
+```
+
+#----------------------------------------------------------------
+#' #4. Evaluate the Model's Performance
+#----------------------------------------------------------------
+# Use the model to predict the class of the test instances.
+```{r predict}
+heart_pred <- predict(heart_mod, newdata = heart_test, type = "raw")
+head(heart_pred)
+heart_pred <- predict(heart_mod, newdata = heart_test, type = "class")
+head(heart_pred)
+```
+
+# Create confusion matrix of our results.
+```{r confusion}
+# Print Confusion Matrix
+heart_pred_table <- table(heart_test$heartDisease, heart_pred)
+heart_pred_table
+
+# Accuracy
+sum(diag(heart_pred_table)) / nrow(heart_test)
+```
+
+# What is the accuracy of our prediction?
+The results show that the predictive accuracy of our model is 84.7% with a generated seed of 12345.
+
+# Is this good?
+We affirm that a predictive accuracy of 84.7% is a good for the affirmed use case of predicting heart disease for a patient. In the
+
+
+# How important is prediction accuracy?
+
+
+# Peek at near future concepts: resampling and k-fold cross-validation
+
+
+
+#----------------------------------------------------------------
+#' #5. Interpret the results
+#----------------------------------------------------------------
+

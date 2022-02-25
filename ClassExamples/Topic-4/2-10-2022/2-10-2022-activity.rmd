@@ -1,0 +1,27 @@
+---
+title: "Team 1 Associative Rules Mining Activity"
+author: "Andrew Esch, Evan Lee, Collin Stratton"
+output: html_notebook
+---
+```{r getData}
+library(arules)
+
+#setwd("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/Topic-4/2-8-2022")
+
+#df <- read.csv("C:/Users/Evan/OneDrive/Documents/GitHub/CST-425/ClassExamples\Topic-4\2-8-2022\dow_jones_index.data")
+#df <- data.frame(df)
+#head(df)
+```
+
+```{r}
+frequentItems <- eclat (Groceries, parameter = list(supp = 0.07, maxlen = 15)) # calculates support for frequent items
+inspect(frequentItems)
+itemFrequencyPlot(Groceries, topN=20, type="absolute", main="Item Frequency") # plot frequent items
+
+rules <- apriori (Groceries, parameter = list(supp = 0.001, conf = 0.5)) # Min Support as 0.001, confidence as 0.5.
+rules_conf <- sort (rules, by="confidence", decreasing=TRUE) # 'high-confidence' rules.
+inspect(head(rules_conf)) # show the support, lift and confidence for all rules
+
+rules_lift <- sort (rules, by="lift", decreasing=TRUE) # 'high-lift' rules.
+inspect(head(rules_lift)) # show the support, lift and confidence for all rules
+```
