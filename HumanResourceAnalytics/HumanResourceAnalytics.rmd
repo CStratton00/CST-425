@@ -1,0 +1,9 @@
+---
+title: "Data Mining - Clustering"
+author: "Andrew Esch, Evan Lee, and Collin Stratton"
+date: "2-13-2022"
+output: html_notebook
+---
+
+# Introduction
+
