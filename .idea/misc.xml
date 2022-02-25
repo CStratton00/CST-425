@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (CST-425)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9" project-jdk-type="Python SDK" />
   <component name="RMarkdownSettings">
     <option name="renderProfiles">
       <map>
@@ -95,33 +95,39 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-3/2-1-2022/team-1-2-1-2022-activity.rmd">
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-15-2022/2-15-2022-class-activity.rmd">
           <value>
             <RMarkdownRenderProfile>
-              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-3/2-1-2022" />
+              <option name="lastOutput" value="$PROJECT_DIR$/ClassExamples/Topic-5/2-15-2022/2-15-2022-class-activity.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-15-2022" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-activity.rmd">
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-15-2022/PCA.Rmd">
           <value>
             <RMarkdownRenderProfile>
-              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-15-2022" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-class-example.rmd">
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-17-2022/2-17-2022-class-activity.rmd">
           <value>
             <RMarkdownRenderProfile>
-              <option name="lastOutput" value="$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022/2-10-2022-class-example.nb.html" />
-              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-10-2022" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-17-2022" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
-        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-8-2022/2-8-2022-activity.rmd">
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-22-2022/2-22-2022-activity.rmd">
           <value>
             <RMarkdownRenderProfile>
-              <option name="lastOutput" value="$PROJECT_DIR$/ClassExamples/Topic-4/2-8-2022/2-8-2022-activity.nb.html" />
-              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-4/2-8-2022" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-22-2022" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-24-2022/distGPU.Rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples/Topic-5/2-24-2022" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
@@ -143,14 +149,6 @@
           <value>
             <RMarkdownRenderProfile>
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/ClassExamples" />
-            </RMarkdownRenderProfile>
-          </value>
-        </entry>
-        <entry key="file://$PROJECT_DIR$/Clustering/Clustering.rmd">
-          <value>
-            <RMarkdownRenderProfile>
-              <option name="lastOutput" value="$PROJECT_DIR$/Clustering/Clustering.nb.html" />
-              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/Clustering" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
