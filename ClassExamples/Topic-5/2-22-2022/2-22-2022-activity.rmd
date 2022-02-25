@@ -1,0 +1,111 @@
+---
+title: "Soybean PCA - Team 1 Class Activity"
+author: "Andrew Esch, Evan Lee, Collin Stratton"
+date: "2-22-2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load PCA related packages
+
+```{r import}
+library(psych)
+library(rela)   # contains Bartlett and KMO tests to verify assumptions
+library(MASS)
+library(parallel)
+require(graphics)
+
+options(scipen=999)
+```
+
+```{r prep_data}
+# Andrew CD: C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-22-2022/soybean-large.data
+data <- read.csv(file="C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/Topic-5/2-22-2022/soybean-large.data", header=TRUE,sep=",", stringsAsFactors=FALSE)
+data <- data[,2:ncol(data)]
+colnames(data) = c("plant-stand", "precip", "temp", "hail", "crop-hist", "area-damaged", "severity", "seed-tmt", "germination", "plant_growth", "leaves", "leafspots-halo", "leafspots-marg", "leafspot-size", "leaf-shread", "leaf-malf", "leaf-mild", "stem", "lodging", "stem-cankers", "canker-lesion", "fruiting-bodies", "external decay", "mycelium", "int-discolor", "sclerotia", "fruit-pods", "fruit spots", "seed", "mold-growth", "seed-discolor", "seed-size", "shriveling", "roots")
+head(data)
+tail(data)
+
+```
+
+## Skipping verification
+
+# Step 1: Perform initial regression
+
+```{r dataCleaning}
+# Remove missing values
+data[data == "?"] <- NA
+
+sum(is.na(data))
+removeNA <- na.omit(data)
+data <- as.data.frame(removeNA)
+head(data)
+sum(is.na(data))
+
+# Convert each column to numeric
+data <- as.data.frame(apply(data, 2, as.numeric))
+
+# Normalize Data
+data <- as.data.frame(scale(data[1:35]))
+```
+
+```{r regression}
+library(caTools)
+set.seed(123)  # to reproduce the sample
+
+# Split training and testing based on the predictor variable based on the column "plant-growth"
+sample <- sample.split(data$plant_growth, SplitRatio = 0.7) # Split using 70/30 ratio (backed up with research)
+
+# Create training/testing csv files
+train <- subset(data, sample==TRUE)
+test <- subset(data, sample==FALSE)
+
+# Display training dataframe
+head(train)
+```
+
+```{r buildModel}
+model <- lm(plant_growth ~., data = train)
+summary(model)
+```
+
+# Step 2: Perform PCA
+```{r PCA}
+summary(pc.cr <- princomp(data, cor = TRUE, center=TRUE))
+loadings(pc.cr)
+plot(pc.cr)
+biplot(pc.cr)
+
+pcacor <- cor(data)
+summary(cor(data))
+pca5Components <- principal(pcacor, nfactors=7, rotate="none")   #we calculate all 7 components
+pca5Components
+
+test <- fa(pcacor, nfactors=7, rotate="none")
+
+alpha(pcacor)
+fa.parallel(data,n.obs=161, fm="pa", fa="pc")
+# fa.diagram(pca5Components)
+```
+
+```{r regression}
+data <- data[,c(1,2,3)]
+
+# Split training and testing based on the predictor variable based on the column "plant-growth" with new data
+sample <- sample.split(data$plant_growth, SplitRatio = 0.7) # Split using 70/30 ratio (backed up with research)
+
+# Create training/testing csv files
+train <- subset(data, sample==TRUE)
+test <- subset(data, sample==FALSE)
+
+# Display training dataframe
+head(train)
+```
+
+# Step 4: Make Predictions
+```{r predictions}
+predict(model, test)
+```
