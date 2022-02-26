@@ -4,6 +4,75 @@ author: "Andrew Esch, Evan Lee, and Collin Stratton"
 date: "2-13-2022"
 output: html_notebook
 ---
-
+#######################################################
 # Introduction
 
+
+#######################################################
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load PCA related packages
+```{r Import Libraries}
+library(psych)
+library(rela)   # contains Bartlett and KMO tests to verify assumptions
+library(MASS)
+library(parallel)
+library(caTools)
+require(graphics)
+
+set.seed(123)
+
+options(scipen=999)
+```
+
+
+
+#Import Data
+```{r Import Data}
+#fileName <- "Collins's Path"
+#fileName <- "Andrew's Path"
+fileName <- "C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+data <- read.csv(file=fileName, header=TRUE,sep=",", stringsAsFactors=TRUE)
+head(data)
+```
+
+##Change all string factor data into numerical data for PCA
+```{r Make Numerical Data}
+stringFactors <- c(2,3,5,8,12,16,18,22,23)
+
+for(x in stringFactors){
+    print(x)
+    columndatatest <- data[,x]
+    factors <- factor(columndatatest)
+    data[,x] <- as.numeric(factors)
+}
+
+head(data)
+```
+## Find and get rid of NA values
+```{r Remove NA values}
+sum(is.na(data))
+na.omit(data)
+```
+
+## Normalizing data for PCA
+```{r Normalize Data}
+# Normalize Data
+data <- as.data.frame(scale(data))
+head(data)
+```
+
+## Training and Testing Set
+```{r Create Training and Testing Set}
+sample <- sample.split(data$Age, SplitRatio = 0.7)
+
+train <- subset(data, sample==TRUE)
+test <- subset(data, sample==FALSE)
+
+# Display training dataframe
+head(train)
+
+```
