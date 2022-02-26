@@ -52,11 +52,6 @@ for(x in stringFactors){
 
 head(data)
 ```
-## Find and get rid of NA values
-```{r Remove NA values}
-sum(is.na(data))
-na.omit(data)
-```
 
 ## Normalizing data for PCA
 ```{r Normalize Data}
@@ -65,14 +60,89 @@ data <- as.data.frame(scale(data))
 head(data)
 ```
 
+## Find and get rid of NA values
+```{r Remove NA values}
+sum(is.na(data))
+data <- subset(data, select = -c(9,22,27))
+sum(is.na(data))
+head(data)
+
+```
+
+
+#############################################################################################################
+##                                         Linear Regression                                               ##
+#############################################################################################################
+
 ## Training and Testing Set
 ```{r Create Training and Testing Set}
-sample <- sample.split(data$Age, SplitRatio = 0.7)
+sample <- sample.split(data$HourlyRate, SplitRatio = 0.7)
 
 train <- subset(data, sample==TRUE)
 test <- subset(data, sample==FALSE)
 
 # Display training dataframe
 head(train)
-
 ```
+
+###
+### We can change the variable HourlyRate to any variable we want to check out. Just change it above in the testing and training chunk as well.
+
+###
+```{r buildModel}
+model <- lm(HourlyRate ~., data = train)
+summary(model)
+```
+
+## Improve the Model using only Significant Variables
+### We used this for our Linear Regression before, but now we can use PCA instead of pvalues
+Using the P Value of the model gained from the previous section, the next step is to determine which variables are significant and use the training set to build a model with only significant variables. The code section below gives a summary of the significant variables found.
+```{r Removing variables using p-values}
+# Choose only variables with p-value < 2.2e-16
+#highModel.significantVars <- lm(High ~ Open + Close + Volume, data = txn.df.train)
+#highModel.significantVars
+#summary(highModel.significantVars)
+```
+
+
+
+
+#############################################################################################################
+##                                               PCA                                                       ##
+#############################################################################################################
+
+```{r Principal Components and Summary}
+PrincipalComponents <- princomp(data, cor = TRUE)
+summary(PrincipalComponents)
+```
+
+```{r Loadings Data}
+loadings(PrincipalComponents)
+```
+```{r Plotting Principal Components}
+plot(PrincipalComponents)
+biplot(PrincipalComponents)
+```
+
+```{r PCA Correlation Test}
+pcacor <- cor(data)
+pcacor
+summary(cor(data))
+```
+
+```{r }
+pca3Components <- principal(pcacor, nfactors=3, rotate="none")   #we calculate all 3 components
+pca3Components
+```
+
+```{r}
+test <- fa(pcacor, nfactors=3, rotate="none")
+```
+
+```{r}
+alpha(pcacor)
+fa.parallel(data,n.obs=161, fm="pa", fa="pc")
+fa.diagram(pca3Components)
+```
+
+
