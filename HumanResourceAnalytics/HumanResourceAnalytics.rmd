@@ -4,11 +4,10 @@ author: "Andrew Esch, Evan Lee, and Collin Stratton"
 date: "2-27-2022"
 output: html_notebook
 ---
-#######################################################
+
 # Introduction
-
-
-#######################################################
+The purpose of this assignment is to be able to identify important predictors of performance within data in relation to employees’ satisfaction and company policies for the workers. This project will use a provided dataset and computational algorithms to analyze the information from the dataset and find what factors in the company policies provide the best employee satisfaction.
+Principle Component Analysis, or PCA, is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. PCA is useful when there is data on a large number of variables, and there is some redundancy in those variables. In this case, redundancy means that some of the variables are correlated with one another. And because of this redundancy PCA can be used to reduce the observed variables into a smaller number of principal components that will account for most of the variance in the observed variables. Thus, PCA is recommended as an exploratory tool to uncover unknown trends in the data.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -60,6 +59,7 @@ head(data)
 ```
 
 ## Normalize data for PCA
+By normalizing the data it increases the cohesion and quality of the data effectively cleaning it and increasing the quality.
 ```{r Normalize Data}
 data <- as.data.frame(scale(data))
 head(data)
@@ -78,7 +78,9 @@ sum(is.na(data))
 head(data)
 ```
 
-## Linear Regression Training and Testing Set
+## Linear Regression
+### Training and Testing Set
+Split the data into a training set and testing set, using 70% of the data for training and 30% for testing.
 ```{r Create Training and Testing Set}
 sample <- sample.split(data$HourlyRate, SplitRatio = 0.7)
 
@@ -94,6 +96,7 @@ head(train)
 model <- lm(HourlyRate ~., data = train)
 summary(model)
 ```
+From this analysis we can see that Job Satisfaction is the most important predictor of employee attrition. Other factors that are important are Job Level, Job Involvement, and Environment Satisfaction. These will be the factors focused on in the following sections.
 
 ## Improve the Model using only Significant Variables
 ### We used this for our Linear Regression before, but now we can use PCA instead of pvalues
@@ -106,10 +109,12 @@ Using the P Value of the model gained from the previous section, the next step i
 ```
 
 ## PCA
+As talked about before, PCA is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. These next sections will be focused on the application of the PCA technique to the data.
 ```{r Principal Components and Summary}
 PrincipalComponents <- princomp(data, cor = TRUE)
 summary(PrincipalComponents)
 ```
+
 
 ## Display PCA Data
 ```{r Loadings Data}
