@@ -184,6 +184,7 @@
         <entry key="file://$PROJECT_DIR$/HumanResourceAnalytics/HumanResourceAnalytics.rmd">
           <value>
             <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/HumanResourceAnalytics/HumanResourceAnalytics.nb.html" />
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/HumanResourceAnalytics" />
             </RMarkdownRenderProfile>
           </value>

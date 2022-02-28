@@ -1,7 +1,7 @@
 ---
 title: "Data Mining - Clustering"
 author: "Andrew Esch, Evan Lee, and Collin Stratton"
-date: "2-13-2022"
+date: "2-27-2022"
 output: html_notebook
 ---
 #######################################################
@@ -14,6 +14,10 @@ output: html_notebook
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Implementation Approach
+
+
+# Human Resource Analytics
 ## Load PCA related packages
 ```{r Import Libraries}
 library(psych)
@@ -30,19 +34,21 @@ options(scipen=999)
 
 
 
-#Import Data
+## Import Data
 ```{r Import Data}
-#fileName <- "Collins's Path"
+fileName <- "/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
 #fileName <- "Andrew's Path"
-fileName <- "C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+# fileName <- "C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
 data <- read.csv(file=fileName, header=TRUE,sep=",", stringsAsFactors=TRUE)
 head(data)
 ```
 
-##Change all string factor data into numerical data for PCA
+## Change all string factor data into numerical data for PCA
 ```{r Make Numerical Data}
+# columns with string factors
 stringFactors <- c(2,3,5,8,12,16,18,22,23)
 
+# loop through string columns and convert to numeric
 for(x in stringFactors){
     print(x)
     columndatatest <- data[,x]
@@ -53,28 +59,26 @@ for(x in stringFactors){
 head(data)
 ```
 
-## Normalizing data for PCA
+## Normalize data for PCA
 ```{r Normalize Data}
-# Normalize Data
 data <- as.data.frame(scale(data))
 head(data)
 ```
 
 ## Find and get rid of NA values
 ```{r Remove NA values}
+# summarize data before removing NA values
 sum(is.na(data))
+
+# remove NA values
 data <- subset(data, select = -c(9,22,27))
+
+# summarize data after removing NA values
 sum(is.na(data))
 head(data)
-
 ```
 
-
-#############################################################################################################
-##                                         Linear Regression                                               ##
-#############################################################################################################
-
-## Training and Testing Set
+## Linear Regression Training and Testing Set
 ```{r Create Training and Testing Set}
 sample <- sample.split(data$HourlyRate, SplitRatio = 0.7)
 
@@ -85,10 +89,7 @@ test <- subset(data, sample==FALSE)
 head(train)
 ```
 
-###
 ### We can change the variable HourlyRate to any variable we want to check out. Just change it above in the testing and training chunk as well.
-
-###
 ```{r buildModel}
 model <- lm(HourlyRate ~., data = train)
 summary(model)
@@ -104,45 +105,50 @@ Using the P Value of the model gained from the previous section, the next step i
 #summary(highModel.significantVars)
 ```
 
-
-
-
-#############################################################################################################
-##                                               PCA                                                       ##
-#############################################################################################################
-
+## PCA
 ```{r Principal Components and Summary}
 PrincipalComponents <- princomp(data, cor = TRUE)
 summary(PrincipalComponents)
 ```
 
+## Display PCA Data
 ```{r Loadings Data}
 loadings(PrincipalComponents)
 ```
+
+## Graph PCA Data
 ```{r Plotting Principal Components}
 plot(PrincipalComponents)
 biplot(PrincipalComponents)
 ```
 
+## Perform PCA Correlation Test
 ```{r PCA Correlation Test}
 pcacor <- cor(data)
 pcacor
 summary(cor(data))
 ```
 
-```{r }
-pca3Components <- principal(pcacor, nfactors=3, rotate="none")   #we calculate all 3 components
+### Find the 3 PCA variables that are most correlated with the target variable
+```{r PCA Compenent Values}
+pca3Components <- principal(pcacor, nfactors=3, rotate="none") # we calculate all 3 components
 pca3Components
 ```
 
+### Find MR values for each PCA component
 ```{r}
 test <- fa(pcacor, nfactors=3, rotate="none")
+test
 ```
 
+### Plot Parallel Analysis Plots
 ```{r}
 alpha(pcacor)
 fa.parallel(data,n.obs=161, fm="pa", fa="pc")
 fa.diagram(pca3Components)
 ```
 
+# Conclusion
 
+
+# References
