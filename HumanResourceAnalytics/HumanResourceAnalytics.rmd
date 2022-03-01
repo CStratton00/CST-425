@@ -24,6 +24,7 @@ library(rela)   # contains Bartlett and KMO tests to verify assumptions
 library(MASS)
 library(parallel)
 library(caTools)
+library(dplyr)
 require(graphics)
 
 set.seed(123)
@@ -37,9 +38,10 @@ options(scipen=999)
 ```{r Import Data}
 #fileName <- "/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
 fileName <- "C:/Users/andre/Documents/GitHub/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
-# fileName <- "C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+fileName <- "C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
 data <- read.csv(file=fileName, header=TRUE,sep=",", stringsAsFactors=TRUE)
 head(data)
+ncol(data)
 ```
 
 ## Change all string factor data into numerical data for PCA
@@ -176,7 +178,7 @@ The graphs above are a visual representation of the variance in the first 10 com
 ```{r PCA Correlation Test}
 pcacor <- cor(data)
 pcacor
-summary(cor(data))
+summary(pcacor)
 ```
 
 ### Find the 3 PCA variables that are most correlated with the target variable
@@ -195,8 +197,25 @@ test
 ```{r}
 alpha(pcacor)
 fa.parallel(data,n.obs=161, fm="pa", fa="pc")
+
 fa.diagram(pca3Components)
 ```
+
+#Linear Regression of Principal Components
+```{r PCA Linear Regression}
+head(pca3Components$values)
+#typeof(pca3Components)
+#pcaComponentsLinear <- as.data.frame(pca3Components$x)
+#typeof(pca3Components)
+#nrow(data$HourlyRate)
+#nrow(pcaComponentsLinear)
+#ols.data <- cbind(data$HourlyRate,pcaComponentsLinear)
+#lmodel <- lm(data$HourlyRate ~., data = ols.data)
+#summary(lmodel)
+
+```
+
+
 
 # Conclusion
 
