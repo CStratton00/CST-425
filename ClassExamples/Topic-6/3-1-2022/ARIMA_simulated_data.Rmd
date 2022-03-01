@@ -1,0 +1,20 @@
+---
+title: "ARIMA simulated data"
+author: "Isac Artzi"
+date: "12/27/2020"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Generate a time series
+
+```{r ts}
+library(TSstudio)
+stationary_ts <- arima.sim(model=list(order=c(1,0,0), ar=0.5), n=200)
+ts_plot(stationary_ts, title="Stationary Time Series Example", Ytitle="Synthetic values", Xtitle="Time")
+```

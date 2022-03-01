@@ -1,0 +1,143 @@
+---
+title: "TS_MSFT_Stock"
+author: "Isac Artzi"
+date: "12/23/2020"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Value of Microsoft stock between 2006 and 2018.
+
+Data source: https://www.kaggle.com/szrlee/stock-time-series-20050101-to-20171231?select=MSFT_2006-01-01_to_2018-01-01.csv
+
+### Acquire data
+```{r set_data}
+library(forecast)
+stock_value <- read.csv("MSFT_2006-01-01_to_2018-01-01.csv")
+head(stock_value)
+tail(stock_value)
+```
+
+### Create time series
+
+```{r timeseries}
+
+
+value.ts <- ts(stock_value$Close, start = c(2006,1,3),frequency = 365.25)
+
+# Visualize the time series
+plot(value.ts, xlab="Time", ylab="Stock value in $", ylim=c(0,100))
+```
+
+### Zoom in for additional insight
+
+```{r zoom_in}
+value.ts.zoomin <- ts(stock_value$Close, start = c(2011,1,1), end = c(2012,12,31),frequency = 365)
+
+# Visualize the time series
+plot(value.ts.zoomin, xlab="Time", ylab="Stock value in $", ylim=c(20,40))
+
+```
+
+### Verify seasonality
+
+```{r seasonality}
+
+fit <- tbats(value.ts)
+seasonal <- !is.null(fit$seasonal)
+seasonal
+
+```
+
+### Verify if there is a trend
+
+After we concluded there is no seasonality, create a new time series object to verify presence of a trend
+
+```{r trend}
+# Plot Central Moving Average (CMA)
+library(tsutils)
+
+cma <- cmav(value.ts, outplot=1)
+
+head(cma)
+
+```
+### Split the series into **trend**, **seasonality**, and **error**
+
+```{r split_series}
+
+decomposed <- decompose(value.ts, type="mult")
+plot(decomposed)
+stlRes <- stl(value.ts, s.window = "periodic")
+lines(trendcycle(stlRes),col="red")
+
+library(ggplot2)
+autoplot(cbind(
+	    Data=value.ts,
+	    Seasonal=seasonal(stlRes),
+  	  Trend=trendcycle(stlRes),
+	    Remainder=remainder(stlRes)),
+    facets=TRUE) +
+  ylab("") + xlab("Day")
+
+seasplot(value.ts)
+```
+### Prepare to forecast with simple exponential smoothing
+
+Fit a simple exponential smoothing predictive model using the **Holt-Winters** model
+
+```{r exp_smoothing}
+# Plot the time series again
+plot.ts(value.ts)
+
+value.ts.forecast <- HoltWinters(value.ts, beta=FALSE, gamma=FALSE)
+head(value.ts.forecast)
+```
+### Interpretation of Holt-Winters output
+
+The estimated value of the alpha parameter is approximately 0.085. Since it is nearly zero, it follows that the forecasts are based on both recent and less recent observations:
+
+```{r fitted}
+# A sample of the first 10 fitted values
+head(value.ts.forecast$fitted)
+
+# Original time series and the forecast
+plot(value.ts.forecast)
+
+# Calculate the sum of square errors (SSE)
+value.ts.forecast$SSE
+```
+### Make the forecast for a few days ahead using the exponential smoothing
+
+```{r forecast}
+# Forecast 200 days ahead with confidence intervals
+
+value.ts.forecast2 <- forecast:::forecast.HoltWinters(value.ts.forecast, h=200)
+head(value.ts.forecast2)
+
+# The accuracy decreases as the time progresses into the future
+plot(forecast(value.ts.forecast2))
+```
+### Prepare to forecast with ARIMA
+
+
+
+```{r ARIMA}
+
+# Forecast with auto.arima()
+
+value.ts.arima <- arima(value.ts, order=c(1,1,1),seasonal = list(order = c(1,0,0), period = 12),method="ML")
+value.ts.arima
+
+library(lmtest)
+coeftest(value.ts.arima)
+
+predictions <- forecast:::forecast.Arima(value.ts.arima,h=200, level=c(99.5))
+plot(forecast(predictions))
+```
+The blue line represents the forecast, while the gray area represeents 80% prediction intervals
