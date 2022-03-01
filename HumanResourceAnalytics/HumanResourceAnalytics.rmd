@@ -128,7 +128,7 @@ pafData <- paf(mdata, eigcrit=1, convcrit=.001) # Principle Axis Factoring
 summary(pafData) # Notice Bartlett and KMO values and ignore the rest
 ```
 
-Since KMO = 0.738 (which is close enough to 1), the data set with 496 data points and 32 variables is an adequate sample size
+Since KMO = 0.738 (which is close enough to 1), the data set with 496 data points and 32 variables should be an adequate sample size.
 
 From the output of the performing Principle Axis Factoring, we find that the Bartlett Chi-Square = 14311. However, without statistical context (i.e., the number of data points), this test does not show a p-value for the Bartlett assumption. Thus, to verify assumption 1, it is essential to find the p-value (or statistical significance) of the Bartlett test separately.
 
@@ -148,6 +148,7 @@ det(correlationMatrix)
 The correlation matrix has a determinant of 0.000054414. Since the determinant is positive, we verify that the third assumption for performing PCA is verified.
 
 ## Verification Analysis
+To verify that the PCA would be an effective technique for reducing the dimensionality of the Human Resource Analytics dataset, three assumptions must be verified. First, the Sphericity assumption. Bartlett's Test of Sphericity compares a correlation matrix to the identity matrix to verify that there are redundant variables. The assumption can be verified through statistical analysis. The null hypothesis of the test is that the variables are not correlated (or not orthogonal). On the other hand, the alternative hypothesis is that the variables are correlated enough. Based on the result of the Bartlett test statistic (p-value = 0), the first assumption is met. Next, sampling adequacy assumption is the assumption that the vectors (or columns) in the dataset have an adequate proportion for sampling adjacency. The Kaiser-Meyer-Olkin Measure (KMO) can aid in determining if for sampling adjacency. Using the Principle Axis Factoring function (paf) in R, the outputted result for the sampling adjacency is 0.738. This means that the sampling adjacency is adequate enough to perform PCA. Consequently, the second assumption is met as long as the data set used for PCA has at least 496 data points and includes all 32 variables. Finally, the last assumption is that the correlation matrix must have a positive determinant. If this does not hold true, then PCA analysis cannot be performed. Since the determinant is 0.000054414, this assumption is met. Thus, we verify that all assumptions are met for performing PCA.
 
 
 ## PCA
