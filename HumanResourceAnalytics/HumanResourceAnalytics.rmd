@@ -35,8 +35,8 @@ options(scipen=999)
 
 ## Import Data
 ```{r Import Data}
-fileName <- "/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
-#fileName <- "Andrew's Path"
+#fileName <- "/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+fileName <- "C:/Users/andre/Documents/GitHub/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
 # fileName <- "C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
 data <- read.csv(file=fileName, header=TRUE,sep=",", stringsAsFactors=TRUE)
 head(data)
@@ -107,6 +107,48 @@ Using the P Value of the model gained from the previous section, the next step i
 #highModel.significantVars
 #summary(highModel.significantVars)
 ```
+
+## Verify Assumptions
+
+### First, create the correlation and covariance matricies for performing verification analysis
+```{r correlation-covariance-matrices}
+# Create the two matrices for performing analysis
+correlationMatrix <- cor(data)
+covarianceMatrix <- cov(data)
+
+# Output matrices
+correlationMatrix
+covarianceMatrix
+```
+
+### Assumption 1 and 2: Bartlett Test of Sphericity for Covariance Matrices and the Kaiser-Meyer-Olkin Measure of Sampling Adequacy (KMO) test
+```{r assumption_1}
+mdata <- data.matrix(data)
+pafData <- paf(mdata, eigcrit=1, convcrit=.001) # Principle Axis Factoring
+summary(pafData) # Notice Bartlett and KMO values and ignore the rest
+```
+
+Since KMO = 0.738 (which is close enough to 1), the data set with 496 data points and 32 variables is an adequate sample size
+
+From the output of the performing Principle Axis Factoring, we find that the Bartlett Chi-Square = 14311. However, without statistical context (i.e., the number of data points), this test does not show a p-value for the Bartlett assumption. Thus, to verify assumption 1, it is essential to find the p-value (or statistical significance) of the Bartlett test separately.
+
+### Assumption 1 Continued - Finding the Statistical Significance of the Bartlett Test
+```{r assumption_2}
+cortest.bartlett(correlationMatrix, n=496) # Use the cortest.bartlett() function with the dataset size to get a p-value (statistical significance).
+```
+
+With dataset size of 496 and p-value = 0, we conclude that the assumption of Sphericity is verified due to the statistical significance from performing the Bartlett test.
+
+### Assumption 3: The correlation matrix has a positive determinant
+```{r assumption_3}
+# Use the correlation matrix with the def() function to verify that it has a positive determinant.
+det(correlationMatrix)
+```
+
+The correlation matrix has a determinant of 0.000054414. Since the determinant is positive, we verify that the third assumption for performing PCA is verified.
+
+## Verification Analysis
+
 
 ## PCA
 As talked about before, PCA is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. These next sections will be focused on the application of the PCA technique to the data.
