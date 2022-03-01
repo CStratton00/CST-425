@@ -7,7 +7,7 @@ output: html_notebook
 
 # Introduction
 The purpose of this assignment is to be able to identify important predictors of performance within data in relation to employees’ satisfaction and company policies for the workers. This project will use a provided dataset and computational algorithms to analyze the information from the dataset and find what factors in the company policies provide the best employee satisfaction.
-Principle Component Analysis, or PCA, is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. PCA is useful when there is data on a large number of variables, and there is some redundancy in those variables. In this case, redundancy means that some of the variables are correlated with one another. And because of this redundancy PCA can be used to reduce the observed variables into a smaller number of principal components that will account for most of the variance in the observed variables. Thus, PCA is recommended as an exploratory tool to uncover unknown trends in the data.
+Principal Component Analysis, or PCA, is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. PCA is useful when there is data on a large number of variables, and there is some redundancy in those variables. In this case, redundancy means that some of the variables are correlated with one another. And because of this redundancy PCA can be used to reduce the observed variables into a smaller number of principal components that will account for most of the variance in the observed variables. Thus, PCA is recommended as an exploratory tool to uncover unknown trends in the data.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -114,18 +114,20 @@ As talked about before, PCA is a technique for reducing the dimensionality of da
 PrincipalComponents <- princomp(data, cor = TRUE)
 summary(PrincipalComponents)
 ```
-
+After taking the principal components from the data, 32 components were found labeled Comp 1-32. Each of these components explains a percentage of the total variation in the dataset, and by knowing th prepositions of a sample in relation to the components, an accurate view of where the data stands in relation to other samples can be generated.
 
 ## Display PCA Data
 ```{r Loadings Data}
 loadings(PrincipalComponents)
 ```
+Using the loadings function, the principal components are extracted in factor analysis, or principal component analysis. The output above shows off how each variable is explained in each component and reiterated the component analysis.
 
 ## Graph PCA Data
 ```{r Plotting Principal Components}
 plot(PrincipalComponents)
 biplot(PrincipalComponents)
 ```
+The graphs above are a visual representation of the variance in the first 10 components and the biplot of the samples and their terms of the first and second components. The second graph more specifically visualizes how the samples relate to one another in the PCA and reveals how each variable contributes to each principal component. The biplot shows that many of the variables contribute to the first component, with a couple trending towards the second component. This makes sense as the first component will explain most of the variance. 
 
 ## Perform PCA Correlation Test
 ```{r PCA Correlation Test}
@@ -146,7 +148,7 @@ test <- fa(pcacor, nfactors=3, rotate="none")
 test
 ```
 
-### Plot Parallel Analysis Plots
+## Plot Parallel Analysis Plots
 ```{r}
 alpha(pcacor)
 fa.parallel(data,n.obs=161, fm="pa", fa="pc")
