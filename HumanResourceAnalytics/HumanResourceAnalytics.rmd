@@ -26,6 +26,7 @@ library(parallel)
 library(caTools)
 library(dplyr)
 require(graphics)
+require(pls)
 
 set.seed(123)
 
@@ -156,7 +157,8 @@ To verify that the PCA would be an effective technique for reducing the dimensio
 ## PCA
 As talked about before, PCA is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. These next sections will be focused on the application of the PCA technique to the data.
 ```{r Principal Components and Summary}
-PrincipalComponents <- princomp(data, cor = TRUE)
+#PrincipalComponents <- princomp(data, cor = TRUE)
+PrincipalComponents <- prcomp(data, cor = TRUE)
 summary(PrincipalComponents)
 ```
 After taking the principal components from the data, 32 components were found labeled Comp 1-32. Each of these components explains a percentage of the total variation in the dataset, and by knowing th prepositions of a sample in relation to the components, an accurate view of where the data stands in relation to other samples can be generated.
@@ -181,31 +183,40 @@ pcacor
 summary(pcacor)
 ```
 
-### Find the 3 PCA variables that are most correlated with the target variable
+### Find the 6 PCA variables that are most correlated with the target variable
 ```{r PCA Compenent Values}
-pca3Components <- principal(pcacor, nfactors=3, rotate="none") # we calculate all 3 components
-pca3Components
+pca6Components <- principal(pcacor, nfactors=6, rotate="none") # we calculate all 6 components
+pca6Components
 ```
 
 ### Find MR values for each PCA component
 ```{r}
-test <- fa(pcacor, nfactors=3, rotate="none")
+test <- fa(pcacor, nfactors=6, rotate="none")
 test
 ```
 
 ## Plot Parallel Analysis Plots
 ```{r}
-alpha(pcacor)
-fa.parallel(data,n.obs=161, fm="pa", fa="pc")
+alpha(pcacor, check.keys = TRUE)
+fa.parallel(data,n.obs=496, fm="pa", fa="pc")
 
-fa.diagram(pca3Components)
+fa.diagram(pca6Components)
 ```
 
 #Linear Regression of Principal Components
 ```{r PCA Linear Regression}
-head(pca3Components$values)
+
+model <- lm(data$HourlyRate~., data = train,scale = TRUE)
+#pcr_pred <- predict(model,test,ncomp=3)
+#plot(data$HourlyRate, col="green", type="l", lty=1, lwd=5, main = "Actual vs Predicted Values")
+#lines(pcr_pred, col="red", type="l", lty=1, lwd=2.5)
+
+
+#pca6Components$values
+#pca6Components$x
 #typeof(pca3Components)
-#pcaComponentsLinear <- as.data.frame(pca3Components$x)
+#pcaComponentsLinear <- as.data.frame(pca6Components$values)
+#pcaComponentsLinear
 #typeof(pca3Components)
 #nrow(data$HourlyRate)
 #nrow(pcaComponentsLinear)
