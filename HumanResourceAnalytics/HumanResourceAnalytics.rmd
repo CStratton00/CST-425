@@ -107,7 +107,7 @@ Using the P Value of the model gained from the previous section, the next step i
 ```
 
 ## Verify Assumptions
-### First, create the correlation and covariance matricies for performing verification analysis
+### First, create the correlation and covariance matrices for performing verification analysis
 ```{r correlation-covariance-matrices}
 # Create the two matrices for performing analysis
 correlationMatrix <- cor(data)
