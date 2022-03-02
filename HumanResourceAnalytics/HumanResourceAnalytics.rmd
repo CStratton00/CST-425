@@ -13,9 +13,6 @@ Principal Component Analysis, or PCA, is a technique for reducing the dimensiona
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Implementation Approach
-
-
 # Human Resource Analytics
 ## Load PCA related packages
 ```{r Import Libraries}
@@ -32,8 +29,6 @@ set.seed(123)
 
 options(scipen=999)
 ```
-
-
 
 ## Import Data
 ```{r Import Data}
@@ -112,7 +107,6 @@ Using the P Value of the model gained from the previous section, the next step i
 ```
 
 ## Verify Assumptions
-
 ### First, create the correlation and covariance matricies for performing verification analysis
 ```{r correlation-covariance-matrices}
 # Create the two matrices for performing analysis
@@ -217,4 +211,11 @@ To choose the number of components that would yield the most accurate result for
 In this last step, we take the principal components and use them in the linear regression model. This is the action of finding which variables need to be removed or combined and using those for the improved linear regression model. Though we had technical difficulties getting the principal components to map to the linear regression, the above code is how RPubs used PCA on their linear regression model. With further analysis we can implement a working PCA linear regression model but due to time constraints this is the best solution. We were able to reduce the dimensionality from 32 to 6 which can help save computation power and time on further analysis. This would also in theory make better predictions by getting rid of variables with high correlation.
 
 # References
-https://royalsocietypublishing.org/doi/10.1098/rsta.2015.0202
+https://www.datacamp.com/community/tutorials/pca-analysis-r
+http://fs2.american.edu/baron/www/627/R/Labs/PCR%20and%20PLS.htm
+https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/loadings
+https://www.gastonsanchez.com/visually-enforced/how-to/2012/06/17/PCA-in-R/
+http://www.sthda.com/english/articles/17-tips-tricks/68-what-is-variable-loadings-in-pcae/
+https://www.statology.org/bartletts-test-of-sphericity/
+https://www.rdocumentation.org/packages/rela/versions/4.1/topics/paf
+https://towardsdatascience.com/exploratory-factor-analysis-in-r-e31b0015f224
