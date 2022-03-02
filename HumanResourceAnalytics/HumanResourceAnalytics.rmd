@@ -205,31 +205,15 @@ fa.diagram(pca6Components)
 
 #Linear Regression of Principal Components
 ```{r PCA Linear Regression}
-
-model <- lm(data$HourlyRate~., data = train,scale = TRUE)
-#pcr_pred <- predict(model,test,ncomp=3)
-#plot(data$HourlyRate, col="green", type="l", lty=1, lwd=5, main = "Actual vs Predicted Values")
-#lines(pcr_pred, col="red", type="l", lty=1, lwd=2.5)
-
-
-#pca6Components$values
 #pca6Components$x
-#typeof(pca3Components)
-#pcaComponentsLinear <- as.data.frame(pca6Components$values)
+#pcaComponentsLinear <- as.data.frame(pca6Components$x)
 #pcaComponentsLinear
-#typeof(pca3Components)
-#nrow(data$HourlyRate)
-#nrow(pcaComponentsLinear)
+
 #ols.data <- cbind(data$HourlyRate,pcaComponentsLinear)
 #lmodel <- lm(data$HourlyRate ~., data = ols.data)
 #summary(lmodel)
-
 ```
-
-
-
-# Conclusion
-
+In this last step, we take the principal components and use them in the linear regression model. This is the action of finding which variables need to be removed or combined and using those for the improved linear regression model. Though we had technical difficulties getting the principal components to map to the linear regression, the above code is how RPubs used PCA on their linear regression model. With further analysis we can implement a working PCA linear regression model but due to time constraints this is the best solution. We were able to reduce the dimensionality from 32 to 6 which can help save computation power and time on further analysis. This would also in theory make better predictions by getting rid of variables with high correlation.
 
 # References
 https://royalsocietypublishing.org/doi/10.1098/rsta.2015.0202
