@@ -1,0 +1,221 @@
+---
+title: "Data Mining - Clustering"
+author: "Andrew Esch, Evan Lee, and Collin Stratton"
+date: "2-27-2022"
+output: html_notebook
+---
+
+# Introduction
+The purpose of this assignment is to be able to identify important predictors of performance within data in relation to employees’ satisfaction and company policies for the workers. This project will use a provided dataset and computational algorithms to analyze the information from the dataset and find what factors in the company policies provide the best employee satisfaction.
+Principal Component Analysis, or PCA, is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. PCA is useful when there is data on a large number of variables, and there is some redundancy in those variables. In this case, redundancy means that some of the variables are correlated with one another. And because of this redundancy PCA can be used to reduce the observed variables into a smaller number of principal components that will account for most of the variance in the observed variables. Thus, PCA is recommended as an exploratory tool to uncover unknown trends in the data.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Human Resource Analytics
+## Load PCA related packages
+```{r Import Libraries}
+library(psych)
+library(rela)   # contains Bartlett and KMO tests to verify assumptions
+library(MASS)
+library(parallel)
+library(caTools)
+library(dplyr)
+require(graphics)
+require(pls)
+
+set.seed(123)
+
+options(scipen=999)
+```
+
+## Import Data
+```{r Import Data}
+#fileName <- "/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+fileName <- "C:/Users/andre/Documents/GitHub/CST-425/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+fileName <- "C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/HumanResourceAnalytics/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+data <- read.csv(file=fileName, header=TRUE,sep=",", stringsAsFactors=TRUE)
+head(data)
+ncol(data)
+```
+
+## Change all string factor data into numerical data for PCA
+```{r Make Numerical Data}
+# columns with string factors
+stringFactors <- c(2,3,5,8,12,16,18,22,23)
+
+# loop through string columns and convert to numeric
+for(x in stringFactors){
+    print(x)
+    columndatatest <- data[,x]
+    factors <- factor(columndatatest)
+    data[,x] <- as.numeric(factors)
+}
+
+head(data)
+```
+
+## Normalize data for PCA
+By normalizing the data it increases the cohesion and quality of the data effectively cleaning it and increasing the quality.
+```{r Normalize Data}
+data <- as.data.frame(scale(data))
+head(data)
+```
+
+## Find and get rid of NA values
+```{r Remove NA values}
+# summarize data before removing NA values
+sum(is.na(data))
+
+# remove NA values
+data <- subset(data, select = -c(9,22,27))
+
+# summarize data after removing NA values
+sum(is.na(data))
+head(data)
+```
+
+## Linear Regression
+### Training and Testing Set
+Split the data into a training set and testing set, using 70% of the data for training and 30% for testing.
+```{r Create Training and Testing Set}
+sample <- sample.split(data$HourlyRate, SplitRatio = 0.7)
+
+train <- subset(data, sample==TRUE)
+test <- subset(data, sample==FALSE)
+
+# Display training dataframe
+head(train)
+```
+
+### We can change the variable HourlyRate to any variable we want to check out. Just change it above in the testing and training chunk as well.
+```{r buildModel}
+model <- lm(HourlyRate ~., data = train)
+summary(model)
+```
+From this analysis we can see that Job Satisfaction is the most important predictor of employee attrition. Other factors that are important are Job Level, Job Involvement, and Environment Satisfaction. These will be the factors focused on in the following sections.
+
+## Improve the Model using only Significant Variables
+### We used this for our Linear Regression before, but now we can use PCA instead of pvalues
+Using the P Value of the model gained from the previous section, the next step is to determine which variables are significant and use the training set to build a model with only significant variables. The code section below gives a summary of the significant variables found.
+```{r Removing variables using p-values}
+# Choose only variables with p-value < 2.2e-16
+#highModel.significantVars <- lm(High ~ Open + Close + Volume, data = txn.df.train)
+#highModel.significantVars
+#summary(highModel.significantVars)
+```
+
+## Verify Assumptions
+### First, create the correlation and covariance matrices for performing verification analysis
+```{r correlation-covariance-matrices}
+# Create the two matrices for performing analysis
+correlationMatrix <- cor(data)
+covarianceMatrix <- cov(data)
+
+# Output matrices
+correlationMatrix
+covarianceMatrix
+```
+
+### Assumption 1 and 2: Bartlett Test of Sphericity for Covariance Matrices and the Kaiser-Meyer-Olkin Measure of Sampling Adequacy (KMO) test
+```{r assumption_1}
+mdata <- data.matrix(data)
+pafData <- paf(mdata, eigcrit=1, convcrit=.001) # Principle Axis Factoring
+summary(pafData) # Notice Bartlett and KMO values and ignore the rest
+```
+
+Since KMO = 0.738 (which is close enough to 1), the data set with 496 data points and 32 variables should be an adequate sample size.
+
+From the output of the performing Principle Axis Factoring, we find that the Bartlett Chi-Square = 14311. However, without statistical context (i.e., the number of data points), this test does not show a p-value for the Bartlett assumption. Thus, to verify assumption 1, it is essential to find the p-value (or statistical significance) of the Bartlett test separately.
+
+### Assumption 1 Continued - Finding the Statistical Significance of the Bartlett Test
+```{r assumption_2}
+cortest.bartlett(correlationMatrix, n=496) # Use the cortest.bartlett() function with the dataset size to get a p-value (statistical significance).
+```
+
+With dataset size of 496 and p-value = 0, we conclude that the assumption of Sphericity is verified due to the statistical significance from performing the Bartlett test.
+
+### Assumption 3: The correlation matrix has a positive determinant
+```{r assumption_3}
+# Use the correlation matrix with the def() function to verify that it has a positive determinant.
+det(correlationMatrix)
+```
+
+The correlation matrix has a determinant of 0.000054414. Since the determinant is positive, we verify that the third assumption for performing PCA is verified.
+
+## Verification Analysis
+To verify that the PCA would be an effective technique for reducing the dimensionality of the Human Resource Analytics dataset, three assumptions must be verified. First, the Sphericity assumption. Bartlett's Test of Sphericity compares a correlation matrix to the identity matrix to verify that there are redundant variables. The assumption can be verified through statistical analysis. The null hypothesis of the test is that the variables are not correlated (or not orthogonal). On the other hand, the alternative hypothesis is that the variables are correlated enough. Based on the result of the Bartlett test statistic (p-value = 0), the first assumption is met. Next, sampling adequacy assumption is the assumption that the vectors (or columns) in the dataset have an adequate proportion for sampling adjacency. The Kaiser-Meyer-Olkin Measure (KMO) can aid in determining if for sampling adjacency. Using the Principle Axis Factoring function (paf) in R, the outputted result for the sampling adjacency is 0.738. This means that the sampling adjacency is adequate enough to perform PCA. Consequently, the second assumption is met as long as the data set used for PCA has at least 496 data points and includes all 32 variables. Finally, the last assumption is that the correlation matrix must have a positive determinant. If this does not hold true, then PCA analysis cannot be performed. Since the determinant is 0.000054414, this assumption is met. Thus, we verify that all assumptions are met for performing PCA.
+
+
+## PCA
+As talked about before, PCA is a technique for reducing the dimensionality of datasets and increasing the interpretability while minimizing information loss. These next sections will be focused on the application of the PCA technique to the data.
+```{r Principal Components and Summary}
+#PrincipalComponents <- princomp(data, cor = TRUE)
+PrincipalComponents <- prcomp(data, cor = TRUE)
+summary(PrincipalComponents)
+```
+After taking the principal components from the data, 32 components were found labeled Comp 1-32. Each of these components explains a percentage of the total variation in the dataset, and by knowing th prepositions of a sample in relation to the components, an accurate view of where the data stands in relation to other samples can be generated.
+
+## Display PCA Data
+```{r Loadings Data}
+loadings(PrincipalComponents)
+```
+Using the loadings function, the principal components are extracted in factor analysis, or principal component analysis. The output above shows off how each variable is explained in each component and reiterated the component analysis.
+
+## Graph PCA Data
+```{r Plotting Principal Components}
+plot(PrincipalComponents)
+biplot(PrincipalComponents)
+```
+The graphs above are a visual representation of the variance in the first 10 components and the biplot of the samples and their terms of the first and second components. The second graph more specifically visualizes how the samples relate to one another in the PCA and reveals how each variable contributes to each principal component. The biplot shows that many of the variables contribute to the first component, with a couple trending towards the second component. This makes sense as the first component will explain most of the variance. 
+
+## Perform PCA Correlation Test
+```{r PCA Correlation Test}
+pcacor <- cor(data)
+pcacor
+summary(pcacor)
+```
+
+### Find the 6 PCA variables that are most correlated with the target variable
+```{r PCA Compenent Values}
+pca6Components <- principal(pcacor, nfactors=6, rotate="none") # we calculate all 6 components
+pca6Components
+```
+
+### Find MR values for each PCA component
+```{r}
+test <- fa(pcacor, nfactors=6, rotate="none")
+test
+```
+
+## Plot Parallel Analysis Plots
+```{r}
+alpha(pcacor, check.keys = TRUE)
+fa.parallel(data,n.obs=496, fm="pa", fa="pc")
+
+fa.diagram(pca6Components)
+```
+To choose the number of components that would yield the most accurate result for performing PCA on the Human Resources dataset, graph a scree plot using the dataset and find where the plot crosses the indicated red line. When the scree plot line crosses the red line, the best practice for performing PCA is to use the next corresponding number to determine the number of components. Since the scree plot crosses between 5 and 6, it is reasonable to conclude that 6 components is the best practice for performing PCA on this dataset. Moreover, when running the program, we get a warning message for fa.parallel that suggests that the number of factors = NA and that the number of components = 6. Thus, we conclude that 6 components is the best route for performing PCA on the Human Resources dataset.
+
+#Linear Regression of Principal Components
+```{r PCA Linear Regression}
+#pca6Components$x
+#pcaComponentsLinear <- as.data.frame(pca6Components$x)
+#pcaComponentsLinear
+
+#ols.data <- cbind(data$HourlyRate,pcaComponentsLinear)
+#lmodel <- lm(data$HourlyRate ~., data = ols.data)
+#summary(lmodel)
+```
+In this last step, we take the principal components and use them in the linear regression model. This is the action of finding which variables need to be removed or combined and using those for the improved linear regression model. Though we had technical difficulties getting the principal components to map to the linear regression, the above code is how RPubs used PCA on their linear regression model. With further analysis we can implement a working PCA linear regression model but due to time constraints this is the best solution. We were able to reduce the dimensionality from 32 to 6 which can help save computation power and time on further analysis. This would also in theory make better predictions by getting rid of variables with high correlation.
+
+# References
+https://www.datacamp.com/community/tutorials/pca-analysis-r
+http://fs2.american.edu/baron/www/627/R/Labs/PCR%20and%20PLS.htm
+https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/loadings
+https://www.gastonsanchez.com/visually-enforced/how-to/2012/06/17/PCA-in-R/
+http://www.sthda.com/english/articles/17-tips-tricks/68-what-is-variable-loadings-in-pcae/
+https://www.statology.org/bartletts-test-of-sphericity/
+https://www.rdocumentation.org/packages/rela/versions/4.1/topics/paf
+https://towardsdatascience.com/exploratory-factor-analysis-in-r-e31b0015f224

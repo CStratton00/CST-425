@@ -152,6 +152,13 @@
             </RMarkdownRenderProfile>
           </value>
         </entry>
+        <entry key="file://$PROJECT_DIR$/Clustering/Clustering.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/Clustering" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
         <entry key="file://$PROJECT_DIR$/EmailSpamFiltering/EmailSpamFilterReport.rmd">
           <value>
             <RMarkdownRenderProfile>
@@ -171,6 +178,14 @@
           <value>
             <RMarkdownRenderProfile>
               <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/EmailSpamFiltering" />
+            </RMarkdownRenderProfile>
+          </value>
+        </entry>
+        <entry key="file://$PROJECT_DIR$/HumanResourceAnalytics/HumanResourceAnalytics.rmd">
+          <value>
+            <RMarkdownRenderProfile>
+              <option name="lastOutput" value="$PROJECT_DIR$/HumanResourceAnalytics/HumanResourceAnalytics.nb.html" />
+              <option name="outputDirectoryUrl" value="file://$PROJECT_DIR$/HumanResourceAnalytics" />
             </RMarkdownRenderProfile>
           </value>
         </entry>
