@@ -202,6 +202,7 @@ fa.parallel(data,n.obs=496, fm="pa", fa="pc")
 
 fa.diagram(pca6Components)
 ```
+To choose the number of components that would yield the most accurate result for performing PCA on the Human Resources dataset, graph a scree plot using the dataset and find where the plot crosses the indicated red line. When the scree plot line crosses the red line, the best practice for performing PCA is to use the next corresponding number to determine the number of components. Since the scree plot crosses between 5 and 6, it is reasonable to conclude that 6 components is the best practice for performing PCA on this dataset. Moreover, when running the program, we get a warning message for fa.parallel that suggests that the number of factors = NA and that the number of components = 6. Thus, we conclude that 6 components is the best route for performing PCA on the Human Resources dataset.
 
 #Linear Regression of Principal Components
 ```{r PCA Linear Regression}
