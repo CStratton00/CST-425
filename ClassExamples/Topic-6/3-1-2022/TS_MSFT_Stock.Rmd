@@ -18,7 +18,8 @@ Data source: https://www.kaggle.com/szrlee/stock-time-series-20050101-to-2017123
 ### Acquire data
 ```{r set_data}
 library(forecast)
-stock_value <- read.csv("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/ClassExamples/Topic-6/3-1-2022/MSFT_2006-01-01_to_2018-01-01.csv")
+stock_value <- read.csv("C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-6/3-1-2022/MSFT_2006-01-01_to_2018-01-01.csv")
+#stock_value <- read.csv("MSFT_2006-01-01_to_2018-01-01.csv")
 head(stock_value)
 tail(stock_value)
 ```
@@ -140,4 +141,4 @@ coeftest(value.ts.arima)
 predictions <- forecast:::forecast.Arima(value.ts.arima,h=200, level=c(99.5))
 plot(forecast(predictions))
 ```
-The blue line represents the forecast, while the gray area represeents 80% prediction intervals
+The blue line represents the forecast, while the gray area represents 80% prediction intervals
