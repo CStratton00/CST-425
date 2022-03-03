@@ -27,5 +27,41 @@ library(org.EcK12.eg.db)
 # Collin
 # data <- read.csv(file="C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-22-2022/soybean-large.data", header=TRUE,sep=",", stringsAsFactors=FALSE)
 
+wulffenTable <- read.table("C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-6/3-3-2022/GSE71562_E14R012_raw_counts.csv", header=TRUE, row.names=1, sep=",")
+head(wulffenTable)
+
+samples <- read.table("data/pheno.csv", header=TRUE, row.names=1, sep=",")
+samples
+
 ```
 
+
+```{r DGEData}
+wulffen <- DGEList(counts=wulffenTable, genes=rownames(wulffenTable), samples=samples)
+wulffen <- calcNormFactors(wulffen)
+```
+
+# Explore Dataset
+```{r explore}
+wulffenCpm <- cpm(wulffen)
+```
+
+# More libraries
+```{r PCALibraries}
+library(psych)
+library(rela)   # contains Bartlett and KMO tests to verify assumptions
+library(MASS)
+library(parallel)
+library(caTools)
+library(dplyr)
+require(graphics)
+require(pls)
+
+BiocManager::install(c("pcaMethods"))
+library(pcaMethods)
+```
+
+```{r PCA}
+pcaFit <- pca(log2(t(wulffenCpm) + 0.25))
+pcaFit
+```
