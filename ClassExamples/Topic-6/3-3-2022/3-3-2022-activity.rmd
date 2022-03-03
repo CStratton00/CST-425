@@ -9,8 +9,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Load PCA related packages
 
 ```{r import}
-library(edgeRun)
 library(GauPro)
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.14")
+BiocManager::install(c("edgeR", "org.EcK12.eg.db"))
+
+library(edgeR)
+library(ggplot2)
+library(org.EcK12.eg.db)
+
 ```
 
 ```{r prep_data}
