@@ -1,0 +1,22 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load PCA related packages
+
+```{r import}
+library(edgeRun)
+library(GauPro)
+```
+
+```{r prep_data}
+# Evan
+# Collin
+# data <- read.csv(file="C:/Users/andre/Documents/GitHub/CST-425/ClassExamples/Topic-5/2-22-2022/soybean-large.data", header=TRUE,sep=",", stringsAsFactors=FALSE)
+
+```
+
