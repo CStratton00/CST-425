@@ -4,5 +4,20 @@ output: html_notebook
 ---
 
 ```{r}
+#RUN ONCE THEN COMMENT OUT
+#if (!requireNamespace("BiocManager"))
+#    install.packages("BiocManager")
+#BiocManager::install(c("limma", "edgeR", "Glimma", "org.Mm.eg.db", "gplots", "RColorBrewer", "NMF", "BiasedUrn"))
 
+library(edgeR)
+library(limma)
+library(Glimma)
+library(org.Mm.eg.db)
+library(gplots)
+library(RColorBrewer)
+library(NMF)
+```
+```{r Resources}
+#https://combine-australia.github.io/RNAseq-R/06-rnaseq-day1.html
+#https://www.r-bloggers.com/2012/04/gaussian-process-regression-with-r/
 ```
