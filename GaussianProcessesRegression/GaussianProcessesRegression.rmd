@@ -58,8 +58,88 @@ dim(seqdata)
 sampleinfo
 ```
 
+```{r Format Data}
+# Remove first two columns from seqdata
+countdata <- seqdata[,-(1:2)]
+
+# Look at the output
+head(countdata)
+
+colnames(countdata)
+# using substr, you extract the characters starting at position 1 and stopping at position 7 of the colnames
+colnames(countdata) <- substr(colnames(countdata),start=1,stop=7)
+head(countdata)
+```
+
+```{r DGEList}
+dglist <- DGEList(countdata)
+# have a look at y
+dglist
+names(dglist)
+
+group <- paste(sampleinfo$CellType,sampleinfo$Status,sep=".")
+# Take a look
+group <- factor(group)
+group
+
+dglist$samples$group <- group
+dglist$samples
+```
+
+```{r Annotations}
+columns(org.Mm.eg.db)
+ann <- select(org.Mm.eg.db,keys=rownames(dglist$counts),columns=c("ENTREZID","SYMBOL","GENENAME"))
+table(ann$ENTREZID==rownames(dglist$counts))
+dglist$genes <- ann
+```
+
+```{r Filtering Out Expressed }
+# Obtain CPMs
+myCPM <- cpm(countdata)
+
+# Have a look at the output
+head(myCPM)
+
+# Which values in myCPM are greater than 0.5?
+thresh <- myCPM > 0.5
+
+# This produces a logical matrix with TRUEs and FALSEs
+head(thresh)
+
+# Summary of how many TRUEs there are in each row
+# There are 11433 genes that have TRUEs in all 12 samples.
+table(rowSums(thresh))
+
+# we would like to keep genes that have at least 2 TRUES in each row of thresh
+keep <- rowSums(thresh) >= 2
+summary(keep)
+
+# Let's have a look and see whether our threshold of 0.5 does indeed correspond to a count of about 10-15
+# We will look at the first sample
+plot(myCPM[,1],countdata[,1])
+
+# Let us limit the x and y-axis so we can actually look to see what is happening at the smaller counts
+plot(myCPM[,1],countdata[,1],ylim=c(0,50),xlim=c(0,3))
+# Add a vertical line at 0.5 CPM
+abline(v=0.5)
+```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------Testing area---------------------------
 ```{r TEST}
 library(MASS)
 gaussprocess <- function(from = 0, to = 1, K = function(s, t) {min(s, t)},
@@ -111,6 +191,8 @@ for(x in 1:5){
 
 
 ## References
+
+
 https://combine-australia.github.io/RNAseq-R/06-rnaseq-day1.html
 https://www.r-bloggers.com/2012/04/gaussian-process-regression-with-r/
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4827276/
