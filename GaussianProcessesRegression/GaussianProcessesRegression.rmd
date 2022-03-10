@@ -29,6 +29,39 @@ library(GauPro)
 set.seed(1234)
 
 ```
+
+```{r Import Data}
+
+#Evan Import -> C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/
+
+#Andrew Import ->
+
+# Read the data into R
+seqdata <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
+# Read the sample information into R
+sampleinfo <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
+
+head(seqdata)
+dim(seqdata)
+
+sampleinfo
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r TEST}
 library(MASS)
 gaussprocess <- function(from = 0, to = 1, K = function(s, t) {min(s, t)},
