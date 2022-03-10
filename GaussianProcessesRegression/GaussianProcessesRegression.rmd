@@ -93,7 +93,7 @@ table(ann$ENTREZID==rownames(dglist$counts))
 dglist$genes <- ann
 ```
 
-```{r Filtering Out Expressed }
+```{r Filtering Out Genes}
 # Obtain CPMs
 myCPM <- cpm(countdata)
 
@@ -122,8 +122,29 @@ plot(myCPM[,1],countdata[,1])
 plot(myCPM[,1],countdata[,1],ylim=c(0,50),xlim=c(0,3))
 # Add a vertical line at 0.5 CPM
 abline(v=0.5)
+
+dglist <- dglist[keep, keep.lib.sizes=FALSE]
 ```
 
+```{r Quality Control}
+dglist$samples$lib.size
+
+# The names argument tells the barplot to use the sample names on the x-axis
+# The las argument rotates the axis names
+
+barplot(dglist$samples$lib.size/1e06, names=colnames(dglist), las=2, ann=FALSE, cex.names=0.75)
+mtext(side = 1, text = "Samples", line = 4)
+mtext(side = 2, text = "Library size (millions)", line = 3)
+title("Barplot of library sizes")
+
+# Get log2 counts per million
+logcounts <- cpm(dglist,log=TRUE)
+# Check distributions of samples using boxplots
+boxplot(logcounts, xlab="", ylab="Log2 counts per million",las=2)
+# Let's add a blue horizontal line that corresponds to the median logCPM
+abline(h=median(logcounts),col="blue")
+title("Boxplots of logCPMs (unnormalised)")
+```
 
 
 
