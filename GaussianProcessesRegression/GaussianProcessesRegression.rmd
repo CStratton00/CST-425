@@ -1,13 +1,18 @@
 ---
-title: "R Notebook"
+title: "Gaussian Processes Regression"
+author: "Andrew Esch, Evan Lee, and Collin Stratton"
+date: "2-27-2022"
 output: html_notebook
 ---
 
+# Introduction
+
+
 ```{r}
 #RUN ONCE THEN COMMENT OUT
-#if (!requireNamespace("BiocManager"))
+# if (!requireNamespace("BiocManager"))
 #    install.packages("BiocManager")
-#BiocManager::install(c("limma", "edgeR", "Glimma", "org.Mm.eg.db", "gplots", "RColorBrewer", "NMF", "BiasedUrn"))
+# BiocManager::install(c("limma", "edgeR", "Glimma", "org.Mm.eg.db", "gplots", "RColorBrewer", "NMF", "BiasedUrn"))
 
 library(edgeR)
 library(limma)
