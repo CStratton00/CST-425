@@ -79,3 +79,7 @@ for(x in 1:5){
 #https://combine-australia.github.io/RNAseq-R/06-rnaseq-day1.html
 #https://www.r-bloggers.com/2012/04/gaussian-process-regression-with-r/
 ```
+
+```{r}
+
+```
