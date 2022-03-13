@@ -88,9 +88,9 @@ dglist$samples
 
 ```{r Annotations}
 columns(org.Mm.eg.db)
-ann <- select(org.Mm.eg.db,keys=rownames(dglist$counts),columns=c("ENTREZID","SYMBOL","GENENAME"))
-table(ann$ENTREZID==rownames(dglist$counts))
-dglist$genes <- ann
+#ann <- select(org.Mm.eg.db,keys=rownames(dglist$counts),columns=c("ENTREZID","SYMBOL","GENENAME"))
+#table(ann$ENTREZID==rownames(dglist$counts))
+#dglist$genes <- ann
 ```
 
 ```{r Filtering Out Genes}
@@ -146,12 +146,34 @@ abline(h=median(logcounts),col="blue")
 title("Boxplots of logCPMs (unnormalised)")
 ```
 
+```{r Normalize DGELIST}
+logcounts <- cpm(dglist,log=TRUE)
+# Apply normalisation to DGEList object
+dglist <- calcNormFactors(dglist)
+dglist$samples
+
+```
+
+```{r Graphing DGELSIT}
+par(mfrow=c(1,2))
+
+for(x in 1:12){
+  plotMD(logcounts,column = x)
+  abline(h=0,col="grey")
+  plotMD(dglist,column = x)
+  abline(h=0,col="grey")
+}
+
+```
+
+```{r Differential Expression}
+
+# Specify a design matrix without an intercept term
+design <- model.matrix(~ 0 + group)
+design
 
 
-
-
-
-
+```
 
 
 
