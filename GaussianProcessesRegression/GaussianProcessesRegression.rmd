@@ -268,6 +268,11 @@ n <- 10
 x <- matrix(seq(0,1,length.out = n), ncol=1)
 y <- dglist$counts[1:10,1]
 
+#doesnt work
+#trainmodel <- dglist$counts[1:100,1]
+#y <- lm(counts,data=trainmodel)
+#y
+
 #Using Kernels
 kern <- Matern52$new(0)
 gpk <- GauPro_kernel_model$new(matrix(x, ncol=1), y, kernel=kern, parallel=FALSE)
