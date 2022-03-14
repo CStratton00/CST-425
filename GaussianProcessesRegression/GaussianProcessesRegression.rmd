@@ -1,7 +1,7 @@
 ---
 title: "Gaussian Processes Regression"
 author: "Andrew Esch, Evan Lee, and Collin Stratton"
-date: "2-27-2022"
+date: "3-13-2022"
 output: html_notebook
 ---
 
@@ -11,7 +11,7 @@ TK
 ## Gene Expression and Differential Expressions
 Gene Expression is the biological process found in cells in which genetic information (coded in the set of bases A, G, T, and C) is decoded and utilized to form a set of genetic products. The types of products that the process of gene expression can produce includes amino acids and proteins. This process is essential foundation for the formation of all biological life, and the differences in gene expression between cells is an important area of biology for further study.
 
-Differential expression is the observation of a statistically significant difference or change in read counts or expression levels. To find a differential expression between genes, it is important to use statistical models to find if there is statistical significants for these metrics.
+Differential expression is the observation of a statistically significant difference or change in read counts or expression levels. To find a differential expression between genes, it is important to use statistical models to find if there is statistically significant difference for these metrics.
 
 
 ## Control and Treatment Categorizations
@@ -21,7 +21,7 @@ A control is a group categorization that does not have any affected conditions. 
 ```{r}
 #RUN ONCE THEN COMMENT OUT
 # if (!requireNamespace("BiocManager"))
-#    install.packages("BiocManager")
+   # install.packages("BiocManager")
 # BiocManager::install(c("limma", "edgeR", "Glimma", "org.Mm.eg.db", "gplots", "RColorBrewer", "NMF", "BiasedUrn"))
 
 library(edgeR)
@@ -37,6 +37,7 @@ library(plyr)
 library(reshape2)
 library(ggplot2)
 library(GauPro)
+library(kernlab)
 set.seed(1234)
 
 ```
@@ -45,12 +46,12 @@ set.seed(1234)
 
 #Evan Import -> C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/
 
-#Andrew Import ->
+#Andrew Import -> C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/
 
 # Read the data into R
-seqdata <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
+seqdata <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
 # Read the sample information into R
-sampleinfo <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
+sampleinfo <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
 
 head(seqdata)
 dim(seqdata)
@@ -166,21 +167,108 @@ for(x in 1:12){
 
 ```
 
-```{r Differential Expression}
 
-# Specify a design matrix without an intercept term
-design <- model.matrix(~ 0 + group)
-design
+```{r TrainGaussianProcesses}
+# Step 1: Create the kernel for the GP model
+#rbf <- rbfdot(sigma = 0.05) # Use standard rbfdot model and set statistical significance to 0.05
+#rbf
+#km <- kernelMatrix(rbf, myCPM[,1])
+
+# Step 2: Compute the GP model
+#gpk <- GauPro_kernel_model$new(matrix(myCPM[,1], ncol=1), dglist, kernel=km, parallel=FALSE)
+#if (requireNamespace("MASS", quietly = TRUE)) {
+#  plot(gpk)
+#}
+
+gpm <- GauPro(myCPM[,1], dglist, parallel=FALSE)
 
 
 ```
 
 
+```{r covariance}
+# Note: Define x somewhere
+cov(x, dglist)
+```
+
+```{r prior}
+# Gaussian Process Prior
+
+```
 
 
+## Optimization Parameters
+TK (Discuss here)
+
+```{r Differential Expression}
+# Specify a design matrix without an intercept term
+design <- model.matrix(~ 0 + group)
+colnames(design) <- levels(group)
+design
+```
+
+```{r VoomTransform}
+# Generate a Voom (Mean-variance trend) graph and EList using the normalized factors
+par(mfrow=c(1,1))
+vtransform <- voom(dglist,design,plot = TRUE) # Create a plot representing this data
+vtransform # Summarize the generated EList object
+names(vtransform)
+```
 
 
+```{r showVoomTransformComparison}
+par(mfrow=c(1,2))
+boxplot(logcounts, xlab="", ylab="Log2 counts per million",las=2,main="Unnormalised logCPM")
+## Let's add a blue horizontal line that corresponds to the median logCPM
+abline(h=median(logcounts),col="blue")
+boxplot(vtransform$E, xlab="", ylab="Log2 counts per million",las=2,main="Voom transformed logCPM")
+## Let's add a blue horizontal line that corresponds to the median logCPM
+abline(h=median(vtransform$E),col="blue")
+```
 
+
+```{r testDifferentialExpression}
+# Using the normalized voom transform, we can test for differential expressions using limma
+
+# Step 1: Create a linear model to represent each gene in the data using lmFit
+fitted <- lmFit(vtransform) # Estimate the means and variances of each group using a design matrix
+names(fitted) # Check the names of the items. Many of these are related to statisitcal testing, but it is important to ensure that the
+
+# Step 2: Check for differential expression between the pregnant and lactating groups in basal cells.
+contrastsMatrix <- makeContrasts(B.PregVsLac=basal.pregnant - basal.lactate,levels=design)
+contrastsMatrix
+```
+According to the contrast matrix, the lactate and pregnant are differentially expressed overall (when the two groups show -1 and 1, this means they have different classifications based on the genes that identify them).
+
+
+```{r VerifyDEStatistics}
+# Step 3: Show statistics and estimated parameters for the two groups
+fittedContrast <- contrasts.fit(fitted, contrastsMatrix) # Fit the contrast matrix based on the fitted voom transform (using linear model)
+fittedContrast <- eBayes(fittedContrast) # Perform empirical Bayes on the variances & find t-values for each gene associated
+dim(fittedContrast) # Verify dimension of the variances and means of each group (from the linear model above)
+
+# Step 4: Use limma to generate a summary of the number of DE genes for the contrasted groups
+fitSummary <- decideTests(fittedContrast)
+summary(fitSummary)
+```
+
+
+```{r showDifferentialExpressionResults}
+# To show the differentially expressed genes, create a graph from the decideTests to highlight the statistically significant genes
+par(mfrow=c(1,2))
+plotMD(fittedContrast,coef=1,status=fitSummary[,"B.PregVsLac"], values = c(-1, 1), hl.col=c("blue","red"))
+
+# To further show the results, the volcano plot allows us to highlight the top genes from the contrastTest.
+volcanoplot(fittedContrast,coef=1,highlight=50,names=fittedContrast$genes$SYMBOL, main="B.PregVsLac") # Show the top 50 statistically significant DE genes
+
+```
+
+
+```{r noise}
+# Noise-free observations and predictions with noisy observations
+library(wvtool)
+noiseTest <- noise.filter(logcounts, n=nrow(logcounts), method="median") # Reduce noise?
+```
 
 #-----------------------------------Testing area---------------------------
 ```{r TEST}
@@ -216,6 +304,8 @@ gaussprocess <- function(from = 0, to = 1, K = function(s, t) {min(s, t)},
   return(data.frame("t" = t, "xt" = path))
 }
 ```
+
+
 ```{r Gaus}
 
 head(df)
@@ -228,14 +318,10 @@ for(x in 1:5){
 
 ```
 
-```{r something}
-# TK
-```
-
 
 ## References
-
-
 https://combine-australia.github.io/RNAseq-R/06-rnaseq-day1.html
 https://www.r-bloggers.com/2012/04/gaussian-process-regression-with-r/
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4827276/
+https://cran.r-project.org/web/packages/GauPro/vignettes/GauPro.html
+https://www.rdocumentation.org/packages/kernlab/versions/0.9-29/topics/kernelMatrix
