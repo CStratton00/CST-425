@@ -180,7 +180,7 @@ for(x in 1:12){
 #  plot(gpk)
 #}
 
-gpm <- GauPro(myCPM[,1], dglist, parallel=FALSE)
+# gpm <- GauPro(logcounts, dglist, parallel=FALSE)
 
 
 ```
@@ -188,7 +188,7 @@ gpm <- GauPro(myCPM[,1], dglist, parallel=FALSE)
 
 ```{r covariance}
 # Note: Define x somewhere
-cov(x, dglist)
+#cov(x, dglist)
 ```
 
 ```{r prior}
@@ -267,7 +267,8 @@ volcanoplot(fittedContrast,coef=1,highlight=50,names=fittedContrast$genes$SYMBOL
 ```{r noise}
 # Noise-free observations and predictions with noisy observations
 library(wvtool)
-noiseTest <- noise.filter(logcounts, n=nrow(logcounts), method="median") # Reduce noise?
+noiseTest <- noise.filter(vtransform$E, n=15804, method="median") # Reduce noise?
+# plot(myCPM[,1],countdata[,1],ylim=c(0,50),xlim=c(0,3))
 ```
 
 #-----------------------------------Testing area---------------------------
@@ -325,3 +326,5 @@ https://www.r-bloggers.com/2012/04/gaussian-process-regression-with-r/
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4827276/
 https://cran.r-project.org/web/packages/GauPro/vignettes/GauPro.html
 https://www.rdocumentation.org/packages/kernlab/versions/0.9-29/topics/kernelMatrix
+https://www.rdocumentation.org/packages/wvtool/versions/1.0/topics/noise.filter
+https://www.geeksforgeeks.org/covariance-and-correlation-in-r-programming/
