@@ -5,11 +5,9 @@ date: "3-13-2022"
 output: html_notebook
 ---
 
-# Introduction
-TK
+## Introduction: Gene Expression and Differential Expressions
+Gene Expression is the biological process found in cells in which genetic information (coded in the set of bases A, G, T, and C) is decoded and utilized to form a set of genetic products. It is a tightly regulated process which allows cells to respond to its changing environments, and it acts as an on/off switch or a protein volume controller to increase or decrease the amount of proteins being product. There are two major steps involved in gene expression, those being transcription and translation. Transcription is the copying of a DNA gene to produce a RNA transcript called mRNA. Translation takes the information from the mRNA, reads the amino acids on the strand using tRNA, then builds a polypeptide chain from the correct codes. The types of products that the process of gene expression can produce includes amino acids and proteins. This process is essential foundation for the formation of all biological life, and the differences in gene expression between cells is an important area of biology for further study.
 
-## Gene Expression and Differential Expressions
-Gene Expression is the biological process found in cells in which genetic information (coded in the set of bases A, G, T, and C) is decoded and utilized to form a set of genetic products. The types of products that the process of gene expression can produce includes amino acids and proteins. This process is essential foundation for the formation of all biological life, and the differences in gene expression between cells is an important area of biology for further study.
 
 Differential expression is the observation of a statistically significant difference or change in read counts or expression levels. To find a differential expression between genes, it is important to use statistical models to find if there is statistically significant difference for these metrics.
 
@@ -168,38 +166,6 @@ for(x in 1:12){
 ```
 
 
-```{r TrainGaussianProcesses}
-# Step 1: Create the kernel for the GP model
-#rbf <- rbfdot(sigma = 0.05) # Use standard rbfdot model and set statistical significance to 0.05
-#rbf
-#km <- kernelMatrix(rbf, myCPM[,1])
-
-# Step 2: Compute the GP model
-#gpk <- GauPro_kernel_model$new(matrix(myCPM[,1], ncol=1), dglist, kernel=km, parallel=FALSE)
-#if (requireNamespace("MASS", quietly = TRUE)) {
-#  plot(gpk)
-#}
-
-# gpm <- GauPro(logcounts, dglist, parallel=FALSE)
-
-
-```
-
-
-```{r covariance}
-# Note: Define x somewhere
-#cov(x, dglist)
-```
-
-```{r prior}
-# Gaussian Process Prior
-
-```
-
-
-## Optimization Parameters
-TK (Discuss here)
-
 ```{r Differential Expression}
 # Specify a design matrix without an intercept term
 design <- model.matrix(~ 0 + group)
@@ -263,13 +229,55 @@ volcanoplot(fittedContrast,coef=1,highlight=50,names=fittedContrast$genes$SYMBOL
 
 ```
 
+## Gaussian Processes
+Gaussian Processes are generic supervised learning methods designed to solve regression and probabilistic classification problems. They provide the advantages of the prediction interpolating the observations, the prediction being probabilistic meaning it can compute empirical confidence intervals and refit the prediction in some regions of interest, and that the kernels can be specified. Its disadvantages include the fact that they aren’t sparse and they lose efficiency in higher dimensional spaces. Consequently, when performing regression to find the best predictor or DE genes, Gaussian processes can be utilized to find the best function model.
 
+```{r TrainGaussianProcesses}
+# Step 1: Create the kernel for the GP model
+#rbf <- rbfdot(sigma = 0.05) # Use standard rbfdot model and set statistical significance to 0.05
+#rbf
+#km <- kernelMatrix(rbf, myCPM[,1])
+
+# Step 2: Compute the GP model
+#gpk <- GauPro_kernel_model$new(matrix(myCPM[,1], ncol=1), dglist, kernel=km, parallel=FALSE)
+#if (requireNamespace("MASS", quietly = TRUE)) {
+#  plot(gpk)
+#}
+
+# gpm <- GauPro(logcounts, dglist, parallel=FALSE)
+
+
+```
+
+## Covariance Function
+Covariance models of RNA sequences are extremely sensitive and discriminative tool for searching for additional RNAs and RNA-related sequences in sequence databases. Models can be built automatically from an existing sequence alignment.
+
+```{r covariance}
+# Note: Define x somewhere
+#cov(x, dglist)
+```
+
+## Addressing Gaussian Process Prior
+Gaussian Process Prior is distribution on some unknown function in the context of regression. It is the assignment of a GP without exact knowledge of what the function is. After having observed some function values, the GP can be converted into a posterior over the functions.
+
+```{r prior}
+# Gaussian Process Prior
+
+```
+
+## Posterior Predictions and Noise Reduction with Gaussian Processes
 ```{r noise}
 # Noise-free observations and predictions with noisy observations
 library(wvtool)
-noiseTest <- noise.filter(vtransform$E, n=15804, method="median") # Reduce noise?
+# noiseTest <- noise.filter(vtransform$E, n=15804, method="median") # Reduce noise?
 # plot(myCPM[,1],countdata[,1],ylim=c(0,50),xlim=c(0,3))
 ```
+
+## Optimization Parameters
+TK (Discuss here)
+
+## Conclusion
+TK (Discuss here)
 
 #-----------------------------------Testing area---------------------------
 ```{r TEST}
@@ -328,3 +336,8 @@ https://cran.r-project.org/web/packages/GauPro/vignettes/GauPro.html
 https://www.rdocumentation.org/packages/kernlab/versions/0.9-29/topics/kernelMatrix
 https://www.rdocumentation.org/packages/wvtool/versions/1.0/topics/noise.filter
 https://www.geeksforgeeks.org/covariance-and-correlation-in-r-programming/
+https://www.yourgenome.org/facts/what-is-gene-expression
+https://www.scribbr.com/methodology/control-group/
+https://scikit-learn.org/stable/modules/gaussian_process.html
+https://www.ncbi.nlm.nih.gov/labs/pmc/articles/PMC308124/pdf/nar00035-0157.pdf
+http://krasserm.github.io/2018/03/19/gaussian-processes/
