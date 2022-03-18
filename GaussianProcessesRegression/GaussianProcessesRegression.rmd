@@ -318,9 +318,8 @@ Using the Berny Optimization Algorithm, the Gaussian process can be considerably
 - Finally, convergence is tested against criteria for the maximum force component, root-mean square force, maximum step component, and root-mean-square step.
 
 ## Conclusion
-TK (Discuss here)
-
-- discuss findings
+This project provided a strong challenge as the purpose was to develop a solution to a problem with little to no prior knowledge of the subject. Analyzing Gene Expression is something that is definitely outside the computer science peripheral, thus causing a lot of challenges in the completion of this project. A large portion of the project was dedicated to understanding Gene Expression and terminology associated with the idea, and the rest was dedicated to the application of determining whether the expression of a gene was affected by treatment. Below is our findings and our conclusion of the treatment.
+TK (Discuss findings here)
 
 #-----------------------------------Testing area---------------------------
 ```{r TEST}
