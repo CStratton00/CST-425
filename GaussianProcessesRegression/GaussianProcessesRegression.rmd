@@ -13,6 +13,7 @@ Differential expression is the observation of a statistically significant differ
 ## Control and Treatment Categorizations
 A control is a group categorization that does not have any affected conditions. In other words, this group acts as the baseline for all other measurements in a model. The standard for most models is to feature one control. Alternatively, a treatment is a type of group categorization that has been affected by some type of condition. They are also known as experimental group categorizations. A model may feature several treatments.
 
+## Setup
 ```{r}
 #RUN ONCE THEN COMMENT OUT
 # if (!requireNamespace("BiocManager"))
@@ -20,7 +21,6 @@ A control is a group categorization that does not have any affected conditions. 
 # BiocManager::install(c("limma", "edgeR", "Glimma", "org.Mm.eg.db", "gplots", "RColorBrewer", "NMF", "BiasedUrn"))
 
 library(edgeR)
-# edgeRUserGuide()
 library(limma)
 library(Glimma)
 library(org.Mm.eg.db)
@@ -34,11 +34,9 @@ library(ggplot2)
 library(GauPro)
 library(kernlab)
 set.seed(1234)
-
 ```
 
 ```{r Import Data}
-
 #Evan Import -> C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/
 
 #Andrew Import -> C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/
@@ -69,14 +67,15 @@ colnames(countdata) <- substr(colnames(countdata),start=1,stop=7)
 head(countdata)
 ```
 
+### Create a DGEList Object
+The DGEList is an object used by edgeR to store count data. It has a number of slots for storing various parameters about the data.
 ```{r DGEList}
 dglist <- DGEList(countdata)
-# have a look at y
+
 dglist
 names(dglist)
 
 group <- paste(sampleinfo$CellType,sampleinfo$Status,sep=".")
-# Take a look
 group <- factor(group)
 group
 
@@ -91,6 +90,8 @@ columns(org.Mm.eg.db)
 #dglist$genes <- ann
 ```
 
+## Filtering Out Genes
+Listed genes with very low counts provide little evidence for differential expression, and they interfere with some statistical approximations. Furthermore, they also add to the multiple testing burden when estimating false discovery rates, reducing power to detect differentially expressed genes. Thus, this next block of code filters out genes with very low counts.
 ```{r Filtering Out Genes}
 # Obtain CPMs
 myCPM <- cpm(countdata)
@@ -124,6 +125,8 @@ abline(v=0.5)
 dglist <- dglist[keep, keep.lib.sizes=FALSE]
 ```
 
+## Quality Control
+With all the low-count genes filtering out, quality control of the data can now proceed. These next sections will look at graphs to be able to determine whether the data is appropriate for further analysis.
 ```{r Quality Control}
 dglist$samples$lib.size
 
@@ -164,7 +167,6 @@ for(x in 1:12){
 
 ```
 
-
 ```{r Differential Expression}
 # Specify a design matrix without an intercept term
 design <- model.matrix(~ 0 + group)
@@ -180,7 +182,6 @@ vtransform # Summarize the generated EList object
 names(vtransform)
 ```
 
-
 ```{r showVoomTransformComparison}
 par(mfrow=c(1,2))
 boxplot(logcounts, xlab="", ylab="Log2 counts per million",las=2,main="Unnormalised logCPM")
@@ -190,7 +191,6 @@ boxplot(vtransform$E, xlab="", ylab="Log2 counts per million",las=2,main="Voom t
 ## Let's add a blue horizontal line that corresponds to the median logCPM
 abline(h=median(vtransform$E),col="blue")
 ```
-
 
 ```{r testDifferentialExpression}
 # Using the normalized voom transform, we can test for differential expressions using limma
@@ -205,7 +205,6 @@ contrastsMatrix
 ```
 According to the contrast matrix, the lactate and pregnant are differentially expressed overall (when the two groups show -1 and 1, this means they have different classifications based on the genes that identify them).
 
-
 ```{r VerifyDEStatistics}
 # Step 3: Show statistics and estimated parameters for the two groups
 fittedContrast <- contrasts.fit(fitted, contrastsMatrix) # Fit the contrast matrix based on the fitted voom transform (using linear model)
@@ -216,7 +215,6 @@ dim(fittedContrast) # Verify dimension of the variances and means of each group 
 fitSummary <- decideTests(fittedContrast)
 summary(fitSummary)
 ```
-
 
 ```{r showDifferentialExpressionResults}
 # To show the differentially expressed genes, create a graph from the decideTests to highlight the statistically significant genes
@@ -230,7 +228,6 @@ volcanoplot(fittedContrast,coef=1,highlight=50,names=fittedContrast$genes$SYMBOL
 
 ## Gaussian Processes
 Gaussian Processes are generic supervised learning methods designed to solve regression and probabilistic classification problems. They provide the advantages of the prediction interpolating the observations, the prediction being probabilistic meaning it can compute empirical confidence intervals and refit the prediction in some regions of interest, and that the kernels can be specified. Its disadvantages include the fact that they aren’t sparse and they lose efficiency in higher dimensional spaces. Consequently, when performing regression to find the best predictor or DE genes, Gaussian processes can be utilized to find the best function model.
-
 ```{r Gaussian Process Testing Code}
 library(GauPro)
 
@@ -280,7 +277,7 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 ```
 
 ## Covariance Function
-Covariance models of RNA sequences are extremely sensitive and discriminative tool for searching for additional RNAs and RNA-related sequences in sequence databases. Models can be built automatically from an existing sequence alignment.
+Covariance models of RNA sequences are extremely sensitive and discriminative tool for searching for additional RNAs and RNA-related sequences in sequence databases. Generally, covariance functions measure how much two variables change together by using a kernel that describes the spatial or temporal covariance of the variable process. Models can be built automatically from the already existing sequence alignment in this case.
 
 ```{r covariance}
 #Will be very self explainatory, just take what is calculated above for gaussian processes and put it in cov().
