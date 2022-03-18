@@ -8,13 +8,10 @@ output: html_notebook
 ## Introduction: Gene Expression and Differential Expressions
 Gene Expression is the biological process found in cells in which genetic information (coded in the set of bases A, G, T, and C) is decoded and utilized to form a set of genetic products. It is a tightly regulated process which allows cells to respond to its changing environments, and it acts as an on/off switch or a protein volume controller to increase or decrease the amount of proteins being product. There are two major steps involved in gene expression, those being transcription and translation. Transcription is the copying of a DNA gene to produce a RNA transcript called mRNA. Translation takes the information from the mRNA, reads the amino acids on the strand using tRNA, then builds a polypeptide chain from the correct codes. The types of products that the process of gene expression can produce includes amino acids and proteins. This process is essential foundation for the formation of all biological life, and the differences in gene expression between cells is an important area of biology for further study.
 
-
 Differential expression is the observation of a statistically significant difference or change in read counts or expression levels. To find a differential expression between genes, it is important to use statistical models to find if there is statistically significant difference for these metrics.
-
 
 ## Control and Treatment Categorizations
 A control is a group categorization that does not have any affected conditions. In other words, this group acts as the baseline for all other measurements in a model. The standard for most models is to feature one control. Alternatively, a treatment is a type of group categorization that has been affected by some type of condition. They are also known as experimental group categorizations. A model may feature several treatments.
-
 
 ```{r}
 #RUN ONCE THEN COMMENT OUT
@@ -46,10 +43,12 @@ set.seed(1234)
 
 #Andrew Import -> C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/
 
+#Collin Import -> /Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/GaussianProcessesRegression/
+
 # Read the data into R
-seqdata <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
+seqdata <- read.delim("/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
 # Read the sample information into R
-sampleinfo <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
+sampleinfo <- read.delim("/Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
 
 head(seqdata)
 dim(seqdata)
@@ -257,7 +256,6 @@ gpk <- GauPro_kernel_model$new(matrix(x, ncol=1), y, kernel=kern, parallel=FALSE
 if (requireNamespace("MASS", quietly = TRUE)) {
   plot(gpk)
 }
-
 ```
 
 ## Using the above testing Gaussian Process Code we implement it in our own data.
@@ -279,10 +277,6 @@ gpk <- GauPro_kernel_model$new(matrix(x, ncol=1), y, kernel=kern, parallel=FALSE
 if (requireNamespace("MASS", quietly = TRUE)) {
   plot(gpk)
 }
-
-
-
-
 ```
 
 ## Covariance Function
@@ -291,7 +285,7 @@ Covariance models of RNA sequences are extremely sensitive and discriminative to
 ```{r covariance}
 #Will be very self explainatory, just take what is calculated above for gaussian processes and put it in cov().
 # Note: Define x somewhere
-#cov(x, dglist)
+cov(y)
 ```
 
 ## Addressing Gaussian Process Prior
@@ -302,15 +296,31 @@ Gaussian Process Prior is distribution on some unknown function in the context o
 # Noise-free observations and predictions with noisy observations
 library(wvtool)
 # use gaussian process variable in noise.filter()
-# noiseTest <- noise.filter(gp, n=15804, method="median") # Reduce noise?
-# plot(myCPM[,1],countdata[,1],ylim=c(0,50),xlim=c(0,3))
+noiseTest <- noise.filter(gp, n=15804, method="median") # Reduce noise?
+plot(myCPM[,1],countdata[,1],ylim=c(0,50),xlim=c(0,3))
 ```
 
-## Optimization Parameters
-TK (Discuss here)
+## Optimization
+Using the Berny Optimization Algorithm, the Gaussian process can be considerably enhanced. The steps of Berny's optimization algorithm are as follows.
+- Any components of the gradient vector corresponding to frozen variables are set to zero or projected out, eliminating their direct contribution to the next optimization step.
+- If a minimum is sought, perform a linear search between the latest point and the best previous point.
+- If second derivatives are available at both points and a minimum is sought, a quintic polynomial fit is attempted first
+  - If it does not have a minimum in the acceptable range or if second derivatives are not available, a constrained quartic fit is attempted.
+  - If this fit fails or if the resulting step is unacceptable, a simple cubic is fit is done.
+- Any quintic or quartic step is considered acceptable if the latest point is the best so far but if the newest point is not the best, the linear search must return a point in between the most recent and the best step to be acceptable.
+- If all fits fail and the most recent step is the best so far, no linear step is taken.
+- If all fits fail and the most recent step is not the best, the linear step is taken to the midpoint of the line connecting the most recent and the best previous points.
+- If the latest point is the best so far or if a transition state is sought, a quadratic step is determined using the current second derivatives.
+- If a linear search was done, the quadratic step is taken from the point extrapolated using the linear search and uses forces at that point estimated by interpolating between the forces at the two points used in the linear search.
+- Any components of the step vector resulting from the quadratic step corresponding to frozen variables are set to zero or projected out.
+- If the quadratic step exceeds the trust radius and a minimum is sought, the step is reduced in length to the trust radius by searching for a minimum of the quadratic function on the sphere having the trust radius.
+- If a transition state is sought or if NRScale was requested, the quadratic step is simply scaled down to the trust radius.
+- Finally, convergence is tested against criteria for the maximum force component, root-mean square force, maximum step component, and root-mean-square step.
 
 ## Conclusion
 TK (Discuss here)
+
+- discuss findings
 
 #-----------------------------------Testing area---------------------------
 ```{r TEST}
@@ -374,3 +384,4 @@ https://www.scribbr.com/methodology/control-group/
 https://scikit-learn.org/stable/modules/gaussian_process.html
 https://www.ncbi.nlm.nih.gov/labs/pmc/articles/PMC308124/pdf/nar00035-0157.pdf
 http://krasserm.github.io/2018/03/19/gaussian-processes/
+https://gaussian.com/opt/
