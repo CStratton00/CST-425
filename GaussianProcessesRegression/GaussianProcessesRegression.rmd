@@ -44,9 +44,9 @@ set.seed(1234)
 #Collin Import -> /Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/GaussianProcessesRegression/
 
 # Read the data into R
-seqdata <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
+seqdata <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
 # Read the sample information into R
-sampleinfo <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
+sampleinfo <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
 
 head(seqdata)
 dim(seqdata)
@@ -85,9 +85,6 @@ dglist$samples
 
 ```{r Annotations}
 columns(org.Mm.eg.db)
-#ann <- select(org.Mm.eg.db,keys=rownames(dglist$counts),columns=c("ENTREZID","SYMBOL","GENENAME"))
-#table(ann$ENTREZID==rownames(dglist$counts))
-#dglist$genes <- ann
 ```
 
 ## Filtering Out Genes
@@ -261,7 +258,6 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 ```
 
 ## Using the above testing Gaussian Process Code we implement it in our own data.
-Using caTools we split the dglist column of the counts for each sequence and split it 70/30. The GauPro_Kernel_model is created using the training sets. Each time this is run the kernel used to create the Gaussian model is different, resulting in a different graph each time.
 ```{r TrainGaussianProcesses}
 library(pracma)
 library(caTools)
@@ -300,12 +296,9 @@ curve(gpk$pred(x));points(x_test,y_test)
 
 ```
 
-##Comparing Predictions
-Each time the kernel will change and produce a different graph. We could run this multiple times to find the averages between them. This will show that the code is indeed using a kernel for the function generator.
 ```{r comparePredictions}
 # To show that predictions vary each time with new testing and training sets, use a for loop to plot 5 different graphs
-par(mfrow=c(2,3))
-for (z in 1:6) {
+for (z in 1:5) {
   # Reformat dglist to a suitable size
   n <- 500
   y <- dglist$counts[1:n,1]
