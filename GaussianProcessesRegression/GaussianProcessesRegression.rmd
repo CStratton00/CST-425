@@ -85,9 +85,6 @@ dglist$samples
 
 ```{r Annotations}
 columns(org.Mm.eg.db)
-#ann <- select(org.Mm.eg.db,keys=rownames(dglist$counts),columns=c("ENTREZID","SYMBOL","GENENAME"))
-#table(ann$ENTREZID==rownames(dglist$counts))
-#dglist$genes <- ann
 ```
 
 ## Filtering Out Genes
@@ -182,6 +179,7 @@ vtransform # Summarize the generated EList object
 names(vtransform)
 ```
 
+
 ```{r showVoomTransformComparison}
 par(mfrow=c(1,2))
 boxplot(logcounts, xlab="", ylab="Log2 counts per million",las=2,main="Unnormalised logCPM")
@@ -191,6 +189,7 @@ boxplot(vtransform$E, xlab="", ylab="Log2 counts per million",las=2,main="Voom t
 ## Let's add a blue horizontal line that corresponds to the median logCPM
 abline(h=median(vtransform$E),col="blue")
 ```
+
 
 ```{r testDifferentialExpression}
 # Using the normalized voom transform, we can test for differential expressions using limma
@@ -288,15 +287,9 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 ## Predictions with GP
 Utilizing Gaussian Processes as a linear regression, the final model can be utilized to predict the presence of differentially expressed genes using a testing RNA-sequence dataset. Moreover, the outcome of performing prediction with this model is a set of positive and negative outcomes for the analyzed dataset. These outcomes indicate whether the indicated gene is differentially expressed or not.
 
-
 ```{r predictions}
 # Create a prediction curve for the test set using the model
 curve(gpk$pred(x));points(x_test,y_test)
-
-# Testing data here
-#predicted <- predict(gpk, y_test)
-#predicted.df <- data.frame(predicted)
-
 ```
 
 ```{r comparePredictions}
@@ -326,15 +319,6 @@ for (z in 1:5) {
 ## Covariance Function
 Covariance models of RNA sequences are extremely sensitive and discriminative tool for searching for additional RNAs and RNA-related sequences in sequence databases. Generally, covariance functions measure how much two variables change together by using a kernel that describes the spatial or temporal covariance of the variable process. Models can be built automatically from the already existing sequence alignment in this case.
 
-```{r covariance}
-#Will be very self explainatory, just take what is calculated above for gaussian processes and put it in cov().
-# Note: Define x somewhere
-
-#kxx <- cov(x,x)
-#kxy <- cov(x,y)
-
-#GauPro_kernel_model$pred_var(x, kxx, kxy)
-```
 
 ## Addressing Gaussian Process Prior
 Gaussian Process Prior is distribution on some unknown function in the context of regression. It is the assignment of a GP without exact knowledge of what the function is. After having observed some function values, the GP can be converted into a posterior over the functions.
@@ -361,57 +345,11 @@ Using the Berny Optimization Algorithm, the Gaussian process can be considerably
 - If a transition state is sought or if NRScale was requested, the quadratic step is simply scaled down to the trust radius.
 - Finally, convergence is tested against criteria for the maximum force component, root-mean square force, maximum step component, and root-mean-square step.
 
+
 ## Conclusion
 This project provided a strong challenge as the purpose was to develop a solution to a problem with little to no prior knowledge of the subject. Analyzing Gene Expression is something that is definitely outside the computer science peripheral, thus causing a lot of challenges in the completion of this project. A large portion of the project was dedicated to understanding Gene Expression and terminology associated with the idea, and the rest was dedicated to the application of determining whether the expression of a gene was affected by treatment. Below is our findings and our conclusion of the treatment.
+
 TK (Discuss findings here)
-
-#-----------------------------------Testing area---------------------------
-```{r TEST}
-library(MASS)
-gaussprocess <- function(from = 0, to = 1, K = function(s, t) {min(s, t)},
-                         start = 0, m = 1000) {
-  # Simulates a Gaussian process with a given kernel
-  #
-  # args:
-  #   from: numeric for the starting location of the sequence
-  #   to: numeric for the ending location of the sequence
-  #   K: a function that corresponds to the kernel (covariance function) of
-  #      the process; must give numeric outputs, and if this won't produce a
-  #      positive semi-definite matrix, it could fail; default is a Wiener
-  #      process
-  #   start: numeric for the starting position of the process
-  #   m: positive integer for the number of points in the process to simulate
-  #
-  # return:
-  #   A data.frame with variables "t" for the time index and "xt" for the value
-  #   of the process
-
-  t <- seq(from = from, to = to, length.out = m)
-  Sigma <- sapply(t, function(s1) {
-    sapply(t, function(s2) {
-      K(s1, s2)
-    })
-  })
-
-  path <- mvrnorm(mu = rep(0, times = m), Sigma = Sigma)
-  path <- path - path[1] + start  # Must always start at "start"
-
-  return(data.frame("t" = t, "xt" = path))
-}
-```
-
-
-```{r Gaus}
-
-head(df)
-for(x in 1:5){
-  df <- as.data.frame(gaussprocess())
-  plot(df)
-}
-
-#ggplot(df)
-
-```
 
 
 ## References
