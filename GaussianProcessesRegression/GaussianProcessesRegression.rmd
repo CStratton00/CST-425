@@ -44,9 +44,9 @@ set.seed(1234)
 #Collin Import -> /Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/GaussianProcessesRegression/
 
 # Read the data into R
-seqdata <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
+seqdata <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
 # Read the sample information into R
-sampleinfo <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
+sampleinfo <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
 
 head(seqdata)
 dim(seqdata)
@@ -261,6 +261,7 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 ```
 
 ## Using the above testing Gaussian Process Code we implement it in our own data.
+Using caTools we split the dglist column of the counts for each sequence and split it 70/30. The GauPro_Kernel_model is created using the training sets. Each time this is run the kernel used to create the Gaussian model is different, resulting in a different graph each time.
 ```{r TrainGaussianProcesses}
 library(pracma)
 library(caTools)
@@ -299,9 +300,12 @@ curve(gpk$pred(x));points(x_test,y_test)
 
 ```
 
+##Comparing Predictions
+Each time the kernel will change and produce a different graph. We could run this multiple times to find the averages between them. This will show that the code is indeed using a kernel for the function generator.
 ```{r comparePredictions}
 # To show that predictions vary each time with new testing and training sets, use a for loop to plot 5 different graphs
-for (z in 1:5) {
+par(mfrow=c(2,3))
+for (z in 1:6) {
   # Reformat dglist to a suitable size
   n <- 500
   y <- dglist$counts[1:n,1]
@@ -325,16 +329,7 @@ for (z in 1:5) {
 
 ## Covariance Function
 Covariance models of RNA sequences are extremely sensitive and discriminative tool for searching for additional RNAs and RNA-related sequences in sequence databases. Generally, covariance functions measure how much two variables change together by using a kernel that describes the spatial or temporal covariance of the variable process. Models can be built automatically from the already existing sequence alignment in this case.
-
-```{r covariance}
-#Will be very self explainatory, just take what is calculated above for gaussian processes and put it in cov().
-# Note: Define x somewhere
-
-#kxx <- cov(x,x)
-#kxy <- cov(x,y)
-
-#GauPro_kernel_model$pred_var(x, kxx, kxy)
-```
+From the multiple models produced above, we can see that there is little variance between some of the graphs, but there is an occasional graph that will have a much different form than the others. This could be considered an outlier for the covariance function. We can take the parameters that were used in that outlier and add them to a list that will store all the parameters that will result in a poor estimate. From the graphs created it looks like the covariance function uses a Rational Quadratic Function.
 
 ## Addressing Gaussian Process Prior
 Gaussian Process Prior is distribution on some unknown function in the context of regression. It is the assignment of a GP without exact knowledge of what the function is. After having observed some function values, the GP can be converted into a posterior over the functions.
@@ -368,55 +363,10 @@ Using the Berny Optimization Algorithm, the Gaussian process can be considerably
 
 ## Conclusion
 This project provided a strong challenge as the purpose was to develop a solution to a problem with little to no prior knowledge of the subject. Analyzing Gene Expression is something that is definitely outside the computer science peripheral, thus causing a lot of challenges in the completion of this project. A large portion of the project was dedicated to understanding Gene Expression and terminology associated with the idea, and the rest was dedicated to the application of determining whether the expression of a gene was affected by treatment. Below is our findings and our conclusion of the treatment.
-TK (Discuss findings here)
 
-#-----------------------------------Testing area---------------------------
-```{r TEST}
-library(MASS)
-gaussprocess <- function(from = 0, to = 1, K = function(s, t) {min(s, t)},
-                         start = 0, m = 1000) {
-  # Simulates a Gaussian process with a given kernel
-  #
-  # args:
-  #   from: numeric for the starting location of the sequence
-  #   to: numeric for the ending location of the sequence
-  #   K: a function that corresponds to the kernel (covariance function) of
-  #      the process; must give numeric outputs, and if this won't produce a
-  #      positive semi-definite matrix, it could fail; default is a Wiener
-  #      process
-  #   start: numeric for the starting position of the process
-  #   m: positive integer for the number of points in the process to simulate
-  #
-  # return:
-  #   A data.frame with variables "t" for the time index and "xt" for the value
-  #   of the process
-
-  t <- seq(from = from, to = to, length.out = m)
-  Sigma <- sapply(t, function(s1) {
-    sapply(t, function(s2) {
-      K(s1, s2)
-    })
-  })
-
-  path <- mvrnorm(mu = rep(0, times = m), Sigma = Sigma)
-  path <- path - path[1] + start  # Must always start at "start"
-
-  return(data.frame("t" = t, "xt" = path))
-}
-```
+The first steps we took in performing Gaussian Processes was to follow the data cleaning and refining from combine-australia.github.io (link down below). This allowed us to read from the source data provided and set up a list with the important information needed to preform analysis on. After performing quality control and data analysis on the dataset, we classified the RNA-sequences by counts per million. Normalizing the data, we were able to observe differential expressions between two classified groups using contrasts on a linear fit. Then, we attempted to perform a Gaussian process as a regression by splitting the data into training and testing sets. Using the training set, we performed Gaussian Processes using GauPro and made several predictions on the testing set (through multiple iterations and comparisons). Once we had our GauPro model, we were able to perform predictions using the testing set to create a best fit graph.
 
 
-```{r Gaus}
-
-head(df)
-for(x in 1:5){
-  df <- as.data.frame(gaussprocess())
-  plot(df)
-}
-
-#ggplot(df)
-
-```
 
 
 ## References
