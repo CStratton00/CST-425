@@ -282,6 +282,28 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 }
 ```
 
+
+## Predictions with GP
+Utilizing Gaussian Processes as a linear regression, the final model can be utilized to predict the presence of differentially expressed genes using a testing RNA-sequence dataset. Moreover, the outcome of performing prediction with this model is a set of positive and negative outcomes for the analyzed dataset. These outcomes indicate whether the indicated gene is differentially expressed or not. Finally, the basic mathematical foundation for analyzing these predictions is Bayesian Statistics. Using a confusion matrix, several metrics about the model can be determined, including accuracy and error rate.
+
+```{r predictions}
+# testing data here
+# predicted <- predict(y, test)
+# predicted.df <- data.frame(predicted)
+
+# Print confusion matrix
+# confusion_matrix <- table(test, predicted)
+# confusion_matrix
+
+# State accuracy and error rate
+# accuracy <- sum(diag(confusion_matrix)) / nrow(test)
+# cat("Accuracy: ", accuracy)
+# error_rate <- 1-accuracy
+# cat("Error Rate: ", error_rate)
+
+```
+
+
 ## Covariance Function
 Covariance models of RNA sequences are extremely sensitive and discriminative tool for searching for additional RNAs and RNA-related sequences in sequence databases. Generally, covariance functions measure how much two variables change together by using a kernel that describes the spatial or temporal covariance of the variable process. Models can be built automatically from the already existing sequence alignment in this case.
 
