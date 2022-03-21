@@ -44,9 +44,9 @@ set.seed(1234)
 #Collin Import -> /Users/collinstratton/Google Drive/School/GCU/Fall 2021 - Spring 2022/CST-425/CST-425/GaussianProcessesRegression/
 
 # Read the data into R
-seqdata <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
+seqdata <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/GSE60450_LactationGenewiseCounts.txt", stringsAsFactors = FALSE)
 # Read the sample information into R
-sampleinfo <- read.delim("C:/GCU Academics/Junior Year/Second Semester/CST-425/CLC Shared GitHub Repository/Cloned Repository/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
+sampleinfo <- read.delim("C:/Users/andre/Documents/GitHub/CST-425/GaussianProcessesRegression/SampleInfo.txt", stringsAsFactors = TRUE)
 
 head(seqdata)
 dim(seqdata)
@@ -263,10 +263,21 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 ## Using the above testing Gaussian Process Code we implement it in our own data.
 ```{r TrainGaussianProcesses}
 library(pracma)
+library(caTools)
 
-n <- 500
-x <- matrix(seq(0,1,length.out = n), ncol=1)
+# Reformat dglist to a suitable size
+n <- 50
 y <- dglist$counts[1:n,1]
+
+sample <- sample.split(y, SplitRatio = 0.7) # Split using 70/30 ratio (backed up with research)
+
+x_train <- matrix(seq(0,1,length.out = 35), ncol=1)
+x_test <- matrix(seq(0,1,length.out = 15), ncol=1)
+y_train <- subset(y, sample==TRUE)
+y_test <- subset(y, sample==FALSE)
+
+#x <- matrix(seq(0,1,length.out = n), ncol=1)
+#y <- dglist$counts[1:n,1]
 
 #dglist$counts
 #doesnt work
@@ -276,9 +287,9 @@ y <- dglist$counts[1:n,1]
 
 #Using Kernels
 kern <- Matern52$new(0)
-gpk <- GauPro_kernel_model$new(matrix(x, ncol=1), y, kernel=kern, parallel=FALSE)
+gpk <- GauPro_kernel_model$new(matrix(x_train, ncol=1), y_train, kernel=kern, parallel=FALSE)
 if (requireNamespace("MASS", quietly = TRUE)) {
-  plot(gpk,cex=1)
+  plot(gpk)
 }
 ```
 
@@ -287,19 +298,19 @@ if (requireNamespace("MASS", quietly = TRUE)) {
 Utilizing Gaussian Processes as a linear regression, the final model can be utilized to predict the presence of differentially expressed genes using a testing RNA-sequence dataset. Moreover, the outcome of performing prediction with this model is a set of positive and negative outcomes for the analyzed dataset. These outcomes indicate whether the indicated gene is differentially expressed or not. Finally, the basic mathematical foundation for analyzing these predictions is Bayesian Statistics. Using a confusion matrix, several metrics about the model can be determined, including accuracy and error rate.
 
 ```{r predictions}
-# testing data here
-# predicted <- predict(y, test)
-# predicted.df <- data.frame(predicted)
+# Testing data here
+predicted <- predict(gpk, y_test)
+predicted.df <- data.frame(predicted)
 
 # Print confusion matrix
-# confusion_matrix <- table(test, predicted)
-# confusion_matrix
+confusion_matrix <- table(y_test, predicted)
+confusion_matrix
 
 # State accuracy and error rate
-# accuracy <- sum(diag(confusion_matrix)) / nrow(test)
-# cat("Accuracy: ", accuracy)
-# error_rate <- 1-accuracy
-# cat("Error Rate: ", error_rate)
+accuracy <- sum(diag(confusion_matrix)) / nrow(y_test)
+cat("Accuracy: ", accuracy)
+error_rate <- 1-accuracy
+cat("Error Rate: ", error_rate)
 
 ```
 
@@ -310,7 +321,11 @@ Covariance models of RNA sequences are extremely sensitive and discriminative to
 ```{r covariance}
 #Will be very self explainatory, just take what is calculated above for gaussian processes and put it in cov().
 # Note: Define x somewhere
-#cov(y)
+
+#kxx <- cov(x,x)
+#kxy <- cov(x,y)
+
+#GauPro_kernel_model$pred_var(x, kxx, kxy)
 ```
 
 ## Addressing Gaussian Process Prior
