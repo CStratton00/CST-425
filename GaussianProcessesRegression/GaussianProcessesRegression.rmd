@@ -339,15 +339,10 @@ Covariance models of RNA sequences are extremely sensitive and discriminative to
 ## Addressing Gaussian Process Prior
 Gaussian Process Prior is distribution on some unknown function in the context of regression. It is the assignment of a GP without exact knowledge of what the function is. After having observed some function values, the GP can be converted into a posterior over the functions.
 
-## Posterior Predictions and Noise Reduction with Gaussian Processes
-Noise is an addition to the functions to produce slightly different results that may result in the most accurate solution. It prompts change where a noise-free environment would settle. Below is our implementation of introducing noise into the Gaussian Process using the wvtool library.
-```{r noise}
-# Noise-free observations and predictions with noisy observations
-library(wvtool)
-# use gaussian process variable in noise.filter()
-#noiseTest <- noise.filter(gp, n=15804, method="median") # Reduce noise?
-#plot(myCPM[,1],countdata[,1],ylim=c(0,50),xlim=c(0,3))
-```
+
+## Posterior Noise-Free Observations and Fitting Predictions to Noisy Observations in Gaussian Processes
+Noise is the measurement of random variation in a graph that describes unexpected plot results from an expected function. Gaussian processes utilize noise to generate the most accurate model for a dataset based on a mean and covariance function. Using Bayesian statistics, a Gaussian Process generates functions using the mean and covariance function for a set of posterior observations through the fixed number of points. Since the generated functions must always pass through this set of given points, the Gaussian Process model can start by assuming that all of the observations are perfectly known and noise-free. However, when attempting to create accurately predicting functions with a Gaussian process, it must make a new assumption that a set of constraining observations is not perfectly known. Thus, it assumes that these constraining observations must be some level of normally-distributed noise. Thus, any function that the Gaussian process generates must fit the posterior noise-free observations to a set of constrained noisy observations. By using and comparing a sample of functions generated through this process, the Gaussian process can return an accurate regression line of the observations.
+
 
 ## Optimization
 Using the Berny Optimization Algorithm, the Gaussian process can be considerably enhanced. The steps of Berny's optimization algorithm are as follows.
@@ -434,3 +429,5 @@ https://www.ncbi.nlm.nih.gov/labs/pmc/articles/PMC308124/pdf/nar00035-0157.pdf
 http://krasserm.github.io/2018/03/19/gaussian-processes/
 https://gaussian.com/opt/
 https://towardsdatascience.com/quick-start-to-gaussian-process-regression-36d838810319
+https://2020blogfor.github.io/posts/2020/04/kf_gp/
+https://www.r-bloggers.com/2012/04/gaussian-process-regression-with-r/
