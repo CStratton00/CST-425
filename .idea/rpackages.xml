@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="RPackageService">
+    <option name="enabledRepositoryUrls">
+      <list>
+        <option value="@CRAN@" />
+      </list>
+    </option>
     <option name="userRepositoryUrls">
       <list>
         <option value="C:\Users\andre\Downloads\rpux_0.7.1_win\rpudplus_0.7.1.zip" />

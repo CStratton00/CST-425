@@ -1,0 +1,2 @@
+# Gaussian Processes Regression Project
+CST-425 project to use the gaussian processes regression given the measured expression level of a gene in two different conditions to model time series, then use it as a basis for detecting differential expression in time series.
