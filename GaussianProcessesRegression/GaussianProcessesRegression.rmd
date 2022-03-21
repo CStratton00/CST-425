@@ -229,7 +229,7 @@ volcanoplot(fittedContrast,coef=1,highlight=50,names=fittedContrast$genes$SYMBOL
 ## Gaussian Processes
 Gaussian Processes are generic supervised learning methods designed to solve regression and probabilistic classification problems. They provide the advantages of the prediction interpolating the observations, the prediction being probabilistic meaning it can compute empirical confidence intervals and refit the prediction in some regions of interest, and that the kernels can be specified. Its disadvantages include the fact that they aren’t sparse and they lose efficiency in higher dimensional spaces. Consequently, when performing regression to find the best predictor or DE genes, Gaussian processes can be utilized to find the best function model.
 
-###Example of 1-D Gaussian Process using a sin function
+### Example of 1-D Gaussian Process using a sin function
 ```{r Gaussian Process Testing Code}
 library(GauPro)
 
@@ -250,7 +250,7 @@ curve(gp$pred(x));points(x,y)
 curve(gp$pred(x)+2*gp$pred(x,T)$se,col=2,add=T);curve(gp$pred(x)-2*gp$pred(x,T)$se,col=2,add=T)
 ```
 
-###Example of Kernel Gaussian Process using a sin function
+### Example of Kernel Gaussian Process using a sin function
 ```{r}
 #Using Kernels
 kern <- Matern52$new(0)
@@ -295,6 +295,7 @@ Covariance models of RNA sequences are extremely sensitive and discriminative to
 Gaussian Process Prior is distribution on some unknown function in the context of regression. It is the assignment of a GP without exact knowledge of what the function is. After having observed some function values, the GP can be converted into a posterior over the functions.
 
 ## Posterior Predictions and Noise Reduction with Gaussian Processes
+Noise is an addition to the functions to produce slightly different results that may result in the most accurate solution. It prompts change where a noise-free environment would settle. Below is our implementation of introducing noise into the Gaussian Process using the wvtool library.
 ```{r noise}
 # Noise-free observations and predictions with noisy observations
 library(wvtool)
