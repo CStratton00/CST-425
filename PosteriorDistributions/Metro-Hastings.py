@@ -1,3 +1,8 @@
+import numpy as np
+import pandas as pd
+import random as rd
+import matplotlib.pyplot as plt
+import networkx as nx
 import pymc3 as pm
 
 # METROPOLIS-HASTINGS
@@ -7,6 +12,12 @@ with pm.Model() as model:
     # Prior is a matrix of probabilities
     x = pm.Normal('x', mu=0, sigma=1)
 
+with pm.Model():
+    # Define beta
+    b = pm.Beta('b', alpha=1, beta=1, shape=(5, 5))
+
+print(x)
+print(b)
 
 # Function to perform Gaussian sampling
 def gaussianSample(mu, sigma):
