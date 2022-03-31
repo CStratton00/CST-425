@@ -19,7 +19,7 @@ transitionMatrixNP = transitionMatrix.to_numpy()
 print(transitionMatrixNP)
 # function to iterate over a matrix and plot the values
 def markovPlot(matrix, x, y, n):
-    xval = np.linspace(0, 100, 100)
+    xval = np.linspace(0, 10, 10)
     yval = []
     for k in range(1, n):
         yval.append(pow(matrix, k)[x, y] * 100)
@@ -33,7 +33,9 @@ def markovPlot(matrix, x, y, n):
 # for i, j in transitionMatrix.iterrows():
 #     markovPlot(transitionMatrixNP, i, j, 100)
 
+# Generate graphs from transition matrix to illustrate the Markov Chain
 for i in range(transitionMatrixNP.shape[0]):
     for j in range(transitionMatrixNP.shape[1]):
-        markovPlot(transitionMatrixNP, i, j, 101)
+        markovPlot(transitionMatrixNP, i, j, 11)
+
 

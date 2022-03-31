@@ -13,7 +13,7 @@ with pm.Model() as model:
     x = pm.Normal('x', mu=0, sigma=1)
 
 with pm.Model():
-    # Define beta
+    # Define beta and alpha
     b = pm.Beta('b', alpha=1, beta=1, shape=(5, 5))
 
 print(x)
