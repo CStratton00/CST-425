@@ -16,7 +16,7 @@ headers = ["Museum", "Concert", "Sports Event", "Restaurant", "Hike"]
 transitionMatrix = df.div(df.sum(axis=1), axis=0)
 
 transitionMatrixNP = transitionMatrix.to_numpy()
-
+print(transitionMatrixNP)
 # function to iterate over a matrix and plot the values
 def markovPlot(matrix, x, y, n):
     xval = np.linspace(0, 100, 100)
