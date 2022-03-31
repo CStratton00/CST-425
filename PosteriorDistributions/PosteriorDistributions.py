@@ -22,8 +22,9 @@ def markovPlot(matrix, x, y, n):
     xval = np.linspace(0, 100, 100)
     yval = []
     for k in range(1, n):
-        yval.append(pow(matrix, k)[x, y])
-
+        yval.append(pow(matrix, k)[x, y] * 100)
+    plt.xlabel("Days")
+    plt.ylabel("% Chance of happening")
     plt.plot(xval, yval)
     plt.title("{} to {}".format(headers[x], headers[y]))
     plt.show()
