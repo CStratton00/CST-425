@@ -23,6 +23,10 @@ print(b)
 def gaussianSample(mu, sigma):
     return np.random.normal(mu, sigma)
 
+def accept_reject(N):
+    min = -1
+    max = 1
+
 
 # Function to perform Metropolis-Hastings sampling
 def metropolisHastings(mu, sigma, n):
