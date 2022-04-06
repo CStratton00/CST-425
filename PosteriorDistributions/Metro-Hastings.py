@@ -105,16 +105,16 @@ training = np.array(randomDataset(1000))  # Create a random dataset with 1000 ob
 # Create the model with initial conditions
 with pm.Model() as model:
     # Define the prior parameters
-    theta = pm.Beta("Theta", alpha=0, beta=1)  # Define a basic beta distribution for the prior distribution
-    observed = pm.Normal("Observed", mu=0, sigma=1, observed=training)  # Define likelihood using a normal Gaussian distribution with observed data
+    theta = pm.Beta("Theta", alpha=3, beta=1)  # Define a basic beta distribution for the prior distribution
+    observed = pm.Normal("Observed", mu=3, sigma=1, observed=training)  # Define likelihood using a normal Gaussian distribution with observed data
 
 # Perform Metropolis-Hastings sampling
 num_samples = 10000  # Set the number of total samples to take
 
 with model:
-    start = [3.0]  # Set the initial condition
+    start = pm.find_MAP()  # Find the MAP of the model
     step = pm.Metropolis()  # Use sampling with Metropolis-Hastings steps
-    trace = pm.sample(num_samples, step=step, start=start, random_seed=456, return_inferencedata=False)  # Perform sampling
+    trace = pm.sample(num_samples, step=step, start=start, random_seed=456)  # Perform sampling
 
 # Plot the Metropolis-Hastings results
 p_true = 0.5
