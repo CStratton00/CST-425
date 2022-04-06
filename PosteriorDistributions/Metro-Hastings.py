@@ -24,12 +24,16 @@ def markovPlot(matrix, x, y, n):
     yval = []
     day = 0
     ssv = 0
-    for k in range(1, n):
-        yval.append(pow(matrix, k)[x, y] * 100)
+    newmatrix = np.dot(matrix, matrix)
+    yval.append(newmatrix[x, y] * 100)
+
+    for k in range(1, n-1):
+        newmatrix = np.dot(newmatrix, matrix)
+        yval.append(newmatrix[x, y] * 100)
 
     for i in range(len(yval)-1):
-        change = yval[i] - yval[i + 1]
-        if change < .05:
+        change = abs(yval[i] - yval[i + 1])
+        if change < .01:
             day = i
             ssv = round(yval[i], 3)
             break
@@ -45,9 +49,9 @@ def markovPlot(matrix, x, y, n):
 #     markovPlot(transitionMatrixNP, i, j, 100)
 
 # Generate graphs from transition matrix to illustrate the Markov Chain
-# for i in range(transitionMatrixNP.shape[0]):
-#     for j in range(transitionMatrixNP.shape[1]):
-#         markovPlot(transitionMatrixNP, i, j, 11)
+for i in range(transitionMatrixNP.shape[0]):
+    for j in range(transitionMatrixNP.shape[1]):
+        markovPlot(transitionMatrixNP, i, j, 11)
 
 # Step 7:
 concertHikeRestaurant = transitionMatrixNP[1][4] * transitionMatrixNP[4][3]
