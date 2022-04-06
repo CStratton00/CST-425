@@ -112,3 +112,40 @@ spv_tran = sum_trans * spv
 # #histogram the t values with and without the mask
 # _ = plt.hist(t, bins=100)
 # _ = plt.hist(t[mask], bins=100)
+
+def normal(x, mu, sigma):
+    numerator = np.exp((-(x - mu) ** 2) / (2 * sigma ** 2))
+    denominator = sigma * np.sqrt(2 * np.pi)
+    return numerator / denominator
+
+
+def random_coin(p):
+    unif = rd.uniform(0, 1)
+    if unif >= p:
+        return False
+    else:
+        return True
+
+
+def gaussian_mcmc(hops, mu, sigma):
+    states = []
+    burn_in = int(hops * 0.2)
+    current = rd.uniform(-5 * sigma + mu, 5 * sigma + mu)
+    for k in range(hops):
+        states.append(current)
+        movement = rd.uniform(-5 * sigma + mu, 5 * sigma + mu)
+
+        curr_prob = normal(x=current, mu=mu, sigma=sigma)
+        move_prob = normal(x=movement, mu=mu, sigma=sigma)
+
+        acceptance = min(move_prob / curr_prob, 1)
+        if random_coin(acceptance):
+            current = movement
+    return states[burn_in:]
+
+
+lines = np.linspace(-3, 3, 1000)
+normal_curve = [normal(l, mu=0, sigma=1) for l in lines]
+dist = gaussian_mcmc(100_000, mu=0, sigma=1)
+plt.hist(dist, normed=1, bins=20)
+plt.plot(lines, normal_curve)
