@@ -8,8 +8,10 @@ def markovPlot(matrix, headers, x, y, n):
     yval = []
     day = 0
     ssv = 0
+    mt = matrix
     for k in range(1, n):
-        yval.append(pow(matrix, k)[x, y] * 100)
+        mt = np.dot(mt, matrix)
+        yval.append(mt[x, y] * 100)
 
     for i in range(len(yval)-1):
         change = yval[i] - yval[i + 1]

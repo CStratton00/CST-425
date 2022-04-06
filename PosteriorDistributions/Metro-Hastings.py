@@ -4,6 +4,7 @@ import random as rd
 import matplotlib.pyplot as plt
 import networkx as nx
 import pymc3 as pm
+from IPython.core.pylabtools import figsize
 
 # Import data
 df = pd.read_csv("./syntheticdata.csv", header=None)
@@ -78,63 +79,44 @@ spv_tran = sum_trans * spv
 # plt.show()
 
 # Step 9: Format a question that requires a MCMC to answer
-# Question: What is the most visited location in town after 5 days?
+# Question: What is the distribution of visited locations in town after 5 days?
+# And what is the most visited location after 5 days?
 
-# Step 10:
+# Step 10: METROPOLIS-HASTINGS
+# 1. Start with a random sample
+# 2. Determine the probability density associated with the sample
+# 3. Propose a new, arbitrary sample (and determine its probability density)
+# 4. Compare densities (via division), quantifying the desire to move
+# 5. Generate a random number, compare with desire to move, and decide: move or stay
+# 6. Repeat until the number of iterations is reached and the convergence criteria is met
 
-# METROPOLIS-HASTINGS Algorithm
-# Start with a random sample
-# Determine the probability density associated with the sample
-# Propose a new, arbitrary sample (and determine its probability density)
-# Compare densities (via division), quantifying the desire to move
-# Generate a random number, compare with desire to move, and decide: move or stay
-# Repeat
-
-# Define the model
-with pm.Model() as model:
-    # Define the prior
-    # Prior is a matrix of probabilities
-    x = pm.Normal('x', mu=0, sigma=1)
-
-with pm.Model():
-    # Define beta and alpha
-    b = pm.Beta('b', alpha=1, beta=1, shape=(5, 5))
-
-# Function to perform random sampling
-def randomSample(n):
-    choicesList = [0, 1, 2, 3, 4]
+# Create a random training dataset
+def randomDataset(n):
+    choicesList = [1, 2, 3, 4, 5]
     return np.random.choice(choicesList, size=n, replace=True, p=spv_tran)
 
 
-# Function to perform Metropolis-Hastings sampling
-def metropolisHastings(n):
-    # Initialize the chain
-    mu = 0
-    sigma = 1
-    chain = [mu]
-    # Initialize the proposal distribution
-    proposalDistribution = randomSample(n)
-    # Initialize the acceptance rate
-    acceptanceRate = 0
-    # Iterate over the chain
-    for i in range(1, n):
-        # Sample from the proposal distribution
-        proposalDistribution = randomSample(n)
-        # Calculate the acceptance rate
-        acceptanceRate = np.exp(proposalDistribution - mu) / (
-                    np.exp(proposalDistribution - mu) + np.exp(mu - proposalDistribution))
-        # Accept the proposal
-        if acceptanceRate > np.random.uniform():
-            mu = proposalDistribution
-        # Add the sample to the chain
-        chain.append(mu)
-    return chain
+training = np.array(randomDataset(1000))  # Create a random dataset with 1000 observations
 
+# Create the model with initial conditions
+with pm.Model() as model:
+    # Define the prior parameters
+    theta = pm.Beta("Theta", alpha=0, beta=1)  # Define a basic beta distribution for the prior distribution
+    observed = pm.Normal("Observed", mu=0, sigma=1, observed=training)  # Define likelihood using a normal Gaussian distribution with observed data
 
-x = np.linspace(0, 1000, 1000)
-metro = metropolisHastings(1000)
+# Perform Metropolis-Hastings sampling
+num_samples = 10000  # Set the number of total samples to take
 
+with model:
+    # start = [3.0]  # Set the initial condition
+    step = pm.Metropolis()  # Use sampling with Metropolis-Hastings steps
+    trace = pm.sample(num_samples, step=step, random_seed=456, return_inferencedata=False)  # Perform sampling
 
-print(x)
-plt.plot(x, metro)
+# Plot the Metropolis-Hastings results
+p_true = 0.5
+figsize(12.5, 4)
+plt.title(r"Posterior distribution of $\theta for sample size N=1000$")
+plt.vlines(p_true, 0, 25, linestyle='--', label="true $\theta$ (unknown)", color='red')
+plt.hist(trace["Theta"], bins=25, histtype='stepfilled', density=True, color='#348ABD')
+plt.legend()
 plt.show()
