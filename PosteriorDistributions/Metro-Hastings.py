@@ -92,7 +92,7 @@ spv_tran = sum_trans * spv
 
 # Create a random training dataset
 def randomDataset(n):
-    choicesList = [1, 2, 3, 4, 5]
+    choicesList = [1.0, 2.0, 3.0, 4.0, 5.0]
     return np.random.choice(choicesList, size=n, replace=True, p=spv_tran)
 
 
@@ -108,9 +108,9 @@ with pm.Model() as model:
 num_samples = 10000  # Set the number of total samples to take
 
 with model:
-    # start = [3.0]  # Set the initial condition
+    start = [3.0]  # Set the initial condition
     step = pm.Metropolis()  # Use sampling with Metropolis-Hastings steps
-    trace = pm.sample(num_samples, step=step, random_seed=456, return_inferencedata=False)  # Perform sampling
+    trace = pm.sample(num_samples, step=step, start=start, random_seed=456, return_inferencedata=False)  # Perform sampling
 
 # Plot the Metropolis-Hastings results
 p_true = 0.5
