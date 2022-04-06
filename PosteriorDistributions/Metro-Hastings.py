@@ -49,9 +49,9 @@ def markovPlot(matrix, x, y, n):
 #     markovPlot(transitionMatrixNP, i, j, 100)
 
 # Generate graphs from transition matrix to illustrate the Markov Chain
-for i in range(transitionMatrixNP.shape[0]):
-    for j in range(transitionMatrixNP.shape[1]):
-        markovPlot(transitionMatrixNP, i, j, 11)
+# for i in range(transitionMatrixNP.shape[0]):
+#     for j in range(transitionMatrixNP.shape[1]):
+#         markovPlot(transitionMatrixNP, i, j, 11)
 
 # Step 7:
 concertHikeRestaurant = transitionMatrixNP[1][4] * transitionMatrixNP[4][3]
