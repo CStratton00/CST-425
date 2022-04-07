@@ -1,70 +1,16 @@
-# coding=utf-8
-# Copyright 2022 The TensorFlow Datasets Authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+from keras.datasets import mnist
+(train_X, train_y), (test_X, test_y) = mnist.load_data()
 
-"""Tests for mnist dataset module."""
-import tensorflow_datasets
-from tensorflow_datasets import testing
-from tensorflow_datasets.image_classification import mnist
+print('X_train: ' + str(train_X.shape))
+print('Y_train: ' + str(train_y.shape))
+print('X_test:  '  + str(test_X.shape))
+print('Y_test:  '  + str(test_y.shape))
 
-# testing/mnist.py generates fake input data
-
-mnist._TRAIN_EXAMPLES = 10  # pylint: disable=protected-access
-mnist._TEST_EXAMPLES = 2  # pylint: disable=protected-access
+from matplotlib import pyplot
+from matplotlib import pyplot
+for i in range(9):
+    pyplot.subplot(330 + 1 + i)
+    pyplot.imshow(train_X[i], cmap=pyplot.get_cmap('gray'))
+    pyplot.show()
 
 
-class MNISTTest(testing.DatasetBuilderTestCase):
-  DATASET_CLASS = mnist.MNIST
-  SPLITS = {
-      "train": 10,
-      "test": 2,
-  }
-  DL_EXTRACT_RESULT = {
-      "train_data": "train-image",
-      "train_labels": "train-label",
-      "test_data": "test-image",
-      "test_labels": "test-label",
-  }
-
-
-class FashionMNISTTest(MNISTTest):
-  DATASET_CLASS = mnist.FashionMNIST
-
-
-class KMNISTTest(MNISTTest):
-  DATASET_CLASS = mnist.KMNIST
-
-
-mnist.EMNIST.BUILDER_CONFIGS.extend([
-    mnist.EMNISTConfig(
-        name="test",
-        class_number=200,
-        train_examples=10,
-        test_examples=2,
-        description="EMNIST test data config.",
-    ),
-])
-
-
-class EMNISTTest(testing.DatasetBuilderTestCase):
-  DATASET_CLASS = mnist.EMNIST
-  SPLITS = {
-      "train": 10,
-      "test": 2,
-  }
-  BUILDER_CONFIG_NAMES_TO_TEST = ["test"]
-
-
-if __name__ == "__main__":
-  testing.test_main()
