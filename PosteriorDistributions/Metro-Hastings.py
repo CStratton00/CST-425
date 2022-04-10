@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import random as rd
 import matplotlib.pyplot as plt
-import networkx as nx
 import pymc3 as pm
 
 # Import data
