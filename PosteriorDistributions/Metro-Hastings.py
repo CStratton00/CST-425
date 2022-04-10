@@ -94,33 +94,36 @@ spv_tran = sum_trans * spv
 # 5. Generate a random number, compare with desire to move, and decide: move or stay
 # 6. Repeat until the number of iterations is reached and the convergence criteria is met
 
-# Create a random training dataset
-def randomDataset(n):
-    choicesList = [1.0, 2.0, 3.0, 4.0, 5.0]
-    return np.random.choice(choicesList, size=n, replace=True, p=spv_tran)
+if __name__ == '__main__':
+    # Create a random training dataset
+    def randomDataset(n):
+        choicesList = [1, 2, 3, 4, 5]
+        return np.random.choice(choicesList, size=n, replace=True, p=spv_tran)
 
 
-training = np.array(randomDataset(1000))  # Create a random dataset with 1000 observations
+    training = np.array(randomDataset(1000))  # Create a random dataset with 1000 observations
+    print(training)
+    print(type(training))
 
-# Create the model with initial conditions
-with pm.Model() as model:
-    # Define the prior parameters
-    theta = pm.Beta("Theta", alpha=3, beta=1)  # Define a basic beta distribution for the prior distribution
-    observed = pm.Normal("Observed", mu=3, sigma=1, observed=training)  # Define likelihood using a normal Gaussian distribution with observed data
+    # Create the model with initial conditions
+    with pm.Model() as model:
+        # Define the prior parameters
+        theta = pm.Beta("Theta", alpha=3, beta=1)  # Define a basic beta distribution for the prior distribution
+        observed = pm.Normal("Observed", mu=3, sigma=1, observed=training)  # Define likelihood using a normal Gaussian distribution with observed data
 
-# Perform Metropolis-Hastings sampling
-num_samples = 10000  # Set the number of total samples to take
+    # Perform Metropolis-Hastings sampling
+    num_samples = 10000  # Set the number of total samples to take
 
-with model:
-    start = pm.find_MAP()  # Find the MAP of the model
-    step = pm.Metropolis()  # Use sampling with Metropolis-Hastings steps
-    trace = pm.sample(num_samples, step=step, start=start, random_seed=456)  # Perform sampling
+    with model:
+        start = pm.find_MAP()  # Find the MAP of the model
+        step = pm.Metropolis()  # Use sampling with Metropolis-Hastings steps
+        trace = pm.sample(num_samples, step=step, start=start, random_seed=456)  # Perform sampling
 
-# Plot the Metropolis-Hastings results
-p_true = 0.5
-figsize(12.5, 4)
-plt.title(r"Posterior distribution of $\theta for sample size N=1000$")
-plt.vlines(p_true, 0, 25, linestyle='--', label="true $\theta$ (unknown)", color='red')
-plt.hist(trace["Theta"], bins=25, histtype='stepfilled', density=True, color='#348ABD')
-plt.legend()
-plt.show()
+    # Plot the Metropolis-Hastings results
+    p_true = 0.5
+    figsize(12.5, 4)
+    plt.title(r"Posterior distribution of $\theta for sample size N=1000$")
+    plt.vlines(p_true, 0, 25, linestyle='--', label="true $theta$ (unknown)", color='red')
+    plt.hist(trace["Theta"], bins=25, histtype='stepfilled', density=True, color='#348ABD')
+    plt.legend()
+    plt.show()
