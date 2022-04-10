@@ -4,7 +4,6 @@ import random as rd
 import matplotlib.pyplot as plt
 import networkx as nx
 import pymc3 as pm
-from IPython.core.pylabtools import figsize
 
 # Import data
 df = pd.read_csv("./syntheticdata.csv", header=None)
@@ -17,7 +16,7 @@ headers = ["Museum", "Concert", "Sports Event", "Restaurant", "Hike"]
 transitionMatrix = df.div(df.sum(axis=1), axis=0)
 
 transitionMatrixNP = transitionMatrix.to_numpy()
-print(transitionMatrixNP)
+# print(transitionMatrixNP)
 # function to iterate over a matrix and plot the values
 def markovPlot(matrix, x, y, n):
     xval = np.linspace(0, 10, 10)
@@ -71,6 +70,7 @@ sum_trans = transDot.sum(axis=0)
 
 # multiply the starting probability vector by the sum of the columns
 spv_tran = sum_trans * spv
+# print("\nHere it is: ", spv_tran)
 
 # print the likelihood of visiting any of the locations as the fifth step
 # print("\nPercent odds of visiting the Museum 5th = ", spv_tran[0] * 100)
@@ -78,14 +78,14 @@ spv_tran = sum_trans * spv
 # print("Percent odds of visiting the Sports Event 5th = ", spv_tran[2] * 100)
 # print("Percent odds of visiting the Restaurant 5th = ", spv_tran[3] * 100)
 # print("Percent odds of visiting the Hike 5th = ", spv_tran[4] * 100)
-#
+
 # plt.pie(spv_tran, labels=headers, autopct='%1.1f%%')
 # plt.show()
 
 # Step 9: Format a question that requires a MCMC to answer
-# Question: What is the distribution of visited locations in town after 5 days?
-# And what is the most visited location after 5 days?
-
+# Question: What is the distribution of visited locations in town after 3 days?
+# And what is the most visited location after 3 days?
+#
 # Step 10: METROPOLIS-HASTINGS
 # 1. Start with a random sample
 # 2. Determine the probability density associated with the sample
@@ -94,36 +94,43 @@ spv_tran = sum_trans * spv
 # 5. Generate a random number, compare with desire to move, and decide: move or stay
 # 6. Repeat until the number of iterations is reached and the convergence criteria is met
 
+# Create the probability vector that will be used to generate the samples
+transDot = transitionMatrix
+for i in range(2):  # Two transitions, so run 2 times
+    transDot = np.dot(transDot, transitionMatrix)
+
+transitionResult = transDot.sum(axis=0)
+probVector = np.array([.2, .2, .2, .2, .2])
+locationProbabilities = transitionResult * probVector
+
 if __name__ == '__main__':
     # Create a random training dataset
     def randomDataset(n):
-        choicesList = [1, 2, 3, 4, 5]
-        return np.random.choice(choicesList, size=n, replace=True, p=spv_tran)
+        choicesList = [0, 1, 2, 3, 4]
+        return np.random.choice(choicesList, size=n, replace=True, p=locationProbabilities)
 
 
-    training = np.array(randomDataset(1000))  # Create a random dataset with 1000 observations
-    print(training)
-    print(type(training))
+    training = np.array(randomDataset(100))  # Create a random dataset with 1000 observations
 
     # Create the model with initial conditions
     with pm.Model() as model:
         # Define the prior parameters
-        theta = pm.Beta("Theta", alpha=3, beta=1)  # Define a basic beta distribution for the prior distribution
-        observed = pm.Normal("Observed", mu=3, sigma=1, observed=training)  # Define likelihood using a normal Gaussian distribution with observed data
+        theta = pm.Beta("Theta", alpha=1, beta=1)  # Define a basic beta distribution for the prior distribution
+        observed = pm.Normal("Observed", mu=0, sigma=1, observed=training)  # Define likelihood using a normal Gaussian distribution with observed data
 
     # Perform Metropolis-Hastings sampling
-    num_samples = 10000  # Set the number of total samples to take
+    num_samples = 1000  # Set the number of total samples to take
 
     with model:
         start = pm.find_MAP()  # Find the MAP of the model
         step = pm.Metropolis()  # Use sampling with Metropolis-Hastings steps
-        trace = pm.sample(num_samples, step=step, start=start, random_seed=456)  # Perform sampling
+        trace = pm.sample(num_samples, step=step, start=start, random_seed=123456)  # Perform sampling
 
     # Plot the Metropolis-Hastings results
-    p_true = 0.5
-    figsize(12.5, 4)
-    plt.title(r"Posterior distribution of $\theta for sample size N=1000$")
-    plt.vlines(p_true, 0, 25, linestyle='--', label="true $theta$ (unknown)", color='red')
-    plt.hist(trace["Theta"], bins=25, histtype='stepfilled', density=True, color='#348ABD')
+    print("\nTrace: ", trace["Theta"])
+
+    plt.title(r"Posterior distribution of MCMC for N=1000")
+    plt.vlines(0.5, 0, 2, linestyle='--', label="Center", color='red')
+    plt.hist(trace["Theta"], bins=5, histtype='stepfilled', density=True, color='#348ABD')
     plt.legend()
     plt.show()
