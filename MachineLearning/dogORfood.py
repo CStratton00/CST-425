@@ -18,6 +18,11 @@ from pathlib import Path
 from fastai.vision import *
 from fastai.metrics import error_rate
 
+import requests
+from PIL import Image
+from io import BytesIO
+import cv2
+
 # dataset = h5py.File('C:/Users/Drew/OneDrive/Pictures/ml-food/food_c101_n1000_r384x384x3.h5', 'r')
 #
 # print(dataset.keys())
@@ -53,7 +58,8 @@ from fastai.metrics import error_rate
 # valid_df = pd.read_csv(path_meta/'test.txt', header=None).apply(lambda x : x + '.jpg')
 # valid_image_list = ImageList.from_df(valid_df, path_img)
 
-image_dir = Path('C:/Users/Drew/OneDrive/Pictures/ml-food/images')
+# image_dir = Path('C:/Users/Drew/OneDrive/Pictures/ml-food/images')
+image_dir = Path('/Users/collinstratton/Documents/archive/images')
 images_paths = list(image_dir.glob(r'**/*.jpg'))
 labels = list(map(lambda x: os.path.split(os.path.split(x)[0])[1], images_paths))
 
@@ -161,11 +167,6 @@ results = model.evaluate(test_images, verbose=1)
 print("Precision: {:.2f}%".format(results[1] * 100))
 
 # Making a prediction with an internet image
-import requests
-from PIL import Image
-from io import BytesIO
-import cv2
-
 url = 'https://www.hola.com/imagenes/cocina/tecnicas-de-cocina/20210820194795/como-hacer-patatas-fritas-perfectas/0-986-565/portada-patatas-age-t.jpg'
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
