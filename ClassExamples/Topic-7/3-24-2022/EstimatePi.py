@@ -25,5 +25,5 @@ if __name__ == "__main__":
     inpointR, outpointR = func2()
     ratio = inpointR / (inpointR + outpointR)
     print(f"{inpointR} / {inpointR+outpointR} = ", ratio)
-    print(ratio/(pow(.5, 2)))
+    print(4*ratio)
 
